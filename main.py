@@ -3,7 +3,7 @@ import utils
 import os
 import notify
 import multiprocessing
-import keep_alive
+import server
 from replit import db
 from datetime import datetime
 
@@ -111,7 +111,7 @@ async def on_message(message):
         await message.channel.send(utils.usage(message.content))
 
 
-process1 = multiprocessing.Process(target=keep_alive.run)
+process1 = multiprocessing.Process(target=server.run)
 process1.daemon = True
 process1.start()
 process2 = multiprocessing.Process(target=notify.start_notifier)
