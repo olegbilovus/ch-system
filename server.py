@@ -10,7 +10,7 @@ def home():
     return '<h1>Alive</h1>'
 
 
-@app.route('/api')
+#@app.route('/api')
 def api():
     response = Response()
     api_key = request.headers.get('X-ApiKey', type=str)
