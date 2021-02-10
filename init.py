@@ -13,8 +13,9 @@ async def on_ready():
 @client.event
 async def on_message(message):
     msg = message.content.split(' ')
-    if message.author != client.user and msg[0] == 'setchannelnotify':
+    if message.author != client.user and msg[0] == 'init':
         db['notify'] = message.channel.id
+        db['guild'] = message.guild.id
         await message.channel.send(
             f'notify channel set to {message.channel.name}')
 

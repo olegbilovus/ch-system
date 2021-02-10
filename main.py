@@ -4,6 +4,7 @@ import os
 import notify
 import multiprocessing
 import server
+import routine
 from replit import db
 from datetime import datetime
 
@@ -12,7 +13,7 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    print(f'Logged at {datetime.now()}')
+    print(f'BOT: logged at {datetime.now()}')
     for boss, timer in utils.BOSSES.items():
         db[boss] = utils.get_timer(boss)
 
@@ -69,7 +70,7 @@ async def on_message(message):
     elif lenght == 2 and msg[0] in get_commands:
         boss = msg[1]
         minutes = utils.get_timer(boss)
-        if minutes:
+        if minutes != None:
             await message.channel.send(utils.minutes_to_dhm(minutes))
         else:
             await message.channel.send(f'{boss} no timer set')
@@ -81,40 +82,47 @@ async def on_message(message):
             await message.channel.send(f'{boss} reset to {default_timer}m')
         else:
             await message.channel.send(f'{boss} is not tracked')
-    elif lenght == 2 and msg[0] in sub_commands:
-        boss = msg[1]
-        if utils.add_sub(boss, message.author.mention):
-            await message.channel.send(
-                f'{message.author.mention} added to {boss} subs')
-        else:
-            await message.channel.send(
-                f'{message.author.mention} something is wrong')
-    elif lenght == 2 and msg[0] in unsub_commands:
-        boss = msg[1]
-        if utils.remove_sub(boss, message.author.mention):
-            await message.channel.send(
-                f'{message.author.mention} removed from {boss} subs')
-        else:
-            await message.channel.send(
-                f'{message.author.mention} something is wrong')
+    elif lenght >= 2 and msg[0] in sub_commands:
+        msg_to_send = ''
+        for boss in msg[1:]:
+          if utils.add_sub(boss, message.author.id):
+              msg_to_send += f'added to {boss} subs\n'
+          else:
+              msg_to_send += f'already in {boss} subs\n'
+        await message.channel.send(f'{message.author.mention}\n' + msg_to_send)
+    elif lenght >= 2 and msg[0] in unsub_commands:
+        msg_to_send = ''
+        for boss in msg[1:]:
+          if utils.remove_sub(boss, message.author.id):
+              msg_to_send += f'removed from {boss} subs\n'
+          else:
+              msg_to_send += f'not a {boss} sub\n'
+        await message.channel.send(f'{message.author.mention}\n' + msg_to_send)
     elif lenght == 2:
         try:
             boss = msg[0]
             timer = int(msg[1])
             if utils.set_timer(boss, timer):
-                await message.channel.send(f'{boss} set to {timer}m')
+                if timer == 0:
+                    await message.channel.send(f'{boss} timer deleted')
+                else:
+                    await message.channel.send(f'{boss} set to {timer}m')
             else:
                 await message.channel.send(f'{boss} is not tracked')
+
         except ValueError:
             await message.channel.send(utils.usage(message.content))
     else:
         await message.channel.send(utils.usage(message.content))
 
 
-process1 = multiprocessing.Process(target=server.run)
-process1.daemon = True
-process1.start()
-process2 = multiprocessing.Process(target=notify.start_notifier)
-process2.daemon = True
-process2.start()
+server_s = multiprocessing.Process(target=server.run)
+server_s.daemon = True
+server_s.start()
+notifier = multiprocessing.Process(target=notify.start_notifier)
+notifier.daemon = True
+notifier.start()
+delete_old_timers = multiprocessing.Process(target=routine.delete_old_timers)
+delete_old_timers.daemon = True
+delete_old_timers.start()
 client.run(os.getenv('TOKEN'))

@@ -1,6 +1,7 @@
 from flask import Flask, request, Response
 from replit import db
 from utils import BOSSES
+from datetime import datetime
 
 app = Flask('')
 
@@ -14,14 +15,18 @@ def home():
 def api():
     response = Response()
     api_key = request.headers.get('X-ApiKey', type=str)
+    api_keys = db['api_keys']
 
-    if api_key in db['api_keys'].values():
-        boss = request.args['boss']
-        if boss in BOSSES:
-            response.status_code = 200
-            response.data = str(db[boss])
-        else:
-            response.status_code = 404
+    for user, api_key_db in api_keys.items():
+        if (api_key == api_key_db):
+            boss = request.args['boss']
+            print(f'API: {user} requested {boss} at {datetime.now()}')
+            if boss in BOSSES:
+                response.status_code = 200
+                response.data = str(db[boss])
+            else:
+                response.status_code = 404
+            break
     else:
         response.status_code = 401
 
