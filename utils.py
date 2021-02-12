@@ -59,8 +59,7 @@ def minutes_to_dhm(minutes):
     msg = f'{str(days) + "d " if days > 0 else ""}{str(hours) + "h " if hours > 0 else ""}{minutes}m'
     if not negative:
         return msg
-    else:
-        return '-' + msg
+    return '-' + msg
 
 
 def get_timer(boss):
@@ -81,8 +80,7 @@ def set_timer(boss, timer):
         else:
             db[boss] = minutes_add(timer)
         return True
-    else:
-        return False
+    return False
 
 
 def get_subs(boss):
@@ -94,8 +92,7 @@ def get_subs(boss):
         except KeyError:
             db[boss_suffix] = subs
         return subs
-    else:
-        return None
+    return None
 
 
 def add_sub(boss, user_id):
@@ -104,8 +101,7 @@ def add_sub(boss, user_id):
         subs.append(user_id)
         db[boss + SUB_SUFFIX] = subs
         return True
-    else:
-        return False
+    return False
 
 
 def remove_sub(boss, user_mention):
@@ -114,8 +110,7 @@ def remove_sub(boss, user_mention):
         subs.remove(user_mention)
         db[boss + SUB_SUFFIX] = subs
         return True
-    else:
-        return False
+    return False
 
 
 def usage(message):
