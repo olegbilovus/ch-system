@@ -1,7 +1,9 @@
+from datetime import datetime
+
 from flask import Flask, request, Response
 from replit import db
+
 from utils import BOSSES
-from datetime import datetime
 
 app = Flask('')
 
@@ -18,7 +20,7 @@ def api():
     api_keys = db['api_keys']
 
     for user, api_key_db in api_keys.items():
-        if (api_key == api_key_db):
+        if api_key == api_key_db:
             boss = request.args['boss']
             print(f'API: {user} requested {boss} at {datetime.now()}')
             if boss in BOSSES:

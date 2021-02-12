@@ -1,7 +1,9 @@
-from replit import db
-from utils import minutes_sub
-from datetime import datetime
 import time
+from datetime import datetime
+
+from replit import db
+
+from utils import minutes_sub
 
 
 def delete_old_timers():
@@ -11,7 +13,7 @@ def delete_old_timers():
         for key in db.keys():
             if key.isdigit():
                 timer = db[key]
-                if timer != None and minutes_sub(timer) <= -180:
+                if timer is not None and minutes_sub(timer) <= -180:
                     print(f'DOT: deleted {key} at {datetime.now()}')
                     db[key] = None
 

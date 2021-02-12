@@ -1,11 +1,12 @@
-from replit import db
 import uuid
+
+from replit import db
 
 key = 'api_keys'
 
 
 def create(user):
-    id = uuid.uuid4().hex
+    api_key = uuid.uuid4().hex
     api_keys = {}
 
     try:
@@ -13,10 +14,10 @@ def create(user):
     except KeyError:
         pass
 
-    api_keys[user] = id
+    api_keys[user] = api_key
     db[key] = api_keys
 
-    return id
+    return api_key
 
 
 def get(user):

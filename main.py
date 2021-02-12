@@ -1,12 +1,14 @@
-import discord
-import utils
-import os
-import notify
 import multiprocessing
-import server
-import routine
-from replit import db
+import os
 from datetime import datetime
+
+import discord
+from replit import db
+
+import notify
+import routine
+import server
+import utils
 
 client = discord.Client()
 
@@ -28,9 +30,9 @@ async def on_message(message):
     get_commands = ['g', 'G', 'get', 'Get']
     sub_commands = ['sub', 'Sub']
     unsub_commands = ['unsub', 'Unsub']
-    lenght = len(msg)
+    length = len(msg)
 
-    if lenght == 1 and msg[0] in all_commands:
+    if length == 1 and msg[0] in all_commands:
         msg_to_send = ''
 
         frozen = False
@@ -40,41 +42,41 @@ async def on_message(message):
 
         for i, boss in enumerate(utils.BOSSES.keys()):
             timer = utils.get_timer(boss)
-            if timer != None:
+            if timer is not None:
                 boss2 = None
                 if boss.isdigit():
                     boss2 = int(boss)
-                if not frozen and boss2 != None and boss2 >= 110 and boss2 <= 140 and utils.minutes_sub(
+                if not frozen and boss2 is not None and 110 <= boss2 <= 140 and utils.minutes_sub(
                         timer) >= -10:
                     frozen = True
                     msg_to_send += utils.separator_label('frozen:',
                                                          separator='')
-                elif not dl and boss2 != None and boss2 >= 155 and boss2 <= 180 and utils.minutes_sub(
+                elif not dl and boss2 is not None and 155 <= boss2 <= 180 and utils.minutes_sub(
                         timer) >= -10:
                     dl = True
                     msg_to_send += utils.separator_label('dl:')
-                elif not edl and boss2 != None and boss2 >= 185 and boss2 <= 215 and utils.minutes_sub(
+                elif not edl and boss2 is not None and 185 <= boss2 <= 215 and utils.minutes_sub(
                         timer) >= -10:
                     edl = True
                     msg_to_send += utils.separator_label('edl:')
-                elif not raid and boss2 == None:
+                elif not raid and boss2 is None:
                     raid = True
                     msg_to_send += utils.separator_label('raid:')
 
-                if boss2 == None or utils.minutes_sub(timer) >= -10:
+                if boss2 is None or utils.minutes_sub(timer) >= -10:
                     msg_to_send += f'{boss}: {utils.minutes_to_dhm(timer)}\n'
         if len(msg_to_send) > 1:
             await message.channel.send(msg_to_send)
         else:
             await message.channel.send('no timers found')
-    elif lenght == 2 and msg[0] in get_commands:
+    elif length == 2 and msg[0] in get_commands:
         boss = msg[1]
         minutes = utils.get_timer(boss)
-        if minutes != None:
+        if minutes is not None:
             await message.channel.send(utils.minutes_to_dhm(minutes))
         else:
             await message.channel.send(f'{boss} no timer set')
-    elif lenght == 1:
+    elif length == 1:
         boss = msg[0]
         if boss in utils.BOSSES:
             default_timer = utils.BOSSES[boss]
@@ -82,7 +84,7 @@ async def on_message(message):
             await message.channel.send(f'{boss} reset to {default_timer}m')
         else:
             await message.channel.send(f'{boss} is not tracked')
-    elif lenght >= 2 and msg[0] in sub_commands:
+    elif length >= 2 and msg[0] in sub_commands:
         msg_to_send = ''
         for boss in msg[1:]:
             if utils.add_sub(boss, message.author.id):
@@ -90,7 +92,7 @@ async def on_message(message):
             else:
                 msg_to_send += f'already in {boss} subs\n'
         await message.channel.send(f'{message.author.mention}\n' + msg_to_send)
-    elif lenght >= 2 and msg[0] in unsub_commands:
+    elif length >= 2 and msg[0] in unsub_commands:
         msg_to_send = ''
         for boss in msg[1:]:
             if utils.remove_sub(boss, message.author.id):
@@ -98,7 +100,7 @@ async def on_message(message):
             else:
                 msg_to_send += f'not a {boss} sub\n'
         await message.channel.send(f'{message.author.mention}\n' + msg_to_send)
-    elif lenght == 2:
+    elif length == 2:
         try:
             boss = msg[0]
             timer = int(msg[1])

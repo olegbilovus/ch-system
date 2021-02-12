@@ -1,10 +1,10 @@
-import requests
 import time
+
+import requests
 from replit import db
 
 
 def clone(url, start):
-
     keys = requests.get(url + '?prefix').content.decode().split('\n')
 
     print(keys)
