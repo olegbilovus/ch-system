@@ -15,5 +15,5 @@ def delete_old_timers():
                     print(f'DOT: deleted {key} at {datetime.now()}')
                     db[key] = None
 
-        #6h
+        # 6h
         time.sleep(10800)

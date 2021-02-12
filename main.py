@@ -85,18 +85,18 @@ async def on_message(message):
     elif lenght >= 2 and msg[0] in sub_commands:
         msg_to_send = ''
         for boss in msg[1:]:
-          if utils.add_sub(boss, message.author.id):
-              msg_to_send += f'added to {boss} subs\n'
-          else:
-              msg_to_send += f'already in {boss} subs\n'
+            if utils.add_sub(boss, message.author.id):
+                msg_to_send += f'added to {boss} subs\n'
+            else:
+                msg_to_send += f'already in {boss} subs\n'
         await message.channel.send(f'{message.author.mention}\n' + msg_to_send)
     elif lenght >= 2 and msg[0] in unsub_commands:
         msg_to_send = ''
         for boss in msg[1:]:
-          if utils.remove_sub(boss, message.author.id):
-              msg_to_send += f'removed from {boss} subs\n'
-          else:
-              msg_to_send += f'not a {boss} sub\n'
+            if utils.remove_sub(boss, message.author.id):
+                msg_to_send += f'removed from {boss} subs\n'
+            else:
+                msg_to_send += f'not a {boss} sub\n'
         await message.channel.send(f'{message.author.mention}\n' + msg_to_send)
     elif lenght == 2:
         try:
