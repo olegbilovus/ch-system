@@ -16,7 +16,7 @@ def clone(url, start):
         if value == 'null':
             db[key] = None
         elif value.isdigit():
-          db[key] = int(value)
+            db[key] = int(value)
         else:
             db[key] = value
         print('db:', key, db[key])
