@@ -4,7 +4,7 @@ from replit import db
 
 TIME_KILL = False
 
-# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection
+
 BOSSES = {
     '110': 30,
     '115': 35,
