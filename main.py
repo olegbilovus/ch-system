@@ -16,7 +16,7 @@ client = discord.Client()
 @client.event
 async def on_ready():
     print(f'BOT: logged at {datetime.now()}')
-    for boss, timer in utils.BOSSES.items():
+    for boss in utils.BOSSES:
         db[boss] = utils.get_timer(boss)
 
 
@@ -40,7 +40,7 @@ async def on_message(message):
         edl = False
         raid = False
 
-        for i, boss in enumerate(utils.BOSSES.keys()):
+        for boss in utils.BOSSES.keys():
             timer = utils.get_timer(boss)
             if timer is not None:
                 boss2 = None
