@@ -1,8 +1,10 @@
-import discord
 import os
 import time
 from datetime import datetime
+
+import discord
 from replit import db
+
 import utils
 
 client = discord.Client()
@@ -17,9 +19,9 @@ async def notify():
             if key.endswith('sub'):
                 boss = key.split('sub')[0]
                 timer = utils.get_timer(boss)
-                if timer != None:
+                if timer is not None:
                     timer2 = utils.minutes_sub(int(timer))
-                    if timer2 <= 10 and timer2 >= 0:
+                    if 10 >= timer2 >= 0:
                         subs_ids = db[key]
                         subs_mentions = []
                         for sub_id in subs_ids:

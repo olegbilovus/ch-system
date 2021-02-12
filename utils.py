@@ -1,8 +1,10 @@
-from replit import db
 import time
+
+from replit import db
 
 TIME_KILL = False
 
+# noinspection SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection,SpellCheckingInspection
 BOSSES = {
     '110': 30,
     '115': 35,
@@ -98,7 +100,7 @@ def get_subs(boss):
 
 def add_sub(boss, user_id):
     subs = get_subs(boss)
-    if subs != None and user_id not in subs:
+    if subs is not None and user_id not in subs:
         subs.append(user_id)
         db[boss + SUB_SUFFIX] = subs
         return True
@@ -117,7 +119,14 @@ def remove_sub(boss, user_mention):
 
 
 def usage(message):
-    return f'I could not understand _{message}_\nCommands:\n__all/All/soon/Soon__: get all available timers. e.g. _all_\n__g/G/get/Get boss__: to get a boss timer. e.g. _180_\n__boss timer__: to set a specific timer to a boss in minutes. Set the timer to _0_ to delete it. e.g. _180 56_, _180 0_\n__boss__: it will reset a boss timer to the default timer. e.g. _180_\n__sub/Sub boss boss ...__: subscribe to a/some boss/es, when it/they will be due, you will be tagged in a message on discord. e.g. _sub 180 205 prot_\n__unsub/Unsub boss boss ...__: unsub from a/some boss/es to not be anymore notified when it is due. e.g. _unsub 180 205 prot_'
+    # noinspection SpellCheckingInspection
+    return f'I could not understand _{message}_\nCommands:\n__all/All/soon/Soon__: get all available timers. e.g. ' \
+           f'_all_\n__g/G/get/Get boss__: to get a boss timer. e.g. _180_\n__boss timer__: to set a specific timer to ' \
+           f'a boss in minutes. Set the timer to _0_ to delete it. e.g. _180 56_, _180 0_\n__boss__: it will reset a ' \
+           f'boss timer to the default timer. e.g. _180_\n__sub/Sub boss boss ...__: subscribe to a/some boss/es, ' \
+           f'when it/they will be due, you will be tagged in a message on discord. e.g. _sub 180 205 ' \
+           f'prot_\n__unsub/Unsub boss boss ...__: unsub from a/some boss/es to not be anymore notified when it is ' \
+           f'due. e.g. _unsub 180 205 prot_ '
 
 
 def separator_label(category, separator='---------------------------------'):

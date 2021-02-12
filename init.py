@@ -1,5 +1,6 @@
-import discord
 import os
+
+import discord
 from replit import db
 
 client = discord.Client()

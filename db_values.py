@@ -1,4 +1,5 @@
 from replit import db
+
 import utils
 
 db['default'] = utils.BOSSES
