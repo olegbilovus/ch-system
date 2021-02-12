@@ -40,7 +40,7 @@ async def on_message(message):
         edl = False
         raid = False
 
-        for boss in utils.BOSSES.keys():
+        for boss in utils.BOSSES:
             timer = utils.get_timer(boss)
             if timer is not None:
                 boss2 = None
