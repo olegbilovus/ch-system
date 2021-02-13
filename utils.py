@@ -128,7 +128,10 @@ def separator_label(category, separator='---------------------------------'):
 
 class Message:
     def __init__(self, content, author_mention, author_id):
-        self.author_mention = author_mention
         self.content = content
-        self.author_id = author_id
         self.length = len(content)
+        self.author_mention = author_mention
+        self.author_id = author_id
+
+    def __str__(self):
+      return f'content:{self.content}, length:{self.length}, mention:{self.author_mention}, id:{self.author_id}'

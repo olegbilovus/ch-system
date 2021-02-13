@@ -64,7 +64,7 @@ def get_all(successor=None):
             if len(msg_to_send) < 1:
                 msg_to_send = 'no timers found'
         elif successor is not None:
-            successor.send(msg)
+            msg_to_send = successor.send(msg)
 
 
 @coroutine
@@ -73,14 +73,14 @@ def get_boss(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.length and msg.content[0] in get_commands:
-            boss = msg[1]
+            boss = msg.content[1]
             minutes = utils.get_timer(boss)
             if minutes is not None:
                 msg_to_send = utils.minutes_to_dhm(minutes)
             else:
                 msg_to_send = f'{boss} no timer set'
         elif successor is not None:
-            successor.send(msg)
+            msg_to_send = successor.send(msg)
 
 
 @coroutine
@@ -97,7 +97,7 @@ def sub_boss(successor=None):
                     msg_to_send += f'already in {boss} subs\n'
             msg_to_send = f'{msg.author_mention}\n' + msg_to_send
         elif successor is not None:
-            successor.send(msg)
+            msg_to_send = successor.send(msg)
 
 
 @coroutine
@@ -109,12 +109,12 @@ def unsub_boss(successor=None):
             msg_to_send = ''
             for boss in msg.content[1:]:
                 if utils.remove_sub(boss, msg.author_id):
-                    msg_to_send += f'added to {boss} subs\n'
+                    msg_to_send += f'removed from {boss} subs\n'
                 else:
-                    msg_to_send += f'already in {boss} subs\n'
+                    msg_to_send += f'not a {boss} sub\n'
             msg_to_send = f'{msg.author_mention}\n' + msg_to_send
         elif successor is not None:
-            successor.send(msg)
+            msg_to_send = successor.send(msg)
 
 
 @coroutine
@@ -124,16 +124,19 @@ def set_timer(successor=None):
         msg = yield msg_to_send
         if msg.length == 2:
             boss = msg.content[0]
-            timer = int(msg.content[1])
-            if utils.set_timer(boss, timer):
-                if timer == 0:
-                    msg_to_send = f'{boss} timer deleted'
-                else:
-                    msg_to_send = f'{boss} set to {timer}m'
+            if msg.content[1].isdigit():
+              timer = int(msg.content[1])
+              if utils.set_timer(boss, timer):
+                  if timer == 0:
+                      msg_to_send = f'{boss} timer deleted'
+                  else:
+                      msg_to_send = f'{boss} set to {timer}m'
+              else:
+                  msg_to_send = f'{boss} is not tracked'
             else:
-                msg_to_send = f'{boss} is not tracked'
+              msg_to_send = successor.send(msg)
         elif successor is not None:
-            successor.send(msg)
+            msg_to_send = successor.send(msg)
 
 
 @coroutine
@@ -142,6 +145,7 @@ def reset_timer(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.length == 1:
+            msg_to_send = ''
             boss = msg.content[0]
             if boss in utils.BOSSES:
                 default_timer = utils.BOSSES[boss]
@@ -150,4 +154,4 @@ def reset_timer(successor=None):
             else:
                 msg_to_send = f'{boss} is not tracked'
         elif successor is not None:
-            successor.send(msg)
+            msg_to_send = successor.send(msg)

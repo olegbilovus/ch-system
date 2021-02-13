@@ -30,9 +30,9 @@ async def on_message(message):
                         message.author.id)
     chain = commands.get_all(
         commands.reset_timer(
-            commands.set_timer(
-                commands.get_boss(
-                    commands.sub_boss(commands.unsub_boss(
+            commands.get_boss(
+                commands.sub_boss(
+                    commands.unsub_boss(commands.set_timer(
                         commands.default()))))))
     msg_to_send = chain.send(msg)
     await message.channel.send(msg_to_send)
