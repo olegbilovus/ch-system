@@ -125,16 +125,16 @@ def set_timer(successor=None):
         if msg.length == 2:
             boss = msg.content[0]
             if msg.content[1].isdigit():
-              timer = int(msg.content[1])
-              if utils.set_timer(boss, timer):
-                  if timer == 0:
-                      msg_to_send = f'{boss} timer deleted'
-                  else:
-                      msg_to_send = f'{boss} set to {timer}m'
-              else:
-                  msg_to_send = f'{boss} is not tracked'
+                timer = int(msg.content[1])
+                if utils.set_timer(boss, timer):
+                    if timer == 0:
+                        msg_to_send = f'{boss} timer deleted'
+                    else:
+                        msg_to_send = f'{boss} set to {timer}m'
+                else:
+                    msg_to_send = f'{boss} is not tracked'
             else:
-              msg_to_send = successor.send(msg)
+                msg_to_send = successor.send(msg)
         elif successor is not None:
             msg_to_send = successor.send(msg)
 
