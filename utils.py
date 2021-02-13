@@ -4,7 +4,6 @@ from replit import db
 
 TIME_KILL = False
 
-
 BOSSES = {
     '110': 30,
     '115': 35,
@@ -114,7 +113,6 @@ def remove_sub(boss, user_mention):
 
 
 def usage(message):
-    # noinspection SpellCheckingInspection
     return f'I could not understand _{message}_\nCommands:\n__all/All/soon/Soon__: get all available timers. e.g. ' \
            f'_all_\n__g/G/get/Get boss__: to get a boss timer. e.g. _180_\n__boss timer__: to set a specific timer to ' \
            f'a boss in minutes. Set the timer to _0_ to delete it. e.g. _180 56_, _180 0_\n__boss__: it will reset a ' \
@@ -126,3 +124,11 @@ def usage(message):
 
 def separator_label(category, separator='---------------------------------'):
     return separator + '\n' + category + '\n'
+
+
+class Message:
+    def __init__(self, author_mention, content, author_id=None):
+        self.author_mention = author_mention
+        self.content = content
+        self.author_id = author_id
+        self.length = len(content)

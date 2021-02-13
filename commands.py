@@ -1,0 +1,153 @@
+import functools
+import utils
+from replit import db
+
+all_commands = ['all', 'All', 'soon', 'Soon']
+get_commands = ['g', 'G', 'get', 'Get']
+sub_commands = ['sub', 'Sub']
+unsub_commands = ['unsub', 'Unsub']
+
+
+def coroutine(function):
+    @functools.wraps(function)
+    def wrapper(*args, **kwargs):
+        generator = function(*args, **kwargs)
+        next(generator)
+        return generator
+
+    return wrapper
+
+
+@coroutine
+def default():
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        msg_to_send = utils.usage(' '.join(msg.content))
+
+
+@coroutine
+def get_all(successor=None):
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        if msg.length == 1 and msg.content[0] in all_commands:
+            msg_to_send = ''
+            frozen = False
+            dl = False
+            edl = False
+            raid = False
+            for boss in utils.BOSSES:
+                timer = utils.get_timer(boss)
+                if timer is not None:
+                    boss2 = None
+                    if boss.isdigit():
+                        boss2 = int(boss)
+                    if not frozen and boss2 is not None and 110 <= boss2 <= 140 and utils.minutes_sub(
+                            timer) >= -10:
+                        frozen = True
+                        msg_to_send += utils.separator_label('frozen:',
+                                                             separator='')
+                    elif not dl and boss2 is not None and 155 <= boss2 <= 180 and utils.minutes_sub(
+                            timer) >= -10:
+                        dl = True
+                        msg_to_send += utils.separator_label('dl:')
+                    elif not edl and boss2 is not None and 185 <= boss2 <= 215 and utils.minutes_sub(
+                            timer) >= -10:
+                        edl = True
+                        msg_to_send += utils.separator_label('edl:')
+                    elif not raid and boss2 is None:
+                        raid = True
+                        msg_to_send += utils.separator_label('raid:')
+                    if boss2 is None or utils.minutes_sub(timer) >= -10:
+                        msg_to_send += f'{boss}: {utils.minutes_to_dhm(timer)}\n'
+            if len(msg_to_send) < 1:
+                msg_to_send = 'no timers found'
+        elif successor is not None:
+            successor.send(msg)
+
+
+@coroutine
+def get_boss(successor=None):
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        if msg.length and msg.content[0] in get_commands:
+            boss = msg[1]
+            minutes = utils.get_timer(boss)
+            if minutes is not None:
+                msg_to_send = utils.minutes_to_dhm(minutes)
+            else:
+                msg_to_send = f'{boss} no timer set'
+        elif successor is not None:
+            successor.send(msg)
+
+
+@coroutine
+def sub_boss(successor=None):
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        if msg.length >= 2 and msg.content[0] in sub_commands:
+            msg_to_send = ''
+            for boss in msg.content[1:]:
+                if utils.add_sub(boss, msg.author_id):
+                    msg_to_send += f'added to {boss} subs\n'
+                else:
+                    msg_to_send += f'already in {boss} subs\n'
+            msg_to_send = f'{msg.author_mention}\n' + msg_to_send
+        elif successor is not None:
+            successor.send(msg)
+
+
+@coroutine
+def unsub_boss(successor=None):
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        if msg.length >= 2 and msg.content[0] in unsub_commands:
+            msg_to_send = ''
+            for boss in msg.content[1:]:
+                if utils.remove_sub(boss, msg.author_id):
+                    msg_to_send += f'added to {boss} subs\n'
+                else:
+                    msg_to_send += f'already in {boss} subs\n'
+            msg_to_send = f'{msg.author_mention}\n' + msg_to_send
+        elif successor is not None:
+            successor.send(msg)
+
+
+@coroutine
+def set_timer(successor=None):
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        if msg.length == 2:
+            boss = msg.content[0]
+            timer = int(msg.content[1])
+            if utils.set_timer(boss, timer):
+                if timer == 0:
+                    msg_to_send = f'{boss} timer deleted'
+                else:
+                    msg_to_send = f'{boss} set to {timer}m'
+            else:
+                msg_to_send = f'{boss} is not tracked'
+        elif successor is not None:
+            successor.send(msg)
+
+
+@coroutine
+def reset_timer(successor=None):
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        if msg.length == 1:
+            boss = msg.content[0]
+            if boss in utils.BOSSES:
+                default_timer = utils.BOSSES[boss]
+                db[boss] = utils.minutes_add(default_timer)
+                msg_to_send = f'{boss} reset to {default_timer}m'
+            else:
+                msg_to_send = f'{boss} is not tracked'
+        elif successor is not None:
+            successor.send(msg)
