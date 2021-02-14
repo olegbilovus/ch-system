@@ -24,9 +24,10 @@ async def on_ready():
     chain = commands.get_all(
         commands.reset_timer(
             commands.get_boss(
+              commands.when_boss(
                 commands.sub_boss(
                     commands.unsub_boss(commands.set_timer(
-                        commands.default()))))))
+                        commands.default())))))))
 
 
 @client.event
