@@ -12,28 +12,29 @@ import server
 import utils
 
 client = discord.Client()
-
+chain = None
 
 @client.event
 async def on_ready():
     print(f'BOT: logged at {datetime.now()}')
     for boss in utils.BOSSES:
         db[boss] = utils.get_timer(boss)
-
-
-@client.event
-async def on_message(message):
-    if message.author == client.user or message.channel.name != 'timer-bot':
-        return
-
-    msg = utils.Message(message.content.split(' '), message.author.mention,
-                        message.author.id)
+    global chain
     chain = commands.get_all(
         commands.reset_timer(
             commands.get_boss(
                 commands.sub_boss(
                     commands.unsub_boss(commands.set_timer(
                         commands.default()))))))
+
+
+@client.event
+async def on_message(message):
+    if message.author == client.user or message.channel.name != 'timer-bot':
+        return
+    msg = utils.Message(message.content.split(' '), message.author.mention,
+                        message.author.id)
+    global chain
     msg_to_send = chain.send(msg)
     await message.channel.send(msg_to_send)
 
