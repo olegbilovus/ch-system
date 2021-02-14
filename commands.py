@@ -165,7 +165,7 @@ def when_boss(successor=None):
         msg = yield msg_to_send
         if msg.length == 2 and msg.content[0] in when_commands:
             msg_to_send = ''
-            boss = msg.content[0]
+            boss = msg.content[1]
             if boss in utils.BOSSES:
                 timer = utils.get_timer(boss)
                 if timer is not None:
