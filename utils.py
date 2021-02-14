@@ -115,6 +115,7 @@ def remove_sub(boss, user_mention):
 def usage(message):
     return f'I could not understand _{message}_\nCommands:\n__all/All/soon/Soon__: get all available timers. e.g. ' \
            f'_all_\n__g/G/get/Get boss__: to get a boss timer. e.g. _180_\n__boss timer__: to set a specific timer to ' \
+           f'___w/W/when/When boss__: get the timestamp when the boss is due in game(game timezone). e.g. _w 180_\n' \
            f'a boss in minutes. Set the timer to _0_ to delete it. e.g. _180 56_, _180 0_\n__boss__: it will reset a ' \
            f'boss timer to the default timer. e.g. _180_\n__sub/Sub boss boss ...__: subscribe to a/some boss/es, ' \
            f'when it/they will be due, you will be tagged in a message on discord. e.g. _sub 180 205 ' \

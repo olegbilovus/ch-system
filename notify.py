@@ -1,9 +1,11 @@
 import os
 import time
-import discord
-import utils
 from datetime import datetime
+
+import discord
 from replit import db
+
+import utils
 
 client = discord.Client()
 

@@ -1,11 +1,15 @@
-import utils
-from replit import db
+from datetime import datetime
 from functools import wraps
+
+from replit import db
+
+import utils
 
 all_commands = ['all', 'All', 'soon', 'Soon']
 get_commands = ['g', 'G', 'get', 'Get']
 sub_commands = ['sub', 'Sub']
 unsub_commands = ['unsub', 'Unsub']
+when_commands = ['w', 'W', 'when', 'When']
 
 
 def start_chain(f):
@@ -145,12 +149,30 @@ def reset_timer(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.length == 1:
-            msg_to_send = ''
             boss = msg.content[0]
             if boss in utils.BOSSES:
                 default_timer = utils.BOSSES[boss]
                 db[boss] = utils.minutes_add(default_timer)
                 msg_to_send = f'{boss} reset to {default_timer}m'
+            else:
+                msg_to_send = f'{boss} is not tracked'
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
+def when_boss(successor=None):
+    msg_to_send = None
+    while True:
+        msg = yield msg_to_send
+        if msg.length == 2 and msg.content[0] in when_commands:
+            boss = msg.content[1]
+            if boss in utils.BOSSES:
+                timer = utils.get_timer(boss)
+                if timer is not None:
+                    msg_to_send = f'{boss} due at {datetime.fromtimestamp(timer * 60)} gt'
+                else:
+                    msg_to_send = f'{boss} no timer set'
             else:
                 msg_to_send = f'{boss} is not tracked'
         elif successor is not None:

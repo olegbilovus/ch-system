@@ -1,11 +1,11 @@
 import multiprocessing
 import os
-import commands
 from datetime import datetime
 
 import discord
 from replit import db
 
+import commands
 import notify
 import routine
 import server
@@ -24,9 +24,10 @@ async def on_ready():
     chain = commands.get_all(
         commands.reset_timer(
             commands.get_boss(
-                commands.sub_boss(
-                    commands.unsub_boss(commands.set_timer(
-                        commands.default()))))))
+                commands.when_boss(
+                    commands.sub_boss(
+                        commands.unsub_boss(commands.set_timer(
+                            commands.default())))))))
 
 
 @client.event
