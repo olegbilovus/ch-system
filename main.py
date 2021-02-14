@@ -14,6 +14,7 @@ import utils
 client = discord.Client()
 chain = None
 
+
 @client.event
 async def on_ready():
     print(f'BOT: logged at {datetime.now()}')
