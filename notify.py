@@ -34,7 +34,7 @@ async def notify():
                             db[key] = subs_id
                         else:
                             raise IndexError
-                    except KeyError or IndexError:
+                    except (KeyError, IndexError):
                         msg = f'{boss} due in {utils.minutes_to_dhm(timer)}'
                     await channel.send(msg)
                     print(f'NOTIFIER: {boss} sent at {datetime.now()}')
