@@ -1,6 +1,6 @@
-import functools
 import utils
 from replit import db
+from functools import wraps
 
 all_commands = ['all', 'All', 'soon', 'Soon']
 get_commands = ['g', 'G', 'get', 'Get']
@@ -8,17 +8,17 @@ sub_commands = ['sub', 'Sub']
 unsub_commands = ['unsub', 'Unsub']
 
 
-def coroutine(function):
-    @functools.wraps(function)
+def start_chain(f):
+    @wraps(f)
     def wrapper(*args, **kwargs):
-        generator = function(*args, **kwargs)
-        next(generator)
-        return generator
+        chain = f(*args, **kwargs)
+        next(chain)
+        return chain
 
     return wrapper
 
 
-@coroutine
+@start_chain
 def default():
     msg_to_send = None
     while True:
@@ -26,7 +26,7 @@ def default():
         msg_to_send = utils.usage(' '.join(msg.content))
 
 
-@coroutine
+@start_chain
 def get_all(successor=None):
     msg_to_send = None
     while True:
@@ -67,7 +67,7 @@ def get_all(successor=None):
             msg_to_send = successor.send(msg)
 
 
-@coroutine
+@start_chain
 def get_boss(successor=None):
     msg_to_send = None
     while True:
@@ -83,7 +83,7 @@ def get_boss(successor=None):
             msg_to_send = successor.send(msg)
 
 
-@coroutine
+@start_chain
 def sub_boss(successor=None):
     msg_to_send = None
     while True:
@@ -100,7 +100,7 @@ def sub_boss(successor=None):
             msg_to_send = successor.send(msg)
 
 
-@coroutine
+@start_chain
 def unsub_boss(successor=None):
     msg_to_send = None
     while True:
@@ -117,7 +117,7 @@ def unsub_boss(successor=None):
             msg_to_send = successor.send(msg)
 
 
-@coroutine
+@start_chain
 def set_timer(successor=None):
     msg_to_send = None
     while True:
@@ -139,7 +139,7 @@ def set_timer(successor=None):
             msg_to_send = successor.send(msg)
 
 
-@coroutine
+@start_chain
 def reset_timer(successor=None):
     msg_to_send = None
     while True:
