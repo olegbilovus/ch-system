@@ -24,16 +24,16 @@ def api():
             req_bosses = json['bosses']
             print(f'API: {user} {json} at {datetime.now()}')
             for boss in req_bosses:
-              if boss in BOSSES:
-                  res_bosses[boss] = db[boss]
-              else:
-                  res_bosses[boss] = 404
+                if boss in BOSSES:
+                    res_bosses[boss] = db[boss]
+                else:
+                    res_bosses[boss] = 404
             break
     else:
         response = Response()
         response.status_code = 401
         return response
-        
+
     return jsonify(res_bosses)
 
 
