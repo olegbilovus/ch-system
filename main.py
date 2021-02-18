@@ -11,11 +11,11 @@ import routine
 import server
 import utils
 
-client = discord.Client()
+#client = discord.Client()
 chain = None
 
 
-@client.event
+# @client.event
 async def on_ready():
     print(f'BOT: logged at {datetime.now()}')
     for boss in utils.BOSSES:
@@ -30,7 +30,7 @@ async def on_ready():
                             commands.default())))))))
 
 
-@client.event
+# @client.event
 async def on_message(message):
     if message.author == client.user or message.channel.name != 'timer-bot':
         return
@@ -44,6 +44,7 @@ async def on_message(message):
 server_s = multiprocessing.Process(target=server.run)
 server_s.daemon = True
 server_s.start()
+'''
 notifier = multiprocessing.Process(target=notify.start_notifier)
 notifier.daemon = True
 notifier.start()
@@ -51,3 +52,4 @@ delete_old_timers = multiprocessing.Process(target=routine.delete_old_timers)
 delete_old_timers.daemon = True
 delete_old_timers.start()
 client.run(os.getenv('TOKEN'))
+'''
