@@ -11,7 +11,6 @@ def auth(api_key):
     for user, key in api_keys.items():
         if api_key == key:
             return user
-            break
     else:
         return None
 
