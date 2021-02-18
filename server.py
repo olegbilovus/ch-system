@@ -14,7 +14,6 @@ def auth(api_key):
 			break
 	else:
 		return None
-		
 
 
 app = Flask('')
@@ -48,17 +47,18 @@ def api_get():
 def api_set():
 	api_key = request.headers.get('X-ApiKey', type=str)
 	user = auth(api_key)
+	response = Response()
 	if user is not None:
-		boss = request.form['boss']
-		print(f'API: {user} {boss} at {datetime.now()}')
-		for boss in req_bosses:
-			res_bosses[boss] = utils.get_timer(boss)
+		req_boss = request.json
+		print(f'API: {user} {request.json} at {datetime.now()}')
+		if utils.set_timer(req_boss['boss'], req_boss['timer']):
+			response.status_code = 200
+		else:
+			response.status_code = 404
 	else:
-		response = Response()
 		response.status_code = 401
-		return response
 
-	return jsonify(res_bosses)
+	return response
 
 
 def run():
