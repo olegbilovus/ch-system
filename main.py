@@ -15,7 +15,7 @@ import utils
 chain = None
 
 
-#@client.event
+# @client.event
 async def on_ready():
     print(f'BOT: logged at {datetime.now()}')
     for boss in utils.BOSSES:
@@ -30,7 +30,7 @@ async def on_ready():
                             commands.default())))))))
 
 
-#@client.event
+# @client.event
 async def on_message(message):
     if message.author == client.user or message.channel.name != 'timer-bot':
         return
