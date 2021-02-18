@@ -11,8 +11,8 @@ def auth(api_key):
     for user, key in api_keys.items():
         if api_key == key:
             return user
-    else:
-        return None
+        
+    return None
 
 
 app = Flask('')
