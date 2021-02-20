@@ -25,15 +25,7 @@ async def notify():
                     try:
                         subs_id = db[key]
                         if subs_id:
-                            subs_mention = []
-                            for sub_id in subs_id:
-                                try:
-                                    user = await guild.fetch_member(int(sub_id))
-                                    subs_mention.append(user.mention)
-                                except discord.errors.NotFound:
-                                    subs_id.remove(sub_id)
-                            msg = f'{boss} due in {utils.minutes_to_dhm(timer)} {" ".join(subs_mention)}'
-                            db[key] = subs_id
+                            msg = f'{boss} due in {utils.minutes_to_dhm(timer)} {" ".join(subs_id)}'
                         else:
                             raise IndexError
                     except (KeyError, IndexError):

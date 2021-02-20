@@ -1,0 +1,13 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <title>Timers</title>
+  </head>
+  <body>
+    <form method="POST" action="/timers">
+      <label>Api Key<input type="text" name="X-ApiKey"></label>
+      <button type="submit">Send</button>
+    </form>
+  </body>
+</html>

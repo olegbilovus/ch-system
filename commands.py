@@ -95,7 +95,7 @@ def sub_boss(successor=None):
         if msg.length >= 2 and msg.content[0] in sub_commands:
             msg_to_send = ''
             for boss in msg.content[1:]:
-                if utils.add_sub(boss, msg.author_id):
+                if utils.add_sub(boss, msg.author_mention):
                     msg_to_send += f'added to {boss} subs\n'
                 else:
                     msg_to_send += f'already in {boss} subs\n'
@@ -112,7 +112,7 @@ def unsub_boss(successor=None):
         if msg.length >= 2 and msg.content[0] in unsub_commands:
             msg_to_send = ''
             for boss in msg.content[1:]:
-                if utils.remove_sub(boss, msg.author_id):
+                if utils.remove_sub(boss, msg.author_mention):
                     msg_to_send += f'removed from {boss} subs\n'
                 else:
                     msg_to_send += f'not a {boss} sub\n'

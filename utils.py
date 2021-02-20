@@ -136,3 +136,4 @@ class Message:
 
     def __str__(self):
         return f'content:{self.content}, length:{self.length}, mention:{self.author_mention}, id:{self.author_id}'
+        

@@ -11,40 +11,43 @@ import routine
 import server
 import utils
 
-#client = discord.Client()
+client = discord.Client()
 chain = None
 
 
-# @client.event
+@client.event
 async def on_ready():
-    print(f'BOT: logged at {datetime.now()}')
-    for boss in utils.BOSSES:
-        db[boss] = utils.get_timer(boss)
-    global chain
-    chain = commands.get_all(
-        commands.reset_timer(
-            commands.get_boss(
-                commands.when_boss(
-                    commands.sub_boss(
-                        commands.unsub_boss(commands.set_timer(
-                            commands.default())))))))
+	print(f'BOT: logged at {datetime.now()}')
+	for boss in utils.BOSSES:
+		db[boss] = utils.get_timer(boss)
+	global chain
+	chain = commands.get_all(
+	    commands.reset_timer(
+	        commands.get_boss(
+	            commands.when_boss(
+	                commands.sub_boss(
+	                    commands.unsub_boss(
+	                        commands.set_timer(commands.default())))))))
 
 
-# @client.event
+@client.event
 async def on_message(message):
-    if message.author == client.user or message.channel.name != 'timer-bot':
-        return
-    msg = utils.Message(message.content.split(' '), message.author.mention,
-                        message.author.id)
-    global chain
-    msg_to_send = chain.send(msg)
-    await message.channel.send(msg_to_send)
+	if message.author == client.user or message.channel.name != 'timer-bot':
+		return
+	print(f'{message.author}: {message.content} at {datetime.now()}')
+	msg = utils.Message(message.content.split(' '), message.author.mention,
+	                    message.author.id)
+	global chain
+	try:
+		msg_to_send = chain.send(msg)
+		await message.channel.send(msg_to_send)
+	except discord.errors.HTTPException as e:
+		print(e)
 
 
 server_s = multiprocessing.Process(target=server.run)
 server_s.daemon = True
 server_s.start()
-'''
 notifier = multiprocessing.Process(target=notify.start_notifier)
 notifier.daemon = True
 notifier.start()
@@ -52,4 +55,3 @@ delete_old_timers = multiprocessing.Process(target=routine.delete_old_timers)
 delete_old_timers.daemon = True
 delete_old_timers.start()
 client.run(os.getenv('TOKEN'))
-'''

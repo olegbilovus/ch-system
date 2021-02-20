@@ -21,4 +21,4 @@ def print_db(db_kv):
 
 
 if __name__ == '__main__':
-    print_db(get_all_key_values())
+    delete_all_subs()

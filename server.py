@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from flask import Flask, request, Response, jsonify
+from flask import Flask, request, Response, jsonify, render_template
 from replit import db
 
 import utils
@@ -20,7 +20,7 @@ app = Flask('')
 
 @app.route('/')
 def home():
-    return '<h1>Alive</h1>'
+    return render_template('index.html')
 
 
 @app.route('/api/get', methods=['POST'])
