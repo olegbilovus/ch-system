@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import time
 from datetime import datetime
 
 import discord
@@ -43,6 +44,7 @@ async def on_message(message):
 		await message.channel.send(msg_to_send)
 	except discord.errors.HTTPException as e:
 		print(e)
+		time.sleep(3600)
 
 
 server_s = multiprocessing.Process(target=server.run)
