@@ -12,7 +12,6 @@ client = discord.Client()
 
 async def notify():
     channel = client.get_channel(int(db['notify']))
-    guild = client.get_guild(int(db['guild']))
     while True:
         print(f'NOTIFIER: check at {datetime.now()}')
         for boss in utils.BOSSES:

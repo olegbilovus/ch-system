@@ -1,6 +1,7 @@
 import time
 
 from replit import db
+from discord import User
 
 TIME_KILL = False
 
@@ -128,11 +129,11 @@ def separator_label(category, separator='---------------------------------'):
 
 
 class Message:
-    def __init__(self, content, author_mention, author_id):
+    def __init__(self, content, author):
         self.content = content
         self.length = len(content)
-        self.author_mention = author_mention
-        self.author_id = author_id
+        self.author_mention = author.mention
+        self.author_id = author.id
 
     def __str__(self):
         return f'content:{self.content}, length:{self.length}, mention:{self.author_mention}, id:{self.author_id}'

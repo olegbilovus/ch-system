@@ -36,12 +36,14 @@ async def on_message(message):
 	if message.author == client.user or message.channel.name != 'timer-bot':
 		return
 	print(f'{message.author}: {message.content} at {datetime.now()}')
-	msg = utils.Message(message.content.split(' '), message.author.mention,
-	                    message.author.id)
+	msg = utils.Message(message.content.split(' '), message.author)
 	global chain
+	msg_to_send = chain.send(msg)
 	try:
-		msg_to_send = chain.send(msg)
-		await message.channel.send(msg_to_send)
+		if msg_to_send['type'] == 'all':
+		  await message.channel.send(msg_to_send['msg'])
+		elif msg_to_send['type'] == 'dm':
+		  await message.author.send(msg_to_send['msg'])
 	except discord.errors.HTTPException as e:
 		print(e)
 		time.sleep(3600)
