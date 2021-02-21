@@ -11,6 +11,7 @@ import notify
 import routine
 import server
 import utils
+import api
 
 client = discord.Client()
 chain = None
@@ -23,12 +24,13 @@ async def on_ready():
 		db[boss] = utils.get_timer(boss)
 	global chain
 	chain = commands.get_all(
-	    commands.reset_timer(
-	        commands.get_boss(
-	            commands.when_boss(
-	                commands.sub_boss(
-	                    commands.unsub_boss(
-	                        commands.set_timer(commands.default())))))))
+	    commands.api_key(
+	        commands.reset_timer(
+	            commands.get_boss(
+	                commands.when_boss(
+	                    commands.sub_boss(
+	                        commands.unsub_boss(
+	                            commands.set_timer(commands.default()))))))))
 
 
 @client.event
@@ -41,12 +43,20 @@ async def on_message(message):
 	msg_to_send = chain.send(msg)
 	try:
 		if msg_to_send['type'] == 'all':
-		  await message.channel.send(msg_to_send['msg'])
+			await message.channel.send(msg_to_send['msg'])
 		elif msg_to_send['type'] == 'dm':
-		  await message.author.send(msg_to_send['msg'])
+			await message.author.send(msg_to_send['msg'])
 	except discord.errors.HTTPException as e:
-		print(e)
-		time.sleep(3600)
+		message_error = str(e)
+		print(message_error)
+		if '429' in message_error:
+			print('429')
+			time.sleep(3600)
+		elif '50007' in message_error:
+		  api.delete(message.author.name)
+		  print('50007')
+		  await message.channel.send(
+			    f'{message.author.mention} I can not dm you')
 
 
 server_s = multiprocessing.Process(target=server.run)

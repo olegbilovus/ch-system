@@ -1,7 +1,6 @@
 import time
 
 from replit import db
-from discord import User
 
 TIME_KILL = False
 
@@ -134,6 +133,7 @@ class Message:
         self.length = len(content)
         self.author_mention = author.mention
         self.author_id = author.id
+        self.author_name = str(author)
 
     def __str__(self):
         return f'content:{self.content}, length:{self.length}, mention:{self.author_mention}, id:{self.author_id}'
