@@ -1,13 +1,27 @@
+<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename= 'images/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename= 'images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename= 'images/favicon-16x16.png') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.css') }}">
+    <script src="{{ url_for('static', filename= 'js/utils.js') }}"></script>
     <title>Timers</title>
   </head>
   <body>
-    <form method="POST" action="/timers">
+    <form method="POST" action="/login" id="login">
       <label>Api Key<input type="text" name="ApiKey"></label>
       <button type="submit">Send</button>
     </form>
+    <h2 id="user"></h2>
   </body>
+  <script>
+  	user = document.getElementById('user');
+  	api_key = getCookieValue('ApiKey')
+  	if(api_key != ''){
+   		user.innerHTML = 'Logged'
+   		document.getElementById('login').style.display = 'None'
+  	}
+  </script>
 </html>

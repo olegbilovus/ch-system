@@ -34,6 +34,19 @@ app = Flask('')
 @app.route('/')
 def home():
 	return render_template('index.html')
+	
+@app.route('/login', methods=['POST'])
+def login():
+	api_key = request.form['ApiKey']
+	user = auth(api_key)
+	response = Response()
+	if user is not None:
+		response.set_cookie('ApiKey', api_key, secure=True)
+		response.status_code = 200
+	else:
+		response.status_code = 401
+		
+	return response
 
 
 @app.route('/api/get', methods=['POST'])
