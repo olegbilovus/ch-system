@@ -73,4 +73,5 @@ def api_set():
 
 
 def run():
-	serve(TransLogger(app), host='0.0.0.0', port=8080, url_scheme='https')
+	format = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
+	serve(TransLogger(app, format=format), host='0.0.0.0', port=8080, url_scheme='https')
