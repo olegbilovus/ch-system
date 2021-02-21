@@ -29,6 +29,7 @@ def default():
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		msg_to_send['msg'] = utils.usage(' '.join(msg.content))
 
 
@@ -37,6 +38,7 @@ def get_all(successor=None):
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		if msg.length == 1 and msg.content[0] in all_commands:
 			msg_to_send['msg'] = ''
 			frozen = False
@@ -79,6 +81,7 @@ def get_boss(successor=None):
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		if msg.length and msg.content[0] in get_commands:
 			boss = msg.content[1]
 			minutes = utils.get_timer(boss)
@@ -95,6 +98,7 @@ def sub_boss(successor=None):
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		if msg.length >= 2 and msg.content[0] in sub_commands:
 			msg_to_send['msg'] = ''
 			for boss in msg.content[1:]:
@@ -112,6 +116,7 @@ def unsub_boss(successor=None):
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		if msg.length >= 2 and msg.content[0] in unsub_commands:
 			msg_to_send['msg'] = ''
 			for boss in msg.content[1:]:
@@ -129,6 +134,7 @@ def set_timer(successor=None):
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		if msg.length == 2:
 			boss = msg.content[0]
 			if msg.content[1].isdigit():
@@ -151,6 +157,7 @@ def reset_timer(successor=None):
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		if msg.length == 1:
 			boss = msg.content[0]
 			if boss in utils.BOSSES:
@@ -168,6 +175,7 @@ def when_boss(successor=None):
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'all'
 		if msg.length == 2 and msg.content[0] in when_commands:
 			boss = msg.content[1]
 			if boss in utils.BOSSES:
@@ -188,6 +196,7 @@ def api_key(successor=None):
 	msg_to_send = {'type': 'dm', 'msg': None}
 	while True:
 		msg = yield msg_to_send
+		msg_to_send['type'] = 'dm'
 		if msg.length == 1 and msg.content[0] in api_commands:
 			msg_to_send['msg'] = api.create(msg.author_name)
 		elif successor is not None:
