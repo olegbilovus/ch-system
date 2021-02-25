@@ -17,11 +17,11 @@ def auth(api_key):
     return None
 
 
-def get_api_key(request):
-    api_key = request.headers.get('X-ApiKey', type=str)
+def get_api_key(_request):
+    api_key = _request.headers.get('X-ApiKey', type=str)
     if api_key is None:
         try:
-            api_key = request.cookies['ApiKey']
+            api_key = _request.cookies['ApiKey']
         except KeyError:
             pass
 
