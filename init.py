@@ -1,5 +1,5 @@
 import os
-
+import utils
 import discord
 from replit import db
 
@@ -8,7 +8,7 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    print('Logged')
+    utils.logger.info('Logged')
 
 
 @client.event

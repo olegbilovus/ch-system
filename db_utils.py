@@ -1,4 +1,5 @@
 from replit import db
+from utils import BOSSES
 
 
 def delete_all_subs():
@@ -20,5 +21,9 @@ def print_db(db_kv):
         print(f'{key}: {value}')
 
 
+def get_all_bosses():
+    return {boss: timer for (boss, timer) in db.items() if boss in BOSSES}
+
+
 if __name__ == '__main__':
-    print_db(get_all_key_values())
+    print(get_all_bosses())

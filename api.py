@@ -39,5 +39,4 @@ def delete_all():
 
 
 if __name__ == '__main__':
-    print(create('BrandonHeath'))
     print(get_all())
