@@ -62,10 +62,9 @@ def api_get():
         for boss in req_bosses:
             res_bosses[boss] = utils.get_timer(boss)
         return jsonify(res_bosses)
-    else:
-        response = Response()
-        response.status_code = 401
-        return response
+    response = Response()
+    response.status_code = 401
+    return response
 
 
 @app.route('/api/set', methods=['POST'])
