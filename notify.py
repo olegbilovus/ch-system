@@ -13,7 +13,7 @@ client = discord.Client()
 async def notify():
     channel = client.get_channel(int(db['notify']))
     while True:
-        print(f'NOTIFIER: check at {datetime.now()}')
+        utils.logger.info(f'NOTIFIER: check at {datetime.now()}')
         for boss in utils.BOSSES:
             timer = utils.get_timer(boss)
             if timer is not None:
@@ -30,13 +30,13 @@ async def notify():
                     except (KeyError, IndexError):
                         msg = f'{boss} due in {utils.minutes_to_dhm(timer)}'
                     await channel.send(msg)
-                    print(f'NOTIFIER: {boss} sent at {datetime.now()}')
+                    utils.logger.info(f'NOTIFIER: {boss} sent at {datetime.now()}')
         time.sleep(300)
 
 
 @client.event
 async def on_ready():
-    print(f'NOTIFIER: ready at {datetime.now()}')
+    utils.logger.info(f'NOTIFIER: ready at {datetime.now()}')
     await notify()
 
 

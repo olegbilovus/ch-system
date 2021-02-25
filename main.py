@@ -19,7 +19,7 @@ chain = None
 
 @client.event
 async def on_ready():
-	print(f'BOT: logged at {datetime.now()}')
+	utils.logger.info(f'BOT: logged at {datetime.now()}')
 	for boss in utils.BOSSES:
 		db[boss] = utils.get_timer(boss)
 	global chain
@@ -37,7 +37,7 @@ async def on_ready():
 async def on_message(message):
 	if message.author == client.user or message.channel.name != 'timer-bot':
 		return
-	print(f'{message.author}: {message.content} at {datetime.now()}')
+	utils.logger.info(f'{message.author}: {message.content} at {datetime.now()}')
 	msg = utils.Message(message.content.split(' '), message.author)
 	global chain
 	msg_to_send = chain.send(msg)
@@ -48,13 +48,13 @@ async def on_message(message):
 			await message.author.send(msg_to_send['msg'])
 	except discord.errors.HTTPException as e:
 		message_error = str(e)
-		print(message_error)
+		utils.logger.error(message_error)
 		if '429' in message_error:
-			print('429')
+			utils.logger.error('429')
 			time.sleep(3600)
 		elif '50007' in message_error:
 		  api.delete(message.author.name)
-		  print('50007')
+		  utils.logger.error('50007')
 		  await message.channel.send(
 			    f'{message.author.mention} I can not dm you')
 

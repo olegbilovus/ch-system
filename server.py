@@ -6,6 +6,7 @@ from waitress import serve
 from paste.translogger import TransLogger
 
 import utils
+import logging
 
 
 def auth(api_key):
@@ -34,6 +35,19 @@ app = Flask('')
 @app.route('/')
 def home():
 	return render_template('index.html')
+	
+@app.route('/login', methods=['POST'])
+def login():
+	api_key = request.form['ApiKey']
+	user = auth(api_key)
+	response = Response()
+	if user is not None:
+		response.set_cookie('ApiKey', api_key, secure=True)
+		response.status_code = 200
+	else:
+		response.status_code = 401
+		
+	return response
 
 
 @app.route('/api/get', methods=['POST'])
@@ -44,7 +58,7 @@ def api_get():
 		res_bosses = {}
 		json = request.json
 		req_bosses = json['bosses']
-		print(f'API: {user} {json} at {datetime.now()}')
+		utils.logger.info(f'API: {user} {json} at {datetime.now()}')
 		for boss in req_bosses:
 			res_bosses[boss] = utils.get_timer(boss)
 		return jsonify(res_bosses)
@@ -61,7 +75,7 @@ def api_set():
 	response = Response()
 	if user is not None:
 		req_boss = request.json
-		print(f'API: {user} {request.json} at {datetime.now()}')
+		utils.logger.info(f'API: {user} {request.json} at {datetime.now()}')
 		if utils.set_timer(req_boss['boss'], req_boss['timer']):
 			response.status_code = 200
 		else:
@@ -74,4 +88,4 @@ def api_set():
 
 def run():
 	format = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
-	serve(TransLogger(app, format=format), host='0.0.0.0', port=8080, url_scheme='https')
+	serve(TransLogger(app, format=format, logger=utils.logger), host='0.0.0.0', port=8080, url_scheme='https')

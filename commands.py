@@ -1,6 +1,5 @@
 from datetime import datetime
 from functools import wraps
-from discord import Member
 from replit import db
 import api
 
