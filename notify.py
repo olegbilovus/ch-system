@@ -30,7 +30,8 @@ async def notify():
                     except (KeyError, IndexError):
                         msg = f'{boss} due in {utils.minutes_to_dhm(timer)}'
                     await channel.send(msg)
-                    utils.logger.info(f'NOTIFIER: {boss} sent at {datetime.now()}')
+                    utils.logger.info(
+                        f'NOTIFIER: {boss} sent at {datetime.now()}')
         time.sleep(300)
 
 

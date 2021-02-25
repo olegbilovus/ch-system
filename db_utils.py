@@ -20,8 +20,10 @@ def print_db(db_kv):
     for key, value in db_kv.items():
         print(f'{key}: {value}')
 
+
 def get_all_bosses():
-  return {boss:timer for (boss, timer) in db.items() if boss in BOSSES}
+    return {boss: timer for (boss, timer) in db.items() if boss in BOSSES}
+
 
 if __name__ == '__main__':
-  print(get_all_bosses())
+    print(get_all_bosses())

@@ -15,7 +15,8 @@ def delete_old_timers():
             if key.isdigit():
                 timer = db[key]
                 if timer is not None and minutes_sub(timer) <= -180:
-                    utils.logger.info(f'DOT: deleted {key} at {datetime.now()}')
+                    utils.logger.info(
+                        f'DOT: deleted {key} at {datetime.now()}')
                     db[key] = None
 
         # 6h
