@@ -1,5 +1,4 @@
 import os
-import utils
 import discord
 from replit import db
 

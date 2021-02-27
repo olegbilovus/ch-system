@@ -1,5 +1,4 @@
 import time
-import utils
 from datetime import datetime
 
 from replit import db
