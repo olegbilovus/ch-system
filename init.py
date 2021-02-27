@@ -8,7 +8,7 @@ client = discord.Client()
 
 @client.event
 async def on_ready():
-    utils.logger.info('Logged')
+    print('Logged')
 
 
 @client.event

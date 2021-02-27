@@ -1,13 +1,14 @@
 import time
-import logging
 
 from replit import db
 
 TIME_KILL = False
 
+'''
 logger = logging.getLogger('server')
 logger.addHandler(logging.FileHandler('log.txt'))
 logger.setLevel(logging.INFO)
+'''
 
 BOSSES = {
     '110': 30,
