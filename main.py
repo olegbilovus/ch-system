@@ -60,6 +60,9 @@ async def on_message(message):
                 f'{message.author.mention} I can not dm you')
 
 
+delete_logs = multiprocessing.Process(target=routine.delete_logs)
+delete_logs.daemon = True
+delete_logs.start()
 server_s = multiprocessing.Process(target=server.run)
 server_s.daemon = True
 server_s.start()
