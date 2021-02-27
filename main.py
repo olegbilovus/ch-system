@@ -19,7 +19,7 @@ chain = None
 
 @client.event
 async def on_ready():
-    utils.logger.info(f'BOT: logged at {datetime.now()}')
+    print(f'BOT: logged at {datetime.now()}')
     for boss in utils.BOSSES:
         db[boss] = utils.get_timer(boss)
     global chain
@@ -37,8 +37,7 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user or message.channel.name != 'timer-bot':
         return
-    utils.logger.info(
-        f'{message.author}: {message.content} at {datetime.now()}')
+    print(f'{message.author}: {message.content} at {datetime.now()}')
     msg = utils.Message(message.content.split(' '), message.author)
     global chain
     msg_to_send = chain.send(msg)

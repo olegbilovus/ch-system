@@ -58,7 +58,7 @@ def api_get():
         res_bosses = {}
         json = request.json
         req_bosses = json['bosses']
-        utils.logger.info(f'API: {user} {json} at {datetime.now()}')
+        print(f'API: {user} {json} at {datetime.now()}')
         for boss in req_bosses:
             res_bosses[boss] = utils.get_timer(boss)
         return jsonify(res_bosses)
@@ -74,7 +74,7 @@ def api_set():
     response = Response()
     if user is not None:
         req_boss = request.json
-        utils.logger.info(f'API: {user} {request.json} at {datetime.now()}')
+        print(f'API: {user} {request.json} at {datetime.now()}')
         if utils.set_timer(str(req_boss['boss']), req_boss['timer']):
             response.status_code = 200
         else:
@@ -87,7 +87,7 @@ def api_set():
 
 def run():
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
-    serve(TransLogger(app, format=format_logger, logger=utils.logger),
+    serve(TransLogger(app, format=format_logger),
           host='0.0.0.0',
           port=8080,
           url_scheme='https')
