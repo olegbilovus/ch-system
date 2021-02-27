@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from flask import Flask, request, Response, jsonify, render_template
 from replit import db
 from waitress import serve
@@ -58,7 +56,7 @@ def api_get():
         res_bosses = {}
         json = request.json
         req_bosses = json['bosses']
-        print(f'API: {user} {json} at {datetime.now()}')
+        utils.logger(f'API: {user}')
         for boss in req_bosses:
             res_bosses[boss] = utils.get_timer(boss)
         return jsonify(res_bosses)
@@ -74,7 +72,7 @@ def api_set():
     response = Response()
     if user is not None:
         req_boss = request.json
-        print(f'API: {user} {request.json} at {datetime.now()}')
+        utils.logger(f'API: {user} {request.json}')
         if utils.set_timer(str(req_boss['boss']), req_boss['timer']):
             response.status_code = 200
         else:
