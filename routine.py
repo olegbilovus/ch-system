@@ -21,3 +21,13 @@ def delete_old_timers():
 
         # 6h
         time.sleep(10800)
+
+
+def delete_logs():
+    while True:
+        with open('log.txt', 'w') as logs:
+            logs.write('--DELETED--\n')
+        utils.logger.info(f'DL: deleted logs at {datetime.now()}')
+
+        # 30 days
+        time.sleep(2592000)
