@@ -57,14 +57,6 @@ version = "7.1.2"
 
 [[package]]
 category = "main"
-description = "Supercharged split and join operations, inspired on the eponymous R functions."
-name = "cutandpaste"
-optional = false
-python-versions = "*"
-version = "0.4.0"
-
-[[package]]
-category = "main"
 description = "A mirror package for discord.py. Please install that instead."
 name = "discord"
 optional = false
@@ -137,14 +129,6 @@ MarkupSafe = ">=0.23"
 
 [package.extras]
 i18n = ["Babel (>=0.8)"]
-
-[[package]]
-category = "main"
-description = "Python logging helper"
-name = "logger"
-optional = false
-python-versions = "*"
-version = "1.4"
 
 [[package]]
 category = "main"
@@ -245,7 +229,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "627fae6ed1ff865b9cfe6905a1de2dd040455f47365d4e436900e2f6149b4830"
+content-hash = "88cc5be4ea0689d168db8e952cf3f5547fce52376400d7408ef20ab436ca4deb"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -304,9 +288,6 @@ click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
     {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
 ]
-cutandpaste = [
-    {file = "cutandpaste-0.4.0.tar.gz", hash = "sha256:47ff5ee305812fe977406ab1018432a1196c98912bb004046ff554efeb637966"},
-]
 discord = [
     {file = "discord-1.0.1-py3-none-any.whl", hash = "sha256:9d4debb4a37845543bd4b92cb195bc53a302797333e768e70344222857ff1559"},
     {file = "discord-1.0.1.tar.gz", hash = "sha256:ff6653655e342e7721dfb3f10421345fd852c2a33f2cca912b1c39b3778a9429"},
@@ -330,9 +311,6 @@ itsdangerous = [
 jinja2 = [
     {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
     {file = "Jinja2-2.11.3.tar.gz", hash = "sha256:a6d58433de0ae800347cab1fa3043cebbabe8baa9d29e668f1c768cb87a333c6"},
-]
-logger = [
-    {file = "logger-1.4.tar.gz", hash = "sha256:4ecac57133c6376fa215f0fe6b4dc4d60e4d1ad8be005cab4e8a702df682f8b3"},
 ]
 markupsafe = [
     {file = "MarkupSafe-1.1.1-cp27-cp27m-macosx_10_6_intel.whl", hash = "sha256:09027a7803a62ca78792ad89403b1b7a73a01c8cb65909cd876f7fcebd79b161"},

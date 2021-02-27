@@ -10,9 +10,7 @@ flask = "^1.1.2"
 replit = "^2.0.0"
 discord = "^1.0.1"
 waitress = "^1.4.4"
-cutandpaste = "^0.4.0"
 Paste = "^3.5.0"
-logger = "^1.4"
 
 [tool.poetry.dev-dependencies]
 
