@@ -1,5 +1,5 @@
 import time
-from datetime import datetime
+import utils
 
 from replit import db
 
@@ -7,14 +7,14 @@ from utils import minutes_sub
 
 
 def delete_old_timers():
-    print(f'DOT: ready at {datetime.now()}')
+    utils.logger('DOT: ready')
     while True:
-        print(f'DOT: check at {datetime.now()}')
+        utils.logger('DOT: check')
         for key in db.keys():
             if key.isdigit():
                 timer = db[key]
                 if timer is not None and minutes_sub(timer) <= -180:
-                    print(f'DOT: deleted {key} at {datetime.now()}')
+                    utils.logger(f'DOT: deleted {key}')
                     db[key] = None
 
         # 6h
@@ -25,7 +25,7 @@ def delete_logs():
     while True:
         with open('log.txt', 'w') as logs:
             logs.write('--DELETED--\n')
-        print(f'DL: deleted logs at {datetime.now()}')
+        utils.logger('DL: deleted logs')
 
         # 30 days
         time.sleep(2592000)

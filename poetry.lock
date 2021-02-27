@@ -57,6 +57,14 @@ version = "7.1.2"
 
 [[package]]
 category = "main"
+description = "Supercharged split and join operations, inspired on the eponymous R functions."
+name = "cutandpaste"
+optional = false
+python-versions = "*"
+version = "0.4.0"
+
+[[package]]
+category = "main"
 description = "A mirror package for discord.py. Please install that instead."
 name = "discord"
 optional = false
@@ -229,7 +237,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "88cc5be4ea0689d168db8e952cf3f5547fce52376400d7408ef20ab436ca4deb"
+content-hash = "191c34606062a95f71762f410b91f04c31776279836a0f10f6361d1c985170f1"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -287,6 +295,9 @@ chardet = [
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},
     {file = "click-7.1.2.tar.gz", hash = "sha256:d2b5255c7c6349bc1bd1e59e08cd12acbbd63ce649f2588755783aa94dfb6b1a"},
+]
+cutandpaste = [
+    {file = "cutandpaste-0.4.0.tar.gz", hash = "sha256:47ff5ee305812fe977406ab1018432a1196c98912bb004046ff554efeb637966"},
 ]
 discord = [
     {file = "discord-1.0.1-py3-none-any.whl", hash = "sha256:9d4debb4a37845543bd4b92cb195bc53a302797333e768e70344222857ff1559"},

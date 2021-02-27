@@ -1,9 +1,9 @@
 import time
 
 from replit import db
+from datetime import datetime
 
 TIME_KILL = False
-
 '''
 logger = logging.getLogger('server')
 logger.addHandler(logging.FileHandler('log.txt'))
@@ -143,3 +143,10 @@ class Message:
 
     def __str__(self):
         return f'content:{self.content}, length:{self.length}, mention:{self.author_mention}, id:{self.author_id}'
+
+
+def logger(msg):
+    log = f'[{datetime.now()}] {msg}'
+    print(log)
+    with open('log.txt', 'a') as logs:
+        logs.write(log + '\n')

@@ -1,7 +1,6 @@
 import multiprocessing
 import os
 import time
-from datetime import datetime
 
 import discord
 from replit import db
@@ -19,7 +18,7 @@ chain = None
 
 @client.event
 async def on_ready():
-    print(f'BOT: logged at {datetime.now()}')
+    utils.logger('BOT: logged')
     for boss in utils.BOSSES:
         db[boss] = utils.get_timer(boss)
     global chain
@@ -37,7 +36,7 @@ async def on_ready():
 async def on_message(message):
     if message.author == client.user or message.channel.name != 'timer-bot':
         return
-    print(f'{message.author}: {message.content} at {datetime.now()}')
+    utils.logger(f'{message.author}: {message.content}')
     msg = utils.Message(message.content.split(' '), message.author)
     global chain
     msg_to_send = chain.send(msg)
@@ -48,13 +47,13 @@ async def on_message(message):
             await message.author.send(msg_to_send['msg'])
     except discord.errors.HTTPException as e:
         message_error = str(e)
-        utils.logger.error(message_error)
+        utils.logger(message_error)
         if '429' in message_error:
-            utils.logger.error('429')
+            utils.logger('429')
             time.sleep(3600)
         elif '50007' in message_error:
             api.delete(message.author.name)
-            utils.logger.error('50007')
+            utils.logger('50007')
             await message.channel.send(
                 f'{message.author.mention} I can not dm you')
 
