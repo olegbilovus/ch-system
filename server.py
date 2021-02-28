@@ -33,6 +33,10 @@ app = Flask('')
 def home():
     return render_template('index.html')
 
+@app.route('/status')
+def status():
+    return render_template('status.html')
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -56,7 +60,7 @@ def api_get():
         res_bosses = {}
         json = request.json
         req_bosses = json['bosses']
-        utils.logger(f'API: {user}')
+        utils.logger(f'API: {user} {json}')
         for boss in req_bosses:
             res_bosses[boss] = utils.get_timer(boss)
         return jsonify(res_bosses)

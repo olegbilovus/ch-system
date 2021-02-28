@@ -3,7 +3,7 @@ import utils
 
 from replit import db
 from datetime import date
-from utils import minutes_sub
+from utils import minutes_sub, BOSSES
 
 
 def delete_old_timers():
@@ -11,7 +11,7 @@ def delete_old_timers():
     while True:
         utils.logger('DOT: check')
         for key in db.keys():
-            if key.isdigit():
+            if key.isdigit() and key in BOSSES:
                 timer = db[key]
                 if timer is not None and minutes_sub(timer) <= -180:
                     utils.logger(f'DOT: deleted {key}')

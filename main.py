@@ -18,6 +18,7 @@ chain = None
 
 @client.event
 async def on_ready():
+    utils.status(False)
     utils.logger('BOT: logged')
     for boss in utils.BOSSES:
         db[boss] = utils.get_timer(boss)
@@ -49,8 +50,9 @@ async def on_message(message):
         message_error = str(e)
         utils.logger(message_error)
         if '429' in message_error:
-            utils.logger('429')
+            utils.status(True)
             time.sleep(3600)
+            utils.status(False)
         elif '50007' in message_error:
             api.delete(message.author.name)
             utils.logger('50007')
