@@ -33,6 +33,7 @@ def delete_logs():
         if (date.today() - last_delete).days >= 10:
             with open('log.txt', 'w') as logs:
                 logs.write('--DELETED--\n')
+                db['logs'] = ''
                 utils.logger('DL: deleted logs')
 
         # 10 days
