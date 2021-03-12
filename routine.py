@@ -35,6 +35,7 @@ def delete_logs():
                 logs.write('--DELETED--\n')
                 db['logs'] = ''
                 utils.logger('DL: deleted logs')
+                db['last_delete'] = time.time()
 
         # 10 days
         time.sleep(864000)
