@@ -161,5 +161,5 @@ def status(down):
             status_page.write(f'Down for 1h since {datetime.now()}')
     else:
         db['429'] = False
-        with open('templates/status.html', 'w') as status:
-            status.write(f'Alive since {datetime.now()}')
+        with open('templates/status.html', 'w') as status_page:
+            status_page.write(f'Alive since {datetime.now()}')
