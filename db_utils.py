@@ -1,5 +1,7 @@
 from replit import db
 from utils import BOSSES
+import utils
+import time
 
 
 def delete_all_subs():
@@ -25,5 +27,18 @@ def get_all_bosses():
     return {boss: timer for (boss, timer) in db.items() if boss in BOSSES}
 
 
+def write_logs_file(file_name):
+    with open(file_name, 'w') as logs:
+        logs.write(db['logs'])
+
+
+def delete_logs():
+    with open('log.txt', 'w') as logs:
+        logs.write('--DELETED--\n')
+        db['logs'] = ''
+        utils.logger('DL: deleted logs')
+        db['last_delete'] = time.time()
+
+
 if __name__ == '__main__':
-    print(get_all_bosses())
+    write_logs_file('tmp.txt')
