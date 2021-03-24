@@ -154,12 +154,12 @@ def logger(msg):
 
 
 def status(down):
-    status = ''
+    status_message = ''
     if down:
         logger('429')
         db['429'] = True
-        status = f'Down for 1h since {datetime.now()}'
+        status_message = f'Down for 1h since {datetime.now()}'
     else:
         db['429'] = False
-        status = f'Alive since {datetime.now()}'
-    db['status'] = status
+        status_message = f'Alive since {datetime.now()}'
+    db['status'] = status_message
