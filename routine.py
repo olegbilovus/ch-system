@@ -4,6 +4,7 @@ import utils
 from replit import db
 from datetime import date
 from utils import minutes_sub, BOSSES
+import db_utils
 
 
 def delete_old_timers():
@@ -31,11 +32,7 @@ def delete_logs():
     while True:
         utils.logger('DL: check')
         if (date.today() - last_delete).days >= 10:
-            with open('log.txt', 'w') as logs:
-                logs.write('--DELETED--\n')
-                db['logs'] = ''
-                utils.logger('DL: deleted logs')
-                db['last_delete'] = time.time()
+            db_utils.delete_logs()
 
         # 10 days
         time.sleep(864000)
