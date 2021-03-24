@@ -36,7 +36,7 @@ def home():
 
 @app.route('/status')
 def status():
-    return render_template('status.html')
+    return render_template('status.html', status=db['status'])
 
 
 @app.route('/login', methods=['POST'])

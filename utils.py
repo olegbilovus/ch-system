@@ -154,12 +154,12 @@ def logger(msg):
 
 
 def status(down):
+    status_message = ''
     if down:
         logger('429')
         db['429'] = True
-        with open('templates/status.html', 'w') as status_page:
-            status_page.write(f'Down for 1h since {datetime.now()}')
+        status_message = f'Down for 1h since {datetime.now()}'
     else:
         db['429'] = False
-        with open('templates/status.html', 'w') as status_page:
-            status_page.write(f'Alive since {datetime.now()}')
+        status_message = f'Alive since {datetime.now()}'
+    db['status'] = status_message
