@@ -1,3 +1,4 @@
+import webhook
 import multiprocessing
 import os
 import time
@@ -35,7 +36,8 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    if message.author == client.user or message.channel.name != 'timer-bot':
+    if message.author == client.user or message.channel.name != 'timer-bot' or webhook.USERNAME in str(
+            message.author):
         return
     utils.logger(f'{message.author}: {message.content}')
     msg = utils.Message(message.content.split(' '), message.author)
