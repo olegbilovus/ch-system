@@ -26,12 +26,13 @@ def delete_logs():
     utils.logger('DL: ready')
     last_delete = date.today()
     try:
-        last_delete = date.fromtimestamp(db['last_delete'])
+        last_delete = date.fromtimestamp(float(db['last_delete']))
     except KeyError:
-        db['last_delete'] = time.time()
+        db['last_delete'] = str(time.time())
     while True:
-        utils.logger('DL: check')
-        if (date.today() - last_delete).days >= 10:
+        days = (date.today() - last_delete).days
+        utils.logger(f'DL: check, days: {days}')
+        if days >= 10:
             db_utils.delete_logs()
 
         # 10 days
