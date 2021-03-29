@@ -37,8 +37,8 @@ def delete_logs():
         logs.write('--DELETED--\n')
         db['logs'] = ''
         utils.logger('DL: deleted logs')
-        db['last_delete'] = time.time()
+        db['last_delete'] = str(time.time())
 
 
 if __name__ == '__main__':
-    write_logs_file('tmp.txt')
+    delete_logs()

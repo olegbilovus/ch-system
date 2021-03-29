@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "ch-discordbot"
-version = "0.1.0"
-description = ""
-authors = ["Your Name <you@example.com>"]
+version = "0.2.0"
+description = "ch discord bot"
+authors = ["OB"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
