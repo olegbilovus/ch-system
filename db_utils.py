@@ -27,7 +27,7 @@ def get_all_bosses():
     return {boss: timer for (boss, timer) in db.items() if boss in BOSSES}
 
 
-def write_logs_file(file_name):
+def write_logs_file(file_name='tmp.txt'):
     with open(file_name, 'w') as logs:
         logs.write(db['logs'])
 
