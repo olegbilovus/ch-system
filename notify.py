@@ -19,6 +19,7 @@ async def notify():
                 if timer is not None:
                     minutes = utils.minutes_sub(int(timer))
                     if 10 >= minutes >= 0:
+                        utils.logger(f'NOTIFIER: {boss}:{minutes} preparing')
                         msg = None
                         key = boss + utils.SUB_SUFFIX
                         try:
@@ -30,6 +31,7 @@ async def notify():
                         except (KeyError, IndexError):
                             msg = f'{boss} due in {utils.minutes_to_dhm(timer)}'
                         try:
+                            utils.logger(f'NOTIFIER: {boss} sending')
                             await channel.send(msg)
                             utils.logger(f'NOTIFIER: {boss} sent')
                         except discord.errors.HTTPException as e:
@@ -39,6 +41,7 @@ async def notify():
                                 utils.status(True)
                                 time.sleep(3600)
                                 utils.status(False)
+        utils.logger('NOTIFIER: finish check')
         time.sleep(300)
 
 
