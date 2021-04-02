@@ -53,7 +53,7 @@ async def on_message(message):
         utils.logger(message_error)
         if '429' in message_error:
             utils.status(True)
-            time.sleep(3600)
+            time.sleep(utils._429)
             utils.status(False)
         elif '50007' in message_error:
             api.delete(message.author.name)
@@ -74,4 +74,12 @@ notifier.start()
 delete_old_timers = multiprocessing.Process(target=routine.delete_old_timers)
 delete_old_timers.daemon = True
 delete_old_timers.start()
-client.run(os.getenv('TOKEN'))
+try:
+    client.run(os.getenv('TOKEN'))
+except discord.errors.HTTPException as e:
+    message_error = str(e)
+    utils.logger(message_error)
+    if '429' in message_error:
+        utils.status(True)
+        time.sleep(utils._429)
+        utils.status(False)

@@ -39,7 +39,7 @@ async def notify():
                             utils.logger(message_error)
                             if '429' in message_error:
                                 utils.status(True)
-                                time.sleep(3600)
+                                time.sleep(utils._429)
                                 utils.status(False)
         utils.logger('NOTIFIER: finish check')
         time.sleep(300)
@@ -52,4 +52,9 @@ async def on_ready():
 
 
 def start_notifier():
-    client.run(os.getenv('TOKEN'))
+    while True:
+        if not db['429']:
+            client.run(os.getenv('TOKEN'))
+            break
+        else:
+            time.time(utils._429)
