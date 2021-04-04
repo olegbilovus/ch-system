@@ -41,4 +41,4 @@ def delete_logs():
 
 
 if __name__ == '__main__':
-    delete_logs()
+    write_logs_file()

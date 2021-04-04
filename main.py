@@ -7,11 +7,11 @@ import discord
 from replit import db
 
 import commands
-import notify
 import routine
 import server
 import utils
 import api
+import notify
 
 client = discord.Client()
 chain = None
@@ -60,7 +60,6 @@ async def on_message(message):
             utils.logger('50007')
             await message.channel.send(
                 f'{message.author.mention} I can not dm you')
-
 
 delete_logs = multiprocessing.Process(target=routine.delete_logs)
 delete_logs.daemon = True
