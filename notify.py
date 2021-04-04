@@ -57,4 +57,4 @@ def start_notifier():
             client.run(os.getenv('TOKEN'))
             break
         else:
-            time.time(utils._429)
+            time.sleep(utils._429)
