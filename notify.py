@@ -56,5 +56,4 @@ def start_notifier():
         if not db['429']:
             client.run(os.getenv('TOKEN'))
             break
-        else:
-            time.sleep(utils._429)
+        time.sleep(utils._429)
