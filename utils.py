@@ -4,7 +4,7 @@ import time
 from replit import db
 from datetime import datetime
 
-_429 = 900
+_429 = 1200
 
 TIME_KILL = False
 '''
@@ -161,7 +161,7 @@ def status(down):
     if down:
         logger('429')
         db['429'] = True
-        status_message = f'Down for 15mins since {datetime.now()}'
+        status_message = f'Down for 20mins since {datetime.now()}'
     else:
         db['429'] = False
         status_message = f'Alive since {datetime.now()}'

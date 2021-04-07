@@ -14,7 +14,14 @@ import api
 import notify
 
 client = discord.Client()
-chain = None
+chain = commands.get_all(
+    commands.api_key(
+        commands.reset_timer(
+            commands.get_boss(
+                commands.when_boss(
+                    commands.sub_boss(
+                        commands.unsub_boss(
+                            commands.set_timer(commands.default()))))))))
 
 
 @client.event
@@ -23,19 +30,16 @@ async def on_ready():
     utils.logger('BOT: logged')
     for boss in utils.BOSSES:
         db[boss] = utils.get_timer(boss)
-    global chain
-    chain = commands.get_all(
-        commands.api_key(
-            commands.reset_timer(
-                commands.get_boss(
-                    commands.when_boss(
-                        commands.sub_boss(
-                            commands.unsub_boss(
-                                commands.set_timer(commands.default()))))))))
 
 
 @client.event
 async def on_message(message):
+    if db['429']:
+        utils.status(True)
+        time.sleep(utils._429)
+        utils.status(False)
+        return
+
     if message.author == client.user or message.channel.name != 'timer-bot' or webhook.USERNAME in str(
             message.author):
         return
@@ -61,15 +65,17 @@ async def on_message(message):
             await message.channel.send(
                 f'{message.author.mention} I can not dm you')
 
+
 delete_logs = multiprocessing.Process(target=routine.delete_logs)
 delete_logs.daemon = True
 delete_logs.start()
 server_s = multiprocessing.Process(target=server.run)
 server_s.daemon = True
 server_s.start()
-notifier = multiprocessing.Process(target=notify.start_notifier)
-notifier.daemon = True
-notifier.start()
+if db['notifier']:
+    notifier = multiprocessing.Process(target=notify.start_notifier)
+    notifier.daemon = True
+    notifier.start()
 delete_old_timers = multiprocessing.Process(target=routine.delete_old_timers)
 delete_old_timers.daemon = True
 delete_old_timers.start()
