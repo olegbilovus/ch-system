@@ -2,6 +2,7 @@ from flask import Flask, request, Response, jsonify, render_template
 from replit import db
 from waitress import serve
 from paste.translogger import TransLogger
+from secrets import compare_digest
 
 import utils
 
@@ -9,7 +10,7 @@ import utils
 def auth(api_key):
     api_keys = db['api_keys']
     for user, key in api_keys.items():
-        if api_key == key:
+        if compare_digest(api_key, key):
             return user
 
     return None
