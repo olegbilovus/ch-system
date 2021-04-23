@@ -1,4 +1,4 @@
-import uuid
+import secrets
 
 from replit import db
 
@@ -6,7 +6,7 @@ key = 'api_keys'
 
 
 def create(user):
-    api_key = uuid.uuid4().hex
+    api_key = secrets.token_hex(32)
     api_keys = {}
 
     try:
