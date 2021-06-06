@@ -1,16 +1,11 @@
 from datetime import datetime
 from functools import wraps
-from replit import db
-import api
 
 import utils
 
 all_commands = ['all', 'All', 'soon', 'Soon']
 get_commands = ['g', 'G', 'get', 'Get']
-sub_commands = ['sub', 'Sub']
-unsub_commands = ['unsub', 'Unsub']
 when_commands = ['w', 'W', 'when', 'When']
-api_commands = ['api', 'Api', 'API']
 
 
 def start_chain(f):
@@ -27,9 +22,7 @@ def start_chain(f):
 def default():
     msg_to_send = {'type': 'all', 'msg': None}
     while True:
-        msg = yield msg_to_send
-        msg_to_send['type'] = 'all'
-        msg_to_send['msg'] = utils.usage(' '.join(msg.content))
+        yield msg_to_send
 
 
 @start_chain
@@ -44,8 +37,8 @@ def get_all(successor=None):
             dl = False
             edl = False
             raid = False
-            for boss in utils.BOSSES:
-                timer = utils.get_timer(boss)
+            timers = utils.get_all_timers()
+            for boss, timer in timers.items():
                 if timer is not None:
                     boss2 = None
                     if boss.isdigit():
@@ -93,42 +86,6 @@ def get_boss(successor=None):
 
 
 @start_chain
-def sub_boss(successor=None):
-    msg_to_send = {'type': 'all', 'msg': None}
-    while True:
-        msg = yield msg_to_send
-        msg_to_send['type'] = 'all'
-        if msg.length >= 2 and msg.content[0] in sub_commands:
-            msg_to_send['msg'] = ''
-            for boss in msg.content[1:]:
-                if utils.add_sub(boss, msg.author_mention):
-                    msg_to_send['msg'] += f'added to {boss} subs\n'
-                else:
-                    msg_to_send['msg'] += f'already in {boss} subs\n'
-            msg_to_send['msg'] = f'{msg.author_mention}\n' + msg_to_send['msg']
-        elif successor is not None:
-            msg_to_send = successor.send(msg)
-
-
-@start_chain
-def unsub_boss(successor=None):
-    msg_to_send = {'type': 'all', 'msg': None}
-    while True:
-        msg = yield msg_to_send
-        msg_to_send['type'] = 'all'
-        if msg.length >= 2 and msg.content[0] in unsub_commands:
-            msg_to_send['msg'] = ''
-            for boss in msg.content[1:]:
-                if utils.remove_sub(boss, msg.author_mention):
-                    msg_to_send['msg'] += f'removed from {boss} subs\n'
-                else:
-                    msg_to_send['msg'] += f'not in {boss} sub\n'
-            msg_to_send['msg'] = f'{msg.author_mention}\n' + msg_to_send['msg']
-        elif successor is not None:
-            msg_to_send = successor.send(msg)
-
-
-@start_chain
 def set_timer(successor=None):
     msg_to_send = {'type': 'all', 'msg': None}
     while True:
@@ -161,7 +118,7 @@ def reset_timer(successor=None):
             boss = msg.content[0]
             if boss in utils.BOSSES:
                 default_timer = utils.BOSSES[boss]
-                db[boss] = utils.minutes_add(default_timer)
+                utils.set_timer(boss, default_timer)
                 msg_to_send['msg'] = f'{boss} reset to {default_timer}m'
             else:
                 msg_to_send['msg'] = f'{boss} is not tracked'
@@ -186,17 +143,5 @@ def when_boss(successor=None):
                     msg_to_send['msg'] = f'{boss} no timer set'
             else:
                 msg_to_send['msg'] = f'{boss} is not tracked'
-        elif successor is not None:
-            msg_to_send = successor.send(msg)
-
-
-@start_chain
-def api_key(successor=None):
-    msg_to_send = {'type': 'dm', 'msg': None}
-    while True:
-        msg = yield msg_to_send
-        msg_to_send['type'] = 'dm'
-        if msg.length == 1 and msg.content[0] in api_commands:
-            msg_to_send['msg'] = api.create(msg.author_name)
         elif successor is not None:
             msg_to_send = successor.send(msg)
