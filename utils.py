@@ -84,14 +84,14 @@ def get_timer(boss):
 
 
 def get_all_timers():
-	res = requests.post(f'{API_URL}/api/get',
-	                    headers={'X-ApiKey': API_KEY},
-	                    json={'bosses': LIST_BOSSES})
-	try:
-		return res.json()
-	except Exception as e:
-		logger(e)
-		return None
+    res = requests.post(f'{API_URL}/api/get',
+                        headers={'X-ApiKey': API_KEY},
+                        json={'bosses': LIST_BOSSES})
+    try:
+        return res.json()
+    except Exception as e:
+        logger(e)
+        return None
 
 
 def set_timer(boss, timer):
