@@ -65,13 +65,15 @@ async def on_message(message):
             await message.channel.send(
                 f'{message.author.mention} I can not dm you')
 
-
+'''
 delete_logs = multiprocessing.Process(target=routine.delete_logs)
 delete_logs.daemon = True
 delete_logs.start()
+'''
 server_s = multiprocessing.Process(target=server.run)
 server_s.daemon = True
 server_s.start()
+'''
 if db['notifier']:
     notifier = multiprocessing.Process(target=notify.start_notifier)
     notifier.daemon = True
@@ -79,6 +81,7 @@ if db['notifier']:
 delete_old_timers = multiprocessing.Process(target=routine.delete_old_timers)
 delete_old_timers.daemon = True
 delete_old_timers.start()
+'''
 try:
     client.run(os.getenv('TOKEN'))
 except discord.errors.HTTPException as e:
