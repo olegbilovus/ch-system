@@ -70,31 +70,33 @@ def minutes_to_dhm(minutes):
 
 
 def get_timer(boss):
-<<<<<<< HEAD
-	if boss in BOSSES:
-		res = requests.post(f'{API_URL}/api/get',
-		                    headers={'X-ApiKey': API_KEY},
-		                    json={'bosses': [boss]})
-		try:
-			return res.json()[boss]
-		except Exception as e:
-			logger(e)
-			return None
-	else:
-		return None
+
+
+<< << << < HEAD
+   if boss in BOSSES:
+        res = requests.post(f'{API_URL}/api/get',
+                            headers={'X-ApiKey': API_KEY},
+                            json={'bosses': [boss]})
+        try:
+            return res.json()[boss]
+        except Exception as e:
+            logger(e)
+            return None
+    else:
+        return None
 
 
 def get_all_timers():
-	res = requests.post(f'{API_URL}/api/get',
-	                    headers={'X-ApiKey': API_KEY},
-	                    json={'bosses': LIST_BOSSES})
-	try:
-		return res.json()
-	except Exception as e:
-		logger(e)
-		return None
-=======
-    if boss in BOSSES:
+    res = requests.post(f'{API_URL}/api/get',
+                        headers={'X-ApiKey': API_KEY},
+                        json={'bosses': LIST_BOSSES})
+    try:
+        return res.json()
+    except Exception as e:
+        logger(e)
+        return None
+== =====
+   if boss in BOSSES:
         res = requests.post(f'{API_URL}/api/get',
                             headers={'X-ApiKey': API_KEY},
                             json={'bosses': [boss]})
@@ -116,7 +118,7 @@ def get_all_timers():
     except Exception as e:
         utils.logger(e)
         return None
->>>>>>> 5af5aaadf53e5069bfe375aa17e13a07fc8779a2
+>>>>>> > 5af5aaadf53e5069bfe375aa17e13a07fc8779a2
 
 
 def set_timer(boss, timer):
