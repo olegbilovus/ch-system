@@ -22,7 +22,7 @@ def start_chain(f):
 def default():
 	msg_to_send = {'type': 'all', 'msg': None}
 	while True:
-		msg = yield msg_to_send
+		yield msg_to_send
 
 
 @start_chain

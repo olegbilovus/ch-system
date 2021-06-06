@@ -77,7 +77,7 @@ def get_timer(boss):
 		try:
 			return res.json()[boss]
 		except Exception as e:
-			utils.logger(e)
+			logger(e)
 			return None
 	else:
 		return None
@@ -90,7 +90,7 @@ def get_all_timers():
 	try:
 		return res.json()
 	except Exception as e:
-		utils.logger(e)
+		logger(e)
 		return None
 
 
