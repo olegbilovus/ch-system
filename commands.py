@@ -20,9 +20,10 @@ def start_chain(f):
 
 @start_chain
 def default():
-	msg_to_send = {'type': 'all', 'msg': None}
-	while True:
-		yield msg_to_sen
+    msg_to_send = {'type': 'all', 'msg': None}
+    while True:
+        yield msg_to_sen
+
 
 @start_chain
 def get_all(successor=None):
