@@ -111,6 +111,7 @@ def remove_sub(boss, user_mention):
         return True
     return False
 
+
 def separator_label(category, separator='---------------------------------'):
     return separator + '\n' + category + '\n'
 
