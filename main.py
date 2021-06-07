@@ -76,6 +76,6 @@ def run():
           threads=6)
 
 
-utils.logger(f'DB: started')
+utils.logger('DB: started')
 db['status'] = f'Alive since {datetime.now()}'
 run()
