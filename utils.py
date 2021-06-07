@@ -34,33 +34,33 @@ BOSSES = {
 
 
 def minutes_add(timer):
-	return round(time.time()) // 60 + timer
+    return round(time.time()) // 60 + timer
 
 
 def get_timer(boss):
-	if boss in BOSSES:
-		try:
-			return db[boss]
-		except KeyError:
-			return None
-	else:
-		return None
+    if boss in BOSSES:
+        try:
+            return db[boss]
+        except KeyError:
+            return None
+    else:
+        return None
 
 
 def set_timer(boss, timer):
-	if boss in BOSSES:
-		timer = int(timer)
-		if timer == 0:
-			db[boss] = None
-		else:
-			db[boss] = minutes_add(timer)
-		return True
-	return False
+    if boss in BOSSES:
+        timer = int(timer)
+        if timer == 0:
+            db[boss] = None
+        else:
+            db[boss] = minutes_add(timer)
+        return True
+    return False
 
 
 def logger(msg):
-	log = f'[{datetime.now()}] {msg}'
-	print(log)
-	with open('log.txt', 'a') as logs:
-		logs.write(log + '\n')
-	db['logs'] = db['logs'] + log + '\n'
+    log = f'[{datetime.now()}] {msg}'
+    print(log)
+    with open('log.txt', 'a') as logs:
+        logs.write(log + '\n')
+    db['logs'] = db['logs'] + log + '\n'
