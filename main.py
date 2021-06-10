@@ -20,8 +20,7 @@ def auth(api_key):
 
 def get_api_key(_request):
     api_key = _request.headers.get('X-ApiKey', type=str)
-
-    return api_key
+    return api_key if api_key is not None else ''
 
 
 app = Flask('')
@@ -58,6 +57,42 @@ def api_set():
         req_boss = request.json
         utils.logger(f'API.set: {user} {request.json}')
         if utils.set_timer(str(req_boss['boss']), req_boss['timer']):
+            response.status_code = 200
+        else:
+            response.status_code = 404
+    else:
+        response.status_code = 401
+
+    return response
+
+
+@app.post('/api/sub')
+def api_sub():
+    api_key = get_api_key(request)
+    user = auth(api_key)
+    response = Response()
+    if user is not None:
+        req = request.json
+        utils.logger(f'API.sub: {user} {request.json}')
+        if utils.add_sub(req['boss'], user):
+            response.status_code = 200
+        else:
+            response.status_code = 404
+    else:
+        response.status_code = 401
+
+    return response
+
+
+@app.post('/api/unsub')
+def api_unsub():
+    api_key = get_api_key(request)
+    user = auth(api_key)
+    response = Response()
+    if user is not None:
+        req = request.json
+        utils.logger(f'API.unsub: {user} {request.json}')
+        if utils.remove_sub(req['boss'], user):
             response.status_code = 200
         else:
             response.status_code = 404

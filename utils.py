@@ -32,6 +32,8 @@ BOSSES = {
     'dino': 4320
 }
 
+SUB_SUFFIX = 's'
+
 
 def minutes_add(timer):
     return round(time.time()) // 60 + timer
@@ -58,6 +60,36 @@ def set_timer(boss, timer):
             db[boss] = None
         else:
             db[boss] = minutes_add(timer)
+        return True
+    return False
+
+
+def get_subs(boss):
+    if boss in BOSSES:
+        subs = []
+        boss_suffix = boss + SUB_SUFFIX
+        try:
+            subs = db[boss_suffix]
+        except KeyError:
+            db[boss_suffix] = subs
+        return subs
+    return None
+
+
+def add_sub(boss, user_id):
+    subs = get_subs(boss)
+    if subs is not None and user_id not in subs:
+        subs.append(user_id)
+        db[boss + SUB_SUFFIX] = subs
+        return True
+    return False
+
+
+def remove_sub(boss, user_id):
+    subs = get_subs(boss)
+    if subs and user_id in subs:
+        subs.remove(user_id)
+        db[boss + SUB_SUFFIX] = subs
         return True
     return False
 
