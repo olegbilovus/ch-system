@@ -9,7 +9,7 @@ import server
 import utils
 import routine
 
-WEBHOOK_NAMES = []
+WEBHOOK_NAMES = ['Notifier#0000']
 
 client = discord.Client()
 chain = commands.get_all(
