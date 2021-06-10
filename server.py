@@ -3,8 +3,6 @@ from replit import db
 from waitress import serve
 from paste.translogger import TransLogger
 
-import utils
-
 app = Flask('')
 
 

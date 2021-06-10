@@ -3,11 +3,13 @@ from replit import db
 
 import os
 import time
-import webhook
 import discord
 import commands
 import server
 import utils
+import routine
+
+WEBHOOK_NAMES = []
 
 client = discord.Client()
 chain = commands.get_all(
@@ -18,6 +20,8 @@ chain = commands.get_all(
 
 @client.event
 async def on_ready():
+    routine.delete_logs()
+    routine.delete_old_timers()
     utils.status(False)
     utils.logger('BOT: logged')
 
@@ -30,8 +34,8 @@ async def on_message(message):
         utils.status(False)
         return
 
-    if message.author == client.user or message.channel.name != 'timer-bot' or webhook.USERNAME in str(
-            message.author):
+    if message.author == client.user or message.channel.name != 'timer-bot' or str(
+            message.author) in WEBHOOK_NAMES:
         return
     utils.logger(f'{message.author}: {message.content}')
     msg = utils.Message(message.content.split(' '), message.author)
