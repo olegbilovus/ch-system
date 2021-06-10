@@ -25,4 +25,4 @@ def delete_logs():
         logs.write('--DELETED--\n')
         db['logs'] = ''
         utils.logger('DL: deleted logs')
-        db['last_delete'] = str(time.time())
+        db['last_delete'] = str(round(time.time()))
