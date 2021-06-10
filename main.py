@@ -116,8 +116,7 @@ def api_getsubs():
         for boss in utils.BOSSES:
             subs[boss] = list(utils.get_subs(boss))
         return jsonify(subs)
-    else:
-        response.status_code = 401
+    response.status_code = 401
 
     return response
 
