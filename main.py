@@ -21,7 +21,6 @@ chain = commands.get_all(
 @client.event
 async def on_ready():
     routine.delete_logs()
-    routine.delete_old_timers()
     utils.status(False)
     utils.logger('BOT: logged')
 
