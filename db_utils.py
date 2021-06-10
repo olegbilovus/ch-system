@@ -1,5 +1,4 @@
 from replit import db
-from utils import BOSSES
 import utils
 import time
 
@@ -14,10 +13,6 @@ def get_all_key_values():
 def print_db(db_kv):
     for key, value in db_kv.items():
         print(f'{key}: {value}')
-
-
-def get_all_bosses():
-    return {boss: timer for (boss, timer) in db.items() if boss in BOSSES}
 
 
 def write_logs_file(file_name='tmp.txt'):
