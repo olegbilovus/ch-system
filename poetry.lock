@@ -157,14 +157,6 @@ openid = ["python-openid"]
 
 [[package]]
 category = "main"
-description = "World timezone definitions, modern and historical"
-name = "pytz"
-optional = false
-python-versions = "*"
-version = "2021.1"
-
-[[package]]
-category = "main"
 description = "A library for interacting with features of repl.it"
 name = "replit"
 optional = false
@@ -228,19 +220,8 @@ version = "1.6.3"
 idna = ">=2.0"
 multidict = ">=4.0"
 
-[[package]]
-category = "main"
-description = "python modules."
-name = "yikai-tools"
-optional = false
-python-versions = "*"
-version = "1.0.6"
-
-[package.dependencies]
-pytz = "*"
-
 [metadata]
-content-hash = "67c89830c90fd32870253a029a076b69d3eba20d2b815fd260e4302380482d1c"
+content-hash = "d89b421c8122f3241a79438c1a78b7de47c56adeffbd65e4020aa921e3c68a79"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -401,10 +382,6 @@ paste = [
     {file = "Paste-3.5.0-py2.py3-none-any.whl", hash = "sha256:8e08200a570f7e29dfafd4eea0e1b38a6193cfda6446bb515db74250b632c53b"},
     {file = "Paste-3.5.0.tar.gz", hash = "sha256:1b095c42dc91d426f3ae85101796b14d265887f8f36f3aad143a5f29effdc39d"},
 ]
-pytz = [
-    {file = "pytz-2021.1-py2.py3-none-any.whl", hash = "sha256:eb10ce3e7736052ed3623d49975ce333bcd712c7bb19a58b9e2089d4057d0798"},
-    {file = "pytz-2021.1.tar.gz", hash = "sha256:83a4a90894bf38e243cf052c8b58f381bfe9a7a483f6a9cab140bc7f702ac4da"},
-]
 replit = [
     {file = "replit-3.1.0-py3-none-any.whl", hash = "sha256:3aaf0791ce5b42fd1b740f58acf76461c703b8136fcc6358f2fbf44c0bdf9bb3"},
     {file = "replit-3.1.0.tar.gz", hash = "sha256:fcea2df361a195ab6a6739ddba429227f36944075f8852e35f77a4031d263ab0"},
@@ -464,7 +441,4 @@ yarl = [
     {file = "yarl-1.6.3-cp39-cp39-win32.whl", hash = "sha256:5b883e458058f8d6099e4420f0cc2567989032b5f34b271c0827de9f1079a424"},
     {file = "yarl-1.6.3-cp39-cp39-win_amd64.whl", hash = "sha256:4953fb0b4fdb7e08b2f3b3be80a00d28c5c8a2056bb066169de00e6501b986b6"},
     {file = "yarl-1.6.3.tar.gz", hash = "sha256:8a9066529240171b68893d60dca86a763eae2139dd42f42106b03cf4b426bf10"},
-]
-yikai-tools = [
-    {file = "yikai-tools-1.0.6.tar.gz", hash = "sha256:d88a91402b37521cb2e9588cdd0a245231161747d558cd90e270d20af013136a"},
 ]
