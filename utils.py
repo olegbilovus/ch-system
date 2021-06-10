@@ -37,6 +37,10 @@ def minutes_add(timer):
     return round(time.time()) // 60 + timer
 
 
+def minutes_sub(timer):
+    return timer - (round(time.time()) // 60)
+
+
 def get_timer(boss):
     if boss in BOSSES:
         try:

@@ -6,6 +6,7 @@ from secrets import compare_digest
 from datetime import datetime
 
 import utils
+import routine
 
 
 def auth(api_key):
@@ -76,6 +77,8 @@ def run():
           threads=6)
 
 
+routine.delete_logs()
+routine.delete_old_timers()
 utils.logger('DB: started')
 db['status'] = f'Alive since {datetime.now()}'
 run()

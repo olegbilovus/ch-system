@@ -36,7 +36,3 @@ def delete(user):
 
 def delete_all():
     del db[key]
-
-
-if __name__ == '__main__':
-    print(get_all())
