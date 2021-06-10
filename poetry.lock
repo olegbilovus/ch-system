@@ -19,26 +19,6 @@ speedups = ["aiodns", "brotlipy", "cchardet"]
 
 [[package]]
 category = "main"
-description = "Consume an API from ReadMe Build"
-name = "api"
-optional = false
-python-versions = "*"
-version = "0.0.7"
-
-[package.dependencies]
-nose = "*"
-requests = "*"
-
-[[package]]
-category = "main"
-description = "A tiny utility to get application version from pkg_resouces"
-name = "app-version"
-optional = false
-python-versions = "*"
-version = "1.0.1"
-
-[[package]]
-category = "main"
 description = "Timeout context manager for asyncio programs"
 name = "async-timeout"
 optional = false
@@ -176,26 +156,6 @@ version = "5.1.0"
 
 [[package]]
 category = "main"
-description = "nose extends unittest to make testing easier"
-name = "nose"
-optional = false
-python-versions = "*"
-version = "1.3.7"
-
-[[package]]
-category = "main"
-description = "Notify process termination via email"
-name = "notify"
-optional = false
-python-versions = "*"
-version = "0.3.1"
-
-[package.dependencies]
-app-version = "*"
-validate-email = "*"
-
-[[package]]
-category = "main"
 description = "Tools for using a Web Server Gateway Interface stack"
 name = "paste"
 optional = false
@@ -226,18 +186,6 @@ werkzeug = ">=1.0.1,<2.0.0"
 
 [[package]]
 category = "main"
-description = "Python HTTP for Humans."
-name = "requests"
-optional = false
-python-versions = "*"
-version = "2.15.1"
-
-[package.extras]
-security = ["cryptography (>=1.3.4)", "idna (>=2.0.0)", "pyOpenSSL (>=0.14)"]
-socks = ["PySocks (>=1.5.6,<1.5.7 || >1.5.7)", "win-inet-pton"]
-
-[[package]]
-category = "main"
 description = "Python 2 and 3 compatibility utilities"
 name = "six"
 optional = false
@@ -251,14 +199,6 @@ name = "typing-extensions"
 optional = false
 python-versions = "*"
 version = "3.10.0.0"
-
-[[package]]
-category = "main"
-description = "Validate_email verify if an email address is valid and really exists."
-name = "validate-email"
-optional = false
-python-versions = "*"
-version = "1.3"
 
 [[package]]
 category = "main"
@@ -297,7 +237,7 @@ idna = ">=2.0"
 multidict = ">=4.0"
 
 [metadata]
-content-hash = "e27f1b0c1a22751fa6079fa6ec77f5887d7c199e0fa9882d49e318a6ea14d6f3"
+content-hash = "ece156fccfd187d05d61c954de117e7fc0591e6a55632de1b2218fae874b023b"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -339,14 +279,6 @@ aiohttp = [
     {file = "aiohttp-3.7.4.post0-cp39-cp39-win32.whl", hash = "sha256:932bb1ea39a54e9ea27fc9232163059a0b8855256f4052e776357ad9add6f1c9"},
     {file = "aiohttp-3.7.4.post0-cp39-cp39-win_amd64.whl", hash = "sha256:02f46fc0e3c5ac58b80d4d56eb0a7c7d97fcef69ace9326289fb9f1955e65cfe"},
     {file = "aiohttp-3.7.4.post0.tar.gz", hash = "sha256:493d3299ebe5f5a7c66b9819eacdcfbbaaf1a8e84911ddffcdc48888497afecf"},
-]
-api = [
-    {file = "api-0.0.7.tar.gz", hash = "sha256:ef1a7d9122c76edf9dc28edd3acfbb56f919194b609191481efc12e9ef83a68d"},
-]
-app-version = [
-    {file = "app_version-1.0.1-py2-none-any.whl", hash = "sha256:aeecceebf20f0935dadeb4aa246a962c5d99b6ccba623b433d0c3952d0964a22"},
-    {file = "app_version-1.0.1-py3-none-any.whl", hash = "sha256:c38bd6931565b9a972961ef19f1ab8aa80748d68c0153000116800b7ce5678a8"},
-    {file = "app_version-1.0.1.tar.gz", hash = "sha256:c21f6ea7e97092ba9a28dd6f884766647888273cbda8bde8f108f9657d5b4bff"},
 ]
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
@@ -466,15 +398,6 @@ multidict = [
     {file = "multidict-5.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:7df80d07818b385f3129180369079bd6934cf70469f99daaebfac89dca288359"},
     {file = "multidict-5.1.0.tar.gz", hash = "sha256:25b4e5f22d3a37ddf3effc0710ba692cfc792c2b9edfb9c05aefe823256e84d5"},
 ]
-nose = [
-    {file = "nose-1.3.7-py2-none-any.whl", hash = "sha256:dadcddc0aefbf99eea214e0f1232b94f2fa9bd98fa8353711dacb112bfcbbb2a"},
-    {file = "nose-1.3.7-py3-none-any.whl", hash = "sha256:9ff7c6cc443f8c51994b34a667bbcf45afd6d945be7477b52e97516fd17c53ac"},
-    {file = "nose-1.3.7.tar.gz", hash = "sha256:f1bffef9cbc82628f6e7d7b40d7e255aefaa1adb6a1b1d26c69a8b79e6208a98"},
-]
-notify = [
-    {file = "notify-0.3.1-py2-none-any.whl", hash = "sha256:9b27073f8483c081efeb28ec2563b39673972cde2c67cbf860d344e64d6ff372"},
-    {file = "notify-0.3.1.tar.gz", hash = "sha256:89dcebec89e2d82afae43687ad3dab343a94ce79e5af7b652f1f7961135955b9"},
-]
 paste = [
     {file = "Paste-3.5.0-py2.py3-none-any.whl", hash = "sha256:8e08200a570f7e29dfafd4eea0e1b38a6193cfda6446bb515db74250b632c53b"},
     {file = "Paste-3.5.0.tar.gz", hash = "sha256:1b095c42dc91d426f3ae85101796b14d265887f8f36f3aad143a5f29effdc39d"},
@@ -482,10 +405,6 @@ paste = [
 replit = [
     {file = "replit-3.0.0-py3-none-any.whl", hash = "sha256:3dd4f21b8b2a44b8c645a15e87398fa129b356cb6a88faa5eedd30374cc404e1"},
     {file = "replit-3.0.0.tar.gz", hash = "sha256:7558e5ce46333062849b2c3be058a90d7769f6d7b1ad2382e78981cfaede2aa1"},
-]
-requests = [
-    {file = "requests-2.15.1-py2.py3-none-any.whl", hash = "sha256:ff753b2196cd18b1bbeddc9dcd5c864056599f7a7d9a4fb5677e723efa2b7fb9"},
-    {file = "requests-2.15.1.tar.gz", hash = "sha256:e5659b9315a0610505e050bb7190bf6fa2ccee1ac295f2b760ef9d8a03ebbb2e"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
@@ -495,9 +414,6 @@ typing-extensions = [
     {file = "typing_extensions-3.10.0.0-py2-none-any.whl", hash = "sha256:0ac0f89795dd19de6b97debb0c6af1c70987fd80a2d62d1958f7e56fcc31b497"},
     {file = "typing_extensions-3.10.0.0-py3-none-any.whl", hash = "sha256:779383f6086d90c99ae41cf0ff39aac8a7937a9283ce0a414e5dd782f4c94a84"},
     {file = "typing_extensions-3.10.0.0.tar.gz", hash = "sha256:50b6f157849174217d0656f99dc82fe932884fb250826c18350e159ec6cdf342"},
-]
-validate-email = [
-    {file = "validate_email-1.3.tar.gz", hash = "sha256:784719dc5f780be319cdd185dc85dd93afebdb6ebb943811bc4c7c5f9c72aeaf"},
 ]
 waitress = [
     {file = "waitress-2.0.0-py3-none-any.whl", hash = "sha256:29af5a53e9fb4e158f525367678b50053808ca6c21ba585754c77d790008c746"},
