@@ -7,6 +7,9 @@ from datetime import datetime
 
 import utils
 import routine
+import os
+
+NOTIFIER_NAME = os.getenv('NOTIFIER')
 
 
 def auth(api_key):
@@ -96,6 +99,23 @@ def api_unsub():
             response.status_code = 200
         else:
             response.status_code = 404
+    else:
+        response.status_code = 401
+
+    return response
+
+
+@app.post('/api/getsubs')
+def api_getsubs():
+    api_key = get_api_key(request)
+    user = auth(api_key)
+    response = Response()
+    if user is not None and user == NOTIFIER_NAME:
+        utils.logger(f'API.getsubs: {user}')
+        subs = {}
+        for boss in utils.BOSSES:
+            subs[boss] = list(utils.get_subs(boss))
+        return jsonify(subs)
     else:
         response.status_code = 401
 
