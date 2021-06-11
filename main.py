@@ -132,8 +132,7 @@ def api_create():
         req = request.json
         utils.logger(f'API.create: {user} {request.json}')
         return jsonify(api.create(req['user_id']))
-    else:
-        response.status_code = 401
+    response.status_code = 401
 
     return response
 
