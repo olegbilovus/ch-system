@@ -4,18 +4,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-	</script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
-
-	</script>
 	<title>Login</title>
 </head>
 
 <body>
-    {% if user_id %}
-        {{user_id}}
-    {% else %}
+	{% if user_id %} {{user_id}} {% else %}
 	<form method="POST" action="/login">
 		<label>User ID <input type="text" name="user_id" value="{{user_id}}"> </label>
         <br>
