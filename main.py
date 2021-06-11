@@ -8,8 +8,10 @@ from datetime import datetime
 import utils
 import routine
 import os
+import api
 
 NOTIFIER_NAME = os.getenv('NOTIFIER')
+WEB_NAME = os.getenv('WEB')
 
 
 def auth(api_key):
@@ -117,6 +119,38 @@ def api_getsubs():
             subs[boss] = list(utils.get_subs(boss))
         return jsonify(subs)
     response.status_code = 401
+
+    return response
+
+
+@app.post('/api/create')
+def api_create():
+    api_key = get_api_key(request)
+    user = auth(api_key)
+    response = Response()
+    if user is not None and user == WEB_NAME:
+        req = request.json
+        utils.logger(f'API.create: {user} {request.json}')
+        return jsonify(api.create(req['user_id']))
+    response.status_code = 401
+
+    return response
+
+
+@app.post('/api/delete')
+def api_delete():
+    api_key = get_api_key(request)
+    user = auth(api_key)
+    response = Response()
+    if user is not None and user == WEB_NAME:
+        req = request.json
+        utils.logger(f'API.delete: {user} {request.json}')
+        if api.delete(req['user_id']):
+            response.status_code = 200
+        else:
+            response.status_code = 404
+    else:
+        response.status_code = 401
 
     return response
 
