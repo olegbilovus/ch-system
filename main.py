@@ -4,6 +4,9 @@ from paste.translogger import TransLogger
 
 import utils
 import os
+import routine
+
+routine.delete_logs()
 
 app = Flask('')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
