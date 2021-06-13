@@ -31,10 +31,13 @@ def home():
 @app.post('/login')
 def login():
     req = request.form
-    if utils.login(req['user_id'], req['api_key']):
+    user = utils.login(req['user_id'], req['api_key'])
+    if user:
         utils.logger(f'WEB.login: {req["user_id"]} {req["api_key"][0:5]}')
         session['user_id'] = req['user_id']
         session['api_key'] = req['api_key']
+        session['main'] = user['main']
+        session['role'] = user['role']
         return redirect('dashboard')
 
     return render_template('index.html', error='Invalid credentials'), 401
@@ -42,10 +45,19 @@ def login():
 
 @app.route('/dashboard')
 def dashboard():
-    try:
-        return session['user_id']
-    except KeyError:
+    if 'user_id' in session:
+        utils.logger(
+            f'WEB.dashboard: {session["main"]} {session["user_id"]} {session["api_key"][0:5]}'
+        )
+        return render_template('dashboard.html',
+                               timers=utils.get_all_timers(),
+                               main=session['main'],
+                               role=session['role'])
+    else:
         return redirect('/')
+
+
+@app.post('')
 
 
 def run():
