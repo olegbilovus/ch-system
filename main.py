@@ -53,8 +53,7 @@ def dashboard():
                                timers=utils.get_all_timers(),
                                main=session['main'],
                                role=session['role'])
-    else:
-        return redirect('/')
+    return redirect('/')
 
 
 @app.post('')
