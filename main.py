@@ -51,7 +51,8 @@ def dashboard():
         return render_template('dashboard.html',
                                timers=utils.get_all_timers(),
                                main=session['main'],
-                               role=session['role'])
+                               role=session['role'],
+                               islice=islice)
     return redirect('/')
 
 
