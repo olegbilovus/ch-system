@@ -58,8 +58,6 @@ def dashboard():
 
 
 @app.post('')
-
-
 def run():
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
     serve(TransLogger(app, format=format_logger),
