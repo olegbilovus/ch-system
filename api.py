@@ -39,6 +39,10 @@ def get_all():
     return db[key]
 
 
+def get_users():
+    return list(dict(db[key]).keys())
+
+
 def delete(user_id):
     api_keys = get_all()
     if user_id in api_keys:
