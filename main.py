@@ -51,9 +51,8 @@ def dashboard():
         return render_template('dashboard.html',
                                timers=utils.get_all_timers(),
                                main=session['main'],
-                               role=session['role'], islice=islice)
-    else:
-        return redirect('/')
+                               role=session['role'])
+    return redirect('/')
 
 
 @app.post('/user/create')
