@@ -36,7 +36,7 @@ def get(user_id):
 
 
 def get_all():
-    return dict(db[key]).keys()
+    return db[key]
 
 
 def delete(user_id):
