@@ -10,6 +10,10 @@ def get_user(user_id):
     return None
 
 
+def get_users():
+    return db['users']
+
+
 def change_role(user_id, role):
     users = db['users']
     if user_id in users:

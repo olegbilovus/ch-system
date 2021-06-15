@@ -51,18 +51,15 @@ function createUser () {
   })
 }
 
-function deleteUser () {
-  const user = {
-    user_id: document.getElementById('user_id_delete').value
-  }
+function deleteUser (_user_id) {
   $.ajax({
     url: './user/delete',
     type: 'POST',
-    data: JSON.stringify(user),
+    data: JSON.stringify({ user_id: _user_id }),
     contentType: 'application/json; charset=utf-8',
     timeout: 5000,
     success: function (apiKey) {
-      document.getElementById('apikey_value').innerHTML = ''
+      document.getElementById('userD' + _user_id).remove()
       alert('Deleted')
     },
     error: function (xhr, status, error) {

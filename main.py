@@ -48,11 +48,16 @@ def dashboard():
         utils.logger(
             f'WEB.dashboard: {session["main"]} {session["user_id"]} {session["api_key"][0:5]}'
         )
-        return render_template('dashboard.html',
-                               timers=utils.get_all_timers(),
-                               main=session['main'],
-                               role=session['role'],
-                               islice=islice)
+        role = session['role']
+        return render_template(
+            'dashboard.html',
+            timers=utils.get_all_timers(),
+            users=db_utils.get_users() if role >= 4 else None,
+            roles=utils.ROLES,
+            role=role,
+            role_colors=utils.ROLES_COLORS,
+            main=session['main'],
+            islice=islice)
     return redirect('/')
 
 

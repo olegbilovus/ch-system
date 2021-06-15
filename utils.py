@@ -38,6 +38,9 @@ BOSSES = {
 
 LIST_BOSSES = list(BOSSES)
 
+ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
+ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
+
 
 def login(user_id, api_key):
     users = db['users']
