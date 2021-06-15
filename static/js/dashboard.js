@@ -55,7 +55,7 @@ function deleteUser (_user_id) {
   $.ajax({
     url: './user/delete',
     type: 'POST',
-    data: JSON.stringify({user_id: _user_id}),
+    data: JSON.stringify({ user_id: _user_id }),
     contentType: 'application/json; charset=utf-8',
     timeout: 5000,
     success: function (apiKey) {
