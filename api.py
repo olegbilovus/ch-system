@@ -1,5 +1,6 @@
 import secrets
 import os
+import utils
 
 from replit import db
 
@@ -14,6 +15,17 @@ def create(user_id):
         db[key] = api_keys
         return api_key
     return None
+
+
+def delete(user_id):
+    api_keys = get_all()
+    if user_id in api_keys:
+        for boss in utils.BOSSES:
+            utils.remove_sub(boss, user_id)
+        del api_keys[user_id]
+        db[key] = api_keys
+        return True
+    return False
 
 
 def edit_userid(user_id, new_user_id):
@@ -41,15 +53,6 @@ def get_all():
 
 def get_users():
     return list(dict(db[key]).keys())
-
-
-def delete(user_id):
-    api_keys = get_all()
-    if user_id in api_keys:
-        del api_keys[user_id]
-        db[key] = api_keys
-        return True
-    return False
 
 
 def delete_all():
