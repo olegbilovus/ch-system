@@ -87,5 +87,5 @@ def logger(msg):
     log = f'[{datetime.now()}] {msg}'
     print(log)
    # with open('log.txt', 'a') as logs:
-    #logs.write(log + '\n')
+    # logs.write(log + '\n')
     db['logs'] = db['logs'] + log + '\n'
