@@ -45,7 +45,7 @@ def validate_apikey(user_id, apikey):
 
 def get(user_id):
     return db[key][user_id]
-
+    
 
 def get_all():
     return db[key]
