@@ -3,9 +3,10 @@ from functools import wraps
 
 import utils
 
-all_commands = ['all', 'All', 'soon', 'Soon']
-get_commands = ['g', 'G', 'get', 'Get']
-when_commands = ['w', 'W', 'when', 'When']
+all_commands = ['all', 'soon']
+get_commands = ['g', 'get']
+when_commands = ['w', 'when']
+set_commands = ['s', 'set']
 
 
 def start_chain(f):
@@ -104,6 +105,26 @@ def set_timer(successor=None):
                     msg_to_send['msg'] = f'{boss} is not tracked'
             else:
                 msg_to_send = successor.send(msg)
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
+def set_timer_2(successor=None):
+    msg_to_send = {'type': 'all', 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        msg_to_send['type'] = 'all'
+        if msg.length >= 3 and msg.content[0] in set_commands:
+            boss = msg.content[1]
+            timer = utils.days_hours_mins_to_mins(msg.content[2:])
+            if utils.set_timer(boss, timer):
+                if timer == 0:
+                    msg_to_send['msg'] = f'{boss} timer deleted'
+                else:
+                    msg_to_send['msg'] = f'{boss} set to {timer}m'
+            else:
+                msg_to_send['msg'] = f'{boss} is not tracked'
         elif successor is not None:
             msg_to_send = successor.send(msg)
 

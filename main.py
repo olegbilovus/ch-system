@@ -9,13 +9,10 @@ import server
 import utils
 import routine
 
-WEBHOOK_NAMES = ['Notifier#0000']
+BOTS_NAMES = [os.getenv('BOT1'), os.getenv('BOT2')]
 
 client = discord.Client()
-chain = commands.get_all(
-    commands.reset_timer(
-        commands.get_boss(
-            commands.when_boss(commands.set_timer(commands.default())))))
+chain = commands.reset_timer(commands.set_timer_2(commands.default()))
 
 
 @client.event
@@ -33,26 +30,15 @@ async def on_message(message):
         utils.status(False)
         return
 
-    if message.author == client.user or message.channel.name != 'timer-bot' or str(
-            message.author) in WEBHOOK_NAMES:
+    if message.author == client.user or message.channel.name != 'timer_bot' or str(
+            message.author) in BOTS_NAMES:
         return
-    utils.logger(f'{message.author}: {message.content}')
-    msg = utils.Message(message.content.split(' '), message.author)
+
+    utils.logger(f'{message.author.display_name}: {message.content}')
+    msg = utils.Message(message.content.lower().split(' '), message.author)
     global chain
     msg_to_send = chain.send(msg)
-    try:
-        if msg_to_send['msg'] is not None:
-            if msg_to_send['type'] == 'all':
-                await message.channel.send(msg_to_send['msg'])
-            elif msg_to_send['type'] == 'dm':
-                await message.author.send(msg_to_send['msg'])
-    except discord.errors.HTTPException as e:
-        message_error = str(e)
-        utils.logger(message_error)
-        if '429' in message_error:
-            utils.status(True)
-            time.sleep(utils._429)
-            utils.status(False)
+    utils.logger(msg_to_send)
 
 
 server_s = Thread(target=server.run)

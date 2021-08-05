@@ -68,6 +68,21 @@ def minutes_to_dhm(minutes):
     return '-' + msg
 
 
+def days_hours_mins_to_mins(array_values):
+    days = 0
+    hours = 0
+    minutes = 0
+    for value in array_values:
+        if value[-1] == 'd':
+            days = int(value[:-1])
+        elif value[-1] == 'h':
+            hours = int(value[:-1])
+        elif value[-1] == 'm':
+            minutes = int(value[:-1])
+
+    return (days * 24 * 60) + (hours * 60) + minutes
+
+
 def get_timer(boss):
     if boss in BOSSES:
         res = requests.post(f'{API_URL}/api/get',
@@ -125,8 +140,8 @@ class Message:
 def logger(msg):
     log = f'[{datetime.now()}] {msg}'
     print(log)
-    with open('log.txt', 'a') as logs:
-        logs.write(log + '\n')
+    #with open('log.txt', 'a') as logs:
+    #logs.write(log + '\n')
     db['logs'] = db['logs'] + log + '\n'
 
 
