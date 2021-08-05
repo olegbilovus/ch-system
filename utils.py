@@ -1,5 +1,6 @@
 import requests
 import os
+import time
 
 from replit import db
 from datetime import datetime
@@ -38,8 +39,34 @@ BOSSES = {
 
 LIST_BOSSES = list(BOSSES)
 
+MINUTES_IN_A_DAY = 1440
+
 ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
 ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
+
+
+def minutes_sub(timer):
+    return timer - (round(time.time()) // 60)
+
+
+def minutes_add(timer):
+    return round(time.time()) // 60 + timer
+
+
+def minutes_to_dhm(minutes):
+    minutes = minutes_sub(minutes)
+    negative = False
+    if int(minutes) < 0:
+        minutes *= -1
+        negative = True
+    days = minutes // MINUTES_IN_A_DAY
+    minutes = minutes % MINUTES_IN_A_DAY
+    hours = minutes // 60
+    minutes = minutes % 60
+    msg = f'{str(days) + "d " if days > 0 else ""}{str(hours) + "h " if hours > 0 else ""}{minutes}m'
+    if not negative:
+        return msg
+    return '-' + msg
 
 
 def login(user_id, api_key):
@@ -139,6 +166,4 @@ def boss_reset(api_key, boss, timer):
 def logger(msg):
     log = f'[{datetime.now()}] {msg}'
     print(log)
-    with open('log.txt', 'a') as logs:
-        logs.write(log + '\n')
     db['logs'] = db['logs'] + log + '\n'

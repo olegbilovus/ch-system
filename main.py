@@ -52,12 +52,14 @@ def dashboard():
         return render_template(
             'dashboard.html',
             timers=utils.get_all_timers(),
+            timers_default=utils.BOSSES,
             users=db_utils.get_users() if role >= 4 else None,
             roles=utils.ROLES,
             role=role,
             role_colors=utils.ROLES_COLORS,
             main=session['main'],
-            islice=islice)
+            islice=islice,
+            minutes_to_dhm=utils.minutes_to_dhm)
     return redirect('/')
 
 

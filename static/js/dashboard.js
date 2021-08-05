@@ -115,38 +115,3 @@ function boss_reset (_boss, _timer) {
     }
   })
 }
-
-const MINUTES_IN_A_DAY = 1440
-
-function minutes_sub (timer) {
-  return timer - (Math.round(Math.round(new Date().getTime() / 1000) / 60))
-}
-
-function minutes_to_dhm (_minutes) {
-  if (_minutes) {
-    let minutes = minutes_sub(_minutes)
-    let negative = false
-    if (minutes < 0) {
-      minutes *= -1
-      negative = true
-    }
-    const days = Math.round(minutes / MINUTES_IN_A_DAY)
-    minutes = minutes % MINUTES_IN_A_DAY
-    const hours = Math.round(minutes / 60)
-    minutes = minutes % 60
-    let msg = ''
-    if (days > 0) {
-      msg += days + 'd '
-    }
-    if (hours > 0) {
-      msg += hours + 'h '
-    }
-    msg += minutes + 'm'
-    if (!negative) {
-      return msg
-    }
-    return '-' + msg
-  } else {
-    return 'nd'
-  }
-}
