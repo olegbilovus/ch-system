@@ -3,11 +3,21 @@ import time
 import routine
 import os
 import utils
+import server
+
+from datetime import datetime
+from threading import Thread
+from replit import db
 
 routine.delete_logs()
 
 WEBHOOK = os.getenv('WEBHOOK')
 USERNAME = 'Notifier'
+
+db['status'] = f'Alive since {datetime.now()}'
+
+server_s = Thread(target=server.run)
+server_s.start()
 
 while True:
     utils.logger('NOTIFIER: check')
