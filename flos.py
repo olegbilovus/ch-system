@@ -76,5 +76,5 @@ class Session:
         res = self.session.get(Session.URL2 + Session.BOSSES_ID[boss],
                                headers=Session.headers)
         logger(f'Flos.reset: boss:{boss} success:{res.text}')
-        if (res.text != '1'):
+        if res.text != '1':
             self.login()
