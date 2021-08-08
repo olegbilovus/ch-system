@@ -81,4 +81,3 @@ class Session:
         else:
             logger(f'Flos.reset: boss:{boss} success:{0}')
             self.login()
-
