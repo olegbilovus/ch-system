@@ -75,6 +75,10 @@ class Session:
     def reset_boss(self, boss):
         res = self.session.get(Session.URL2 + Session.BOSSES_ID[boss],
                                headers=Session.headers)
-        logger(f'Flos.reset: boss:{boss} success:{res.text}')
-        if res.text != '1':
+        res = res.text
+        if len(res) == 1:
+            logger(f'Flos.reset: boss:{boss} success:{res}')
+        else:
+            logger(f'Flos.reset: boss:{boss} success:{0}')
             self.login()
+
