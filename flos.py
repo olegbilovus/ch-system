@@ -76,7 +76,7 @@ class Session:
         res = self.session.get(Session.URL2 + Session.BOSSES_ID[boss],
                                headers=Session.headers)
         res = res.text
-        if len(res) == 1:
+        if len(res) == 1 and res == '1':
             logger(f'Flos.reset: boss:{boss} success:{res}')
         else:
             logger(f'Flos.reset: boss:{boss} success:{0}')
