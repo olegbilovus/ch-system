@@ -70,9 +70,9 @@ def logs():
 		    f'WEB.logs: {session["main"]} {session["user_id"]} {session["api_key"][0:5]}'
 		)
 		if session['role'] == 5:
-		    logs = utils.get_logs().split('\n')
-		    logs.reverse()
-		    return render_template('logs.html', logs=logs)
+			logs = utils.get_logs().split('\n')
+			logs.reverse()
+			return render_template('logs.html', logs=logs)
 
 	return redirect('/')
 
