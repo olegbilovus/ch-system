@@ -168,5 +168,6 @@ def logger(msg):
     print(log)
     db['logs'] = db['logs'] + log + '\n'
 
+
 def get_logs():
     return db['logs']
