@@ -70,9 +70,9 @@ def logs():
 		    f'WEB.logs: {session["main"]} {session["user_id"]} {session["api_key"][0:5]}'
 		)
 		if session['role'] == 5:
-			logs = utils.get_logs().split('\n')
-			logs.reverse()
-			return render_template('logs.html', logs=logs)
+			logs_db = utils.get_logs().split('\n')
+			logs_db.reverse()
+			return render_template('logs.html', logs=logs_db)
 
 	return redirect('/')
 
@@ -95,7 +95,7 @@ def create_user():
 				return api_key
 			response.status_code = 409
 			return response
-		elif role == 4 and request_role == 5:
+		if role == 4 and request_role == 5:
 			api_key = utils.create_user(user_id, role, main)
 			if api_key:
 				return api_key
@@ -125,14 +125,14 @@ def delete_user():
 					return response
 				response.status_code = 404
 				return response
-			elif role == 4 and request_role == 5:
+			if role == 4 and request_role == 5:
 				if utils.delete_user(user_id):
 					return response
 				response.status_code = 404
 				return response
-		else:
-			response.status_code = 404
-			return response
+		
+		response.status_code = 404
+		return response
 
 	response.status_code = 401
 	return response
