@@ -8,6 +8,9 @@ import utils
 import requests
 import os
 import time
+import routine
+
+routine.delete_logs()
 
 WEBHOOK = os.getenv('WEBHOOK')
 USERNAME = os.getenv('USERNAME')
