@@ -45,7 +45,7 @@ class Session:
     }
 
     def __init__(self, user, passw, clan):
-        self.session = requests.Session()
+        self.session = None
         self.payload = {
             'user': user,
             'pass': passw,
@@ -54,6 +54,7 @@ class Session:
         }
 
     def login(self):
+        self.session = requests.session()
         req = self.session.post(Session.URL,
                                 headers=Session.headers,
                                 data=self.payload)

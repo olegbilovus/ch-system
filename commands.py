@@ -4,6 +4,9 @@ from flos import Session
 import utils
 import os
 
+session = Session(os.getenv('USER'), os.getenv('PASS'), os.getenv('CLAN'))
+session.login()
+
 all_commands = ['all', 'soon']
 get_commands = ['g', 'get']
 when_commands = ['w', 'when']
@@ -141,6 +144,7 @@ def reset_timer(successor=None):
             if boss in utils.BOSSES:
                 default_timer = utils.BOSSES[boss]
                 utils.set_timer(boss, default_timer)
+                session.reset_boss(boss)
                 msg_to_send['msg'] = f'{boss} reset to {default_timer}m'
             else:
                 msg_to_send['msg'] = f'{boss} is not tracked'

@@ -36,7 +36,7 @@ async def on_message(message):
 
     utils.logger(f'{message.author.display_name}: {message.content}')
     msg = utils.Message(message.content.lower().split(' '), message.author)
-
+    msg_to_send = None
     global chain
     try:
         msg_to_send = chain.send(msg)
