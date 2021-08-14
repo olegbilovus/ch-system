@@ -28,14 +28,19 @@ session.login()
 while True:
     utils.logger(f'{USERNAME}: check')
     res = None
+    msg = 'Error'
     try:
         users = session.get_users()
         users_unauthorized = session.check_admins(users, ADMINS)
-        msg = f'All good, {len(users)} users in Flos'
         if users_unauthorized:
             msg = f'<@&{TAG_ADMINS}> The following users got Admin, an attemp to remove it was made, please verify\n'
             for user in users_unauthorized:
                 msg += f'{user}\n'
+        else:
+            counter = utils.count_roles(users)
+            msg = ''
+            for i in range(0, 7):
+                msg = f'All good\n{utils.count_roles(users)}'
         res = requests.post(WEBHOOK,
                             data={
                                 'username': USERNAME,
