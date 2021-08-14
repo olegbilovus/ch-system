@@ -123,7 +123,6 @@ def set_timer_2(successor=None):
             boss = msg.content[1]
             timer = utils.days_hours_mins_to_mins(msg.content[2:])
             if utils.set_timer(boss, timer):
-                session.reset_boss(boss)
                 if timer == 0:
                     msg_to_send['msg'] = f'{boss} timer deleted'
                 else:
