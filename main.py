@@ -47,10 +47,10 @@ while True:
             session.login()
         except Exception as e:
             utils.logger(str(e))
-            
+
     utils.logger(f'{USERNAME}: res: {res.status_code}, sent: {msg}')
     utils.logger(f'{USERNAME}: finish check')
-    
+
     if res and res.status_code >= 400:
         utils.logger(f'{USERNAME}: 429')
         time.sleep(3600)
