@@ -80,7 +80,7 @@ class Session:
 
         if users_unauthorized:
             for user in users_unauthorized:
-                payload = {'user_id_to_edit': user['flos_id'], 'level': 5}
+                payload = {'user_id_to_edit': user['flos_id'], 'level': 0}
                 self.session.post(Session.URL2,
                                   headers=Session.headers,
                                   data=payload)
