@@ -53,7 +53,8 @@ while True:
         except Exception as e:
             utils.logger(str(e))
 
-    utils.logger(f'{USERNAME}: res: {res.status_code if res else None}, sent: {msg}')
+    utils.logger(
+        f'{USERNAME}: res: {res.status_code if res else None}, sent: {msg}')
     utils.logger(f'{USERNAME}: finish check')
 
     if res and res.status_code >= 400:
