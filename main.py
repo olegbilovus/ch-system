@@ -26,7 +26,7 @@ def login():
     req = request.form
     user = utils.login(req['user_id'], req['api_key'])
     if user:
-        utils.logger(f'WEB.login: {req["user_id"]} {req["api_key"][0:5]}')
+        utils.logger(f'WEB.login: {user["main"]} {req["user_id"]}')
         session['user_id'] = req['user_id']
         session['api_key'] = req['api_key']
         session['main'] = user['main']
@@ -38,6 +38,10 @@ def login():
 
 @app.get('/logout')
 def logout():
+    if 'user_id' in session:
+        utils.logger(
+            f'WEB.logout: {session["main"]} {session["user_id"]}'
+        )
     session.clear()
     return redirect('/')
 
@@ -46,7 +50,7 @@ def logout():
 def dashboard():
     if 'user_id' in session:
         utils.logger(
-            f'WEB.dashboard: {session["main"]} {session["user_id"]} {session["api_key"][0:5]}'
+            f'WEB.dashboard: {session["main"]} {session["user_id"]}'
         )
         role = session['role']
         return render_template(
@@ -67,7 +71,7 @@ def dashboard():
 def logs():
     if 'user_id' in session:
         utils.logger(
-            f'WEB.logs: {session["main"]} {session["user_id"]} {session["api_key"][0:5]}'
+            f'WEB.logs: {session["main"]} {session["user_id"]}'
         )
         if session['role'] == 5:
             logs_db = utils.get_logs().split('\n')
@@ -84,7 +88,7 @@ def create_user():
     if 'user_id' in session and request_role >= 4:
         req = request.json
         utils.logger(
-            f'WEB.user.create: {session["main"]} {session["user_id"]} {session["api_key"][0:5]} {req}'
+            f'WEB.user.create: {session["main"]} {session["user_id"]} {req}'
         )
         role = req['role']
         user_id = ''.join(req['user_id'].split())
@@ -114,7 +118,7 @@ def delete_user():
     if 'user_id' in session and request_role >= 4:
         req = request.json
         utils.logger(
-            f'WEB.user.delete: {session["main"]} {session["user_id"]} {session["api_key"][0:5]} {req}'
+            f'WEB.user.delete: {session["main"]} {session["user_id"]} {req}'
         )
         user_id = req['user_id']
         user = db_utils.get_user(user_id)
@@ -144,7 +148,7 @@ def boss_sub():
     if 'user_id' in session:
         req = request.json
         utils.logger(
-            f'WEB.boss.sub: {session["main"]} {session["user_id"]} {session["api_key"][0:5]} {req}'
+            f'WEB.boss.sub: {session["main"]} {session["user_id"]} {req}'
         )
         if utils.boss_sub(session['api_key'], req['boss']):
             response.status_code = 200
@@ -161,7 +165,7 @@ def boss_unsub():
     if 'user_id' in session:
         req = request.json
         utils.logger(
-            f'WEB.boss.unsub: {session["main"]} {session["user_id"]} {session["api_key"][0:5]} {req}'
+            f'WEB.boss.unsub: {session["main"]} {session["user_id"]} {req}'
         )
         if utils.boss_unsub(session['api_key'], req['boss']):
             response.status_code = 200
@@ -178,7 +182,7 @@ def boss_reset():
     if 'user_id' in session:
         req = request.json
         utils.logger(
-            f'WEB.boss.set: {session["main"]} {session["user_id"]} {session["api_key"][0:5]} {req}'
+            f'WEB.boss.set: {session["main"]} {session["user_id"]} {req}'
         )
         if utils.boss_reset(session['api_key'], req['boss'], req['timer']):
             response.status_code = 200

@@ -109,6 +109,7 @@ function boss_reset (_boss, _timer) {
     timeout: 5000,
     success: function (apiKey) {
       alert(_boss + ' reset')
+      location.reload()
     },
     error: function (xhr, status, error) {
       alert('Error')

@@ -3,6 +3,7 @@
 
 <head>
 	<meta charset="UTF-8">
+	<meta http-equiv="refresh" content="300">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
     <script src="static/js/dashboard.js">
@@ -50,7 +51,7 @@
                                 <div class="col-xl-4 mb-2">
                                 <select id="role" class="form-select">
                                     <option value="1">Recruit</option>
-                                    <option value="2">Clansman</option>
+                                    <option selected value="2">Clansman</option>
                                     <option value="3">Guardian</option>
                                     {% if role >= 5 %}
                                     <option value="4">General</option>
@@ -88,7 +89,7 @@
                                         <th scope="col">Delete</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="users_table">
                                         {%- for user_id, user in users.items() -%}
                                         <tr id="userD{{user_id}}">
                                         <th scope="row">{{user_id}}</th>
@@ -288,7 +289,7 @@
         </div>
     </div>
     {%- if role == 5 -%}
-    <div class="text-center">
+    <div class="pb-2 pt-2  text-center">
         <form action="/logs">
             <button type="submit" class="btn btn-success">Logs</button>
         </form>
