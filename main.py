@@ -9,7 +9,7 @@ import server
 import utils
 import routine
 
-BOTS_NAMES = [os.getenv('BOT1'), os.getenv('BOT2')]
+BOTS_NAMES = os.getenv('BOTS').split(',')
 
 client = discord.Client()
 chain = commands.reset_timer(commands.set_timer_2(commands.default()))
