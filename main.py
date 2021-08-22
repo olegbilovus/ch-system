@@ -23,6 +23,7 @@ while True:
     utils.logger('NOTIFIER: check')
     timers = utils.get_all_timers()
     subs = utils.get_subs()
+    res = None
     if timers is not None and subs is not None:
         msg = ''
         for boss, timer in timers.items():
@@ -39,7 +40,6 @@ while True:
                         msg += '\n'
                     else:
                         msg += f'{boss} due in {utils.minutes_to_dhm(timer)}\n'
-        res = None
         if len(msg) > 0:
             res = requests.post(
                 WEBHOOK, data={'username': USERNAME, 'content': msg})

@@ -76,11 +76,7 @@ def get_all_timers():
 def get_subs():
     res = requests.post(f'{API_URL}/api/getsubs',
                         headers={'X-ApiKey': API_KEY})
-    try:
-        return res.json()
-    except Exception as e:
-        logger(e)
-        return None
+    return res.json()
 
 
 def logger(msg):
