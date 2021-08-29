@@ -23,7 +23,7 @@ while True:
     utils.logger('NOTIFIER: check')
     timers = None
     subs = None
-    try: 
+    try:
         timers = utils.get_all_timers()
         subs = utils.get_subs()
     except Exception as e:
