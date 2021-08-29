@@ -21,8 +21,13 @@ server_s.start()
 
 while True:
     utils.logger('NOTIFIER: check')
-    timers = utils.get_all_timers()
-    subs = utils.get_subs()
+    timers = None
+    subs = None
+    try: 
+        timers = utils.get_all_timers()
+        subs = utils.get_subs()
+    except Exception as e:
+        utils.logger(str(e))
     res = None
     if timers is not None and subs is not None:
         msg = ''
@@ -45,8 +50,8 @@ while True:
                 WEBHOOK, data={'username': USERNAME, 'content': msg})
             utils.logger(f'NOTIFIER: res: {res.status_code}, sent: {msg}')
     utils.logger('NOTIFIER: finish check')
-    if res and res.status_code >= 400:
+    if res and res.status_code == 429:
         utils.logger('NOTIFIER: 429')
-        time.sleep(3600)
+        os.system('kill 1')
     else:
         time.sleep(300)

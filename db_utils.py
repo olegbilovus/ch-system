@@ -14,3 +14,5 @@ def delete_logs():
         db['logs'] = ''
         utils.logger('DL: deleted logs')
         db['last_delete'] = str(round(time.time()))
+
+write_logs_file('.tmp.txt')
