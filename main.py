@@ -3,15 +3,15 @@ from replit import db
 
 import os
 import time
-import discord
 import commands
 import server
 import utils
 import routine
+import nextcord
 
 BOTS_NAMES = os.getenv('BOTS').split(',')
 
-client = discord.Client()
+client = nextcord.Client()
 chain = commands.reset_timer(commands.set_timer_2(commands.default()))
 
 
