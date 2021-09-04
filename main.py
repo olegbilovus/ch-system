@@ -52,7 +52,7 @@ server_s.start()
 
 try:
     client.run(os.getenv('TOKEN'))
-except discord.errors.HTTPException as e:
+except nextcord.errors.HTTPException as e:
     message_error = str(e)
     utils.logger(message_error)
     if '429' in message_error:
