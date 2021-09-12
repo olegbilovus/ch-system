@@ -70,8 +70,8 @@ function deleteUser (_user_id) {
 
 function changeRole (_user_id, _role) {
   const user = {
-      user_id: _user_id,
-      role : parseInt(_role.value)
+    user_id: _user_id,
+    role: parseInt(_role.value)
   }
   $.ajax({
     url: './user/change-role',
