@@ -9,7 +9,6 @@
     <script src="static/js/dashboard.js">
 	</script>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-	</script>
     <script>
         window.onload = function(){
             for (boss in BOSSES){
@@ -32,7 +31,7 @@
         </div>
     </nav>
 	<div class="container text-center mt-4">
-    {%- if role >= 4 -%}   
+    {%- if role >= 5 -%}   
         <div class="card col-12 mb-2">
             <h5 class="card-header text-center">Users</h5>
             <div class="card-body">
@@ -49,20 +48,20 @@
                             aria-labelledby="headingOneUser" data-bs-parent="#accordionUser">
                             <div class="accordion-body row mx-auto">
                                 <div class="col-xl-4 mb-2">
-                                <select id="role" class="form-select">
-                                    <option value="1">Recruit</option>
-                                    <option selected value="2">Clansman</option>
-                                    <option value="3">Guardian</option>
-                                    {% if role >= 5 %}
-                                    <option value="4">General</option>
-                                    {% endif %}
-                                </select>
+                                    <select id="role" class="form-select">
+                                        <option value="1">Recruit</option>
+                                        <option selected value="2">Clansman</option>
+                                        <option value="3">Guardian</option>
+                                        {% if role >= 5 %}
+                                        <option value="4">General</option>
+                                        {% endif %}
+                                    </select>
                                 </div>
                                 <div class="col-xl-4 mb-2">
                                     <input class="form-control" type="text" id="user_id_create" required placeholder="User ID">
                                 </div>
                                 <div class="col-xl-4 mb-4">
-                                    <input type="text" id="main" required class="form-control" required placeholder="Main account name">
+                                    <input type="text" id="main" class="form-control" required placeholder="Main account name">
                                 </div>
                                 <button id="button_create_user" type="button"  class="btn btn-lg btn-success" onclick="createUser()">Create</button>
                                 <div class="badge badge-secondary text-monospace text-primary text-wrap d-none mt-1" id="apikey_value"></div>
@@ -94,7 +93,15 @@
                                         <tr id="userD{{user_id}}">
                                         <th scope="row">{{user_id}}</th>
                                         <td>{{user['main']}}</td>
-                                        <td style="color:{{role_colors[user['role'] - 1]}}">{{roles[user['role'] - 1]}}</td>
+                                        <td>
+                                            <div class="col-xl-4 mb-2">
+                                                <select{% if user['role'] >= 5%} disabled{% endif %} class="form-select" onchange="changeRole('{{user_id}}', this)">
+                                                    {%- for count, role in enumerate(roles, start=1) -%}
+                                                    <option{% if count == user['role'] %} selected{% endif %} value="{{count}}">{{role}}</option>>
+                                                    {% endfor %}
+                                                </select>   
+                                            </div>
+                                        </td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-lg" onclick="deleteUser('{{user_id}}')">Delete</button>
                                         </td>

@@ -68,6 +68,27 @@ function deleteUser (_user_id) {
   })
 }
 
+function changeRole (_user_id, _role) {
+  const user = {
+      user_id: _user_id,
+      role : parseInt(_role.value)
+  }
+  $.ajax({
+    url: './user/change-role',
+    type: 'POST',
+    data: JSON.stringify(user),
+    contentType: 'application/json; charset=utf-8',
+    timeout: 5000,
+    success: function (apiKey) {
+      alert('Role changed to ' + _role.options[_role.selectedIndex].text)
+      location.reload()
+    },
+    error: function (xhr, status, error) {
+      alert('Error ' + xhr.status)
+    }
+  })
+}
+
 function boss_sub (_boss) {
   $.ajax({
     url: './boss/sub',
