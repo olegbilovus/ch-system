@@ -152,8 +152,8 @@ def change_role():
         if user and user['role'] <= 4:
             if db_utils.change_role(user_id, role):
                 return response
-            response.status_code = 404
-            return response
+        response.status_code = 404
+        return response
     else:
         response.status_code = 401
         return response
