@@ -154,9 +154,8 @@ def change_role():
                 return response
         response.status_code = 404
         return response
-    else:
-        response.status_code = 401
-        return response
+    response.status_code = 401
+    return response
 
 
 @app.post('/boss/sub')
