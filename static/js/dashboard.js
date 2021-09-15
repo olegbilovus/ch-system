@@ -51,7 +51,7 @@ function createUser () {
   })
 }
 
-function deleteUser (_user_id) {
+function deleteUserConfirmed (_user_id) {
   $.ajax({
     url: './user/delete',
     type: 'POST',
@@ -65,6 +65,28 @@ function deleteUser (_user_id) {
     error: function (xhr, status, error) {
       alert('Error')
     }
+  })
+}
+
+function deleteUser (_user_id) {
+  bootbox.confirm({
+      message: 'Are you sure you want to delete ' + _user_id + '?',
+      buttons: {
+          confirm: {
+              label: 'DELETE',
+              className: 'btn-danger'
+          },
+          cancel: {
+              label: 'No',
+              className: 'btn-secondary'
+          }
+      },
+      callback: function (result){
+          if (result){
+              deleteUserConfirmed(_user_id)
+          }
+      }
+      
   })
 }
 
@@ -121,7 +143,7 @@ function boss_unsub (_boss) {
   })
 }
 
-function boss_reset (_boss, _timer) {
+function boss_reset_confirmed (_boss, _timer) {
   $.ajax({
     url: './boss/set',
     type: 'POST',
@@ -135,5 +157,27 @@ function boss_reset (_boss, _timer) {
     error: function (xhr, status, error) {
       alert('Error')
     }
+  })
+}
+
+function boss_reset (_boss, _timer) {
+  bootbox.confirm({
+      message: 'Are you sure you want to reset ' + _boss + '?',
+      buttons: {
+          confirm: {
+              label: 'Yes',
+              className: 'btn-danger'
+          },
+          cancel: {
+              label: 'No',
+              className: 'btn-secondary'
+          }
+      },
+      callback: function (result){
+          if (result){
+              boss_reset_confirmed(_boss, _timer)
+          }
+      }
+      
   })
 }
