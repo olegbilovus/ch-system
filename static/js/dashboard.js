@@ -70,23 +70,23 @@ function deleteUserConfirmed (_user_id) {
 
 function deleteUser (_user_id) {
   bootbox.confirm({
-      message: 'Are you sure you want to delete ' + _user_id + '?',
-      buttons: {
-          confirm: {
-              label: 'DELETE',
-              className: 'btn-danger'
-          },
-          cancel: {
-              label: 'No',
-              className: 'btn-secondary'
-          }
+    message: 'Are you sure you want to delete ' + _user_id + '?',
+    buttons: {
+      confirm: {
+        label: 'DELETE',
+        className: 'btn-danger'
       },
-      callback: function (result){
-          if (result){
-              deleteUserConfirmed(_user_id)
-          }
+      cancel: {
+        label: 'No',
+        className: 'btn-secondary'
       }
-      
+    },
+    callback: function (result) {
+      if (result) {
+        deleteUserConfirmed(_user_id)
+      }
+    }
+
   })
 }
 
@@ -162,22 +162,22 @@ function boss_reset_confirmed (_boss, _timer) {
 
 function boss_reset (_boss, _timer) {
   bootbox.confirm({
-      message: 'Are you sure you want to reset ' + _boss + '?',
-      buttons: {
-          confirm: {
-              label: 'Yes',
-              className: 'btn-danger'
-          },
-          cancel: {
-              label: 'No',
-              className: 'btn-secondary'
-          }
+    message: 'Are you sure you want to reset ' + _boss + '?',
+    buttons: {
+      confirm: {
+        label: 'Yes',
+        className: 'btn-danger'
       },
-      callback: function (result){
-          if (result){
-              boss_reset_confirmed(_boss, _timer)
-          }
+      cancel: {
+        label: 'No',
+        className: 'btn-secondary'
       }
-      
+    },
+    callback: function (result) {
+      if (result) {
+        boss_reset_confirmed(_boss, _timer)
+      }
+    }
+
   })
 }
