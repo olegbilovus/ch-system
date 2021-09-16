@@ -131,7 +131,7 @@ def delete_user(user_id):
             db['users'] = users
             return True
     return False
-    
+
 
 def change_role(user_id, role):
     users = db['users']
