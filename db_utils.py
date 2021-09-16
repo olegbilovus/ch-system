@@ -13,7 +13,7 @@ def get_user(user_id):
 def get_users():
     return db['users']
 
-    
+
 def create_user_local(user_id, role, main):
     users = db['users']
     if user_id not in users:
