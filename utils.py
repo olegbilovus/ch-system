@@ -131,6 +131,15 @@ def delete_user(user_id):
             db['users'] = users
             return True
     return False
+    
+
+def change_role(user_id, role):
+    users = db['users']
+    if user_id in users:
+        users[user_id]['role'] = role
+        db['users'] = users
+        return True
+    return False
 
 
 def boss_sub(api_key, boss):

@@ -13,11 +13,11 @@ def get_user(user_id):
 def get_users():
     return db['users']
 
-
-def change_role(user_id, role):
+    
+def create_user_local(user_id, role, main):
     users = db['users']
-    if user_id in users:
-        users[user_id]['role'] = role
+    if user_id not in users:
+        users[user_id] = {'role': role, 'main': main}
         db['users'] = users
         return True
     return False
