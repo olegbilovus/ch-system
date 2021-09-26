@@ -1,12 +1,12 @@
+import os
 import requests
 import time
 import routine
-import os
 import utils
-import server
+import server 
 
-from datetime import datetime
 from threading import Thread
+from datetime import datetime
 from replit import db
 
 routine.delete_logs()
@@ -50,7 +50,7 @@ while True:
                 WEBHOOK, data={'username': USERNAME, 'content': msg})
             utils.logger(f'NOTIFIER: res: {res.status_code}, sent: {msg}')
     utils.logger('NOTIFIER: finish check')
-    if res and res.status_code == 429:
+    if res and (res.status_code == 429):
         utils.logger('NOTIFIER: 429')
         os.system('kill 1')
     else:

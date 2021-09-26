@@ -1,7 +1,8 @@
 from flask import Flask
-from replit import db
 from waitress import serve
 from paste.translogger import TransLogger
+from replit import db
+
 
 app = Flask('')
 
