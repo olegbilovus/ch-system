@@ -1,7 +1,6 @@
 from threading import Thread
 from replit import db
 from datetime import datetime
-from flos import Session
 
 import server
 import utils
@@ -13,52 +12,51 @@ import routine
 routine.delete_logs()
 
 WEBHOOK = os.getenv('WEBHOOK')
-USERNAME = os.getenv('USERNAME')
-ADMINS = os.getenv('ADMINS').split(',')
-TAG_ADMINS = os.getenv('TAG_ADMINS')
+WEBHOOK2 = os.getenv('WEBHOOK2')
+TAGS = os.getenv('TAGS').split(',')
+URL3 = os.getenv('URL3')
 
 db['status'] = f'Alive since {datetime.now()}'
 
 server_s = Thread(target=server.run)
 server_s.start()
 
-session = Session(os.getenv('USER'), os.getenv('PASS'), os.getenv('CLAN'))
-session.login()
-
 while True:
-    utils.logger(f'{USERNAME}: check')
-    res = None
-    msg = 'Error'
-    try:
-        users = session.get_users()
-        users_unauthorized = session.check_admins(users, ADMINS)
-        if users_unauthorized:
-            msg = f'<@&{TAG_ADMINS}> The following users got Admin, an attemp to remove it was made, please verify\n'
-            for user in users_unauthorized:
-                msg += f'{user}\n'
-        else:
-            counter = utils.count_roles(users)
-            msg = ''
-            for i in range(0, 7):
-                msg = f'All good\n{utils.count_roles(users)}'
-        res = requests.post(WEBHOOK,
-                            data={
-                                'username': USERNAME,
-                                'content': msg
-                            })
-    except Exception as e:
-        utils.logger(str(e))
-        try:
-            session.login()
-        except Exception as e:
-            utils.logger(str(e))
+    json = requests.get(URL3).json()
+    members = json['RankingDataList']
+    members_db = db['ebk_members']
+    str_to_send = ''
+    new_members = False
+    for member in members:
 
-    utils.logger(
-        f'{USERNAME}: res: {res.status_code if res else None}, sent: {msg}')
-    utils.logger(f'{USERNAME}: finish check')
+        name = member['Name']
+        level = member['Level']
+        class_name = member['ClassName']
 
-    if res and res.status_code >= 400:
-        utils.logger(f'{USERNAME}: 429')
-        time.sleep(3600)
-    else:
-        time.sleep(300)
+        if name not in members_db:
+            new_members = True
+            members_db.append(name)
+            str_to_send += '--'
+
+        str_to_send += f'{name} {class_name} {level}\n'
+
+    str_to_send += f'number members: {json["TotalResults"]}'
+
+    if new_members:
+        db['ebk_members'] = members_db
+        str_to_send += '\n@everyone'
+
+    res1 = requests.post(WEBHOOK,
+                         data={
+                             'username': 'ebk-check',
+                             'content': str_to_send
+                         })
+    res2 = requests.post(WEBHOOK2,
+                         data={
+                             'username': 'ebk-check',
+                             'content': str_to_send
+                         })
+
+    utils.logger(f'{res1.status_code}, {res2.status_code}\n{str_to_send}')
+
+    time.sleep(3600)
