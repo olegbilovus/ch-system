@@ -1,0 +1,9 @@
+version = 1
+
+[[analyzers]]
+name = "python"
+enabled = true
+
+[[transformers]]
+name = "autopep8"
+enabled = true
