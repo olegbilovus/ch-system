@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "repl_python3_ch-security-routine"
+name = "repl_python3_ch-discordbot"
 version = "0.1.0"
 description = ""
 authors = ["ArgoPanoptes <<>>"]
@@ -8,11 +8,10 @@ authors = ["ArgoPanoptes <<>>"]
 python = "^3.8"
 bs4 = "^0.0.1"
 cutandpaste = "^0.4.0"
-Flask = "^2.0.1"
+Flask = "^2.0.2"
 Js2Py = "^0.71"
 replit = "^3.2.4"
 waitress = "^2.0.0"
-Paste = "^3.5.0"
 
 [tool.poetry.dev-dependencies]
 
