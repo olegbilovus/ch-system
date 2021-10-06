@@ -161,6 +161,14 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [[package]]
+name = "cutandpaste"
+version = "0.4.0"
+description = "Supercharged split and join operations, inspired on the eponymous R functions."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "flask"
 version = "2.0.2"
 description = "A simple framework for building complex web applications."
@@ -437,7 +445,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "2c7c8a05f918a51fbbc5451c1dd04fcec3c1b817592cb2ce0543ea6bd110b99f"
+content-hash = "bd02ddc04256de983901b947cb53de3f7c46f9f4165e4bab899327e0514ded16"
 
 [metadata.files]
 aiodns = [
@@ -662,6 +670,9 @@ click = [
 colorama = [
     {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
     {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+]
+cutandpaste = [
+    {file = "cutandpaste-0.4.0.tar.gz", hash = "sha256:47ff5ee305812fe977406ab1018432a1196c98912bb004046ff554efeb637966"},
 ]
 flask = [
     {file = "Flask-2.0.2-py3-none-any.whl", hash = "sha256:cb90f62f1d8e4dc4621f52106613488b5ba826b2e1e10a33eac92f723093ab6a"},

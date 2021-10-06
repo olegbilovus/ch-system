@@ -17,6 +17,7 @@ aiodns = "^3.0.0"
 Brotli = "^1.0.9"
 cchardet = "^2.1.7"
 orjson = "^3.6.4"
+cutandpaste = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
 
