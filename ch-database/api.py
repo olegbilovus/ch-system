@@ -10,7 +10,7 @@ key = os.getenv('KEY')
 def create(user_id):
     api_keys = get_all()
     if user_id not in api_keys:
-        api_key = secrets.token_hex(128)
+        api_key = secrets.token_hex(4)
         api_keys[user_id] = api_key
         db[key] = api_keys
         return api_key
