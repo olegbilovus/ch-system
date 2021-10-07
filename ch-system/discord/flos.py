@@ -1,7 +1,7 @@
 import js2py
 import os
 from bs4 import BeautifulSoup as bs
-from utils import logger
+import utils
 import requests
 
 
@@ -71,14 +71,14 @@ class Session:
         token = sucuri_cloudproxy_cookie.split("=")[1].replace(";path", "")
 
         self.session.cookies.set(sucuri_uuid, token, domain=Session.DOMAIN)
-        logger('Flos logged')
+        utils.logger('Flos logged')
 
     def reset_boss(self, boss):
         res = self.session.get(Session.URL2 + Session.BOSSES_ID[boss],
                                headers=Session.headers)
         res = res.text
         if len(res) == 1 and res == '1':
-            logger(f'Flos.reset: boss:{boss} success:{res}')
+            utils.logger(f'Flos.reset: boss:{boss} success:{res}')
         else:
-            logger(f'Flos.reset: boss:{boss} success:{0}')
+            utils.logger(f'Flos.reset: boss:{boss} success:{0}')
             self.login()
