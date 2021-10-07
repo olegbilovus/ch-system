@@ -10,8 +10,8 @@ import db_utils
 
 routine.delete_logs()
 
-app = Flask('', template_folder='ch-web/templates',
-            static_folder='ch-web/static')
+app = Flask('', template_folder='ch-system/web/templates',
+            static_folder='ch-system/web/static')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
