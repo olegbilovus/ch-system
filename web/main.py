@@ -1,17 +1,16 @@
+import os
+import api
+
 from flask import Flask, render_template, session, request, redirect, Response
 from waitress import serve
 from paste.translogger import TransLogger
 from itertools import islice
-
-import utils
-import os
-import routine
-import db_utils
+from utility import utils, routine
 
 routine.delete_logs()
 
-app = Flask('', template_folder='ch-web/templates',
-            static_folder='ch-web/static')
+app = Flask('', template_folder='web/templates',
+            static_folder='web/static')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
@@ -25,7 +24,7 @@ def home():
 @app.post('/login')
 def login():
     req = request.form
-    user = utils.login(req['user_id'], req['api_key'])
+    user = api.login(req['user_id'], req['api_key'])
     if user:
         utils.logger(f'WEB.login: {user["main"]} {req["user_id"]}')
         session['user_id'] = req['user_id']
@@ -54,10 +53,10 @@ def dashboard():
             'dashboard.html',
             timers=utils.get_all_timers(),
             timers_default=utils.BOSSES,
-            users=db_utils.get_users() if role >= 4 else None,
-            roles=utils.ROLES,
+            users=api.get_users() if role >= 4 else None,
+            roles=api.ROLES,
             role=role,
-            role_colors=utils.ROLES_COLORS,
+            role_colors=api.ROLES_COLORS,
             main=session['main'],
             islice=islice,
             enumerate=enumerate,
@@ -89,13 +88,13 @@ def create_user():
         user_id = ''.join(req['user_id'].split())
         main = req['main']
         if role <= 3:
-            api_key = utils.create_user(user_id, role, main)
+            api_key = api.create_user(user_id, role, main)
             if api_key:
                 return api_key
             response.status_code = 409
             return response
         if role == 4 and request_role >= 5:
-            api_key = utils.create_user(user_id, role, main)
+            api_key = api.create_user(user_id, role, main)
             if api_key:
                 return api_key
             response.status_code = 409
@@ -115,16 +114,16 @@ def delete_user():
         utils.logger(
             f'WEB.user.delete: {session["main"]} {session["user_id"]} {req}')
         user_id = req['user_id']
-        user = db_utils.get_user(user_id)
+        user = api.get_user(user_id)
         if user:
             role = user['role']
             if role <= 3:
-                if utils.delete_user(user_id):
+                if api.delete_user(user_id):
                     return response
                 response.status_code = 404
                 return response
             if role == 4 and request_role >= 5:
-                if utils.delete_user(user_id):
+                if api.delete_user(user_id):
                     return response
                 response.status_code = 404
                 return response
@@ -148,10 +147,10 @@ def change_role():
             f'WEB.user.change-role: {session["main"]} {session["user_id"]} {req}'
         )
         user_id = req['user_id']
-        user = db_utils.get_user(user_id)
+        user = api.get_user(user_id)
         print(user, req)
         if user and user['role'] <= 4:
-            if utils.change_role(user_id, role):
+            if api.change_role(user_id, role):
                 return response
         response.status_code = 404
         return response
@@ -166,7 +165,7 @@ def boss_sub():
         req = request.json
         utils.logger(
             f'WEB.boss.sub: {session["main"]} {session["user_id"]} {req}')
-        if utils.boss_sub(session['api_key'], req['boss']):
+        if api.boss_sub(session['api_key'], req['boss']):
             response.status_code = 200
         else:
             response.status_code = 404
@@ -182,7 +181,7 @@ def boss_unsub():
         req = request.json
         utils.logger(
             f'WEB.boss.unsub: {session["main"]} {session["user_id"]} {req}')
-        if utils.boss_unsub(session['api_key'], req['boss']):
+        if api.boss_unsub(session['api_key'], req['boss']):
             response.status_code = 200
         else:
             response.status_code = 404
@@ -200,9 +199,9 @@ def boss_reset():
             f'WEB.boss.set: {session["main"]} {session["user_id"]} {req}')
         boss = req['boss']
         timer = req['timer']
-        if utils.boss_reset(session['api_key'], boss, timer):
+        if api.boss_reset(session['api_key'], boss, timer):
             try:
-                utils.web_to_discord(boss, timer)
+                api.web_to_discord(boss, timer)
             except Exception as e:
                 utils.logger(e)
             response.status_code = 200
