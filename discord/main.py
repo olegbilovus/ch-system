@@ -1,14 +1,12 @@
-from threading import Thread
-from replit import db
-
 import os
 import time
 import commands
-import server
-from utility import utils
-import routine
 import nextcord
 import requests
+
+from threading import Thread
+from replit import db
+from utility import utils, routine, keep_alive
 
 BOTS_NAMES = os.getenv('BOTS').split(',')
 API_URL2 = os.getenv('API_URL2')
@@ -61,7 +59,7 @@ async def on_member_remove(member):
         utils.logger(f'{member} deleted')
 
 
-server_s = Thread(target=server.run)
+server_s = Thread(target=keep_alive.run)
 server_s.start()
 
 try:

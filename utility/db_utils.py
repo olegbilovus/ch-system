@@ -1,6 +1,20 @@
+import time
+
 from replit import db
 from utility import utils
-import time
+
+
+
+def get_all_key_values():
+    db_kv = {}
+    for key in db.keys():
+        db_kv[key] = db[key]
+    return db_kv
+
+
+def print_db(db_kv):
+    for key, value in db_kv.items():
+        print(f'{key}: {value}')
 
 
 def write_logs_file(file_name='tmp.txt'):
