@@ -1,14 +1,13 @@
+import os
+import api
+
 from flask import Flask, request, Response, jsonify
 from replit import db
 from waitress import serve
 from paste.translogger import TransLogger
 from secrets import compare_digest
 from datetime import datetime
-
-import utils
-import routine
-import os
-import api
+from utility import utils, routine
 
 NOTIFIER_NAME = os.getenv('NOTIFIER')
 WEB_NAME = os.getenv('WEB')
@@ -46,7 +45,7 @@ def api_get():
         req_bosses = json['bosses']
         utils.logger(f'API.get: {user} {json}')
         for boss in req_bosses:
-            res_bosses[boss] = utils.get_timer(boss)
+            res_bosses[boss] = api.get_timer(boss)
         return jsonify(res_bosses)
     response = Response()
     response.status_code = 401
@@ -61,7 +60,7 @@ def api_set():
     if user is not None:
         req_boss = request.json
         utils.logger(f'API.set: {user} {request.json}')
-        if utils.set_timer(str(req_boss['boss']), req_boss['timer']):
+        if api.set_timer(str(req_boss['boss']), req_boss['timer']):
             response.status_code = 200
         else:
             response.status_code = 404
@@ -79,7 +78,7 @@ def api_sub():
     if user is not None:
         req = request.json
         utils.logger(f'API.sub: {user} {request.json}')
-        if utils.add_sub(req['boss'], user):
+        if api.add_sub(req['boss'], user):
             response.status_code = 200
         else:
             response.status_code = 404
@@ -97,7 +96,7 @@ def api_unsub():
     if user is not None:
         req = request.json
         utils.logger(f'API.unsub: {user} {request.json}')
-        if utils.remove_sub(req['boss'], user):
+        if api.remove_sub(req['boss'], user):
             response.status_code = 200
         else:
             response.status_code = 404
@@ -116,7 +115,7 @@ def api_getsubs():
         utils.logger(f'API.getsubs: {user}')
         subs = {}
         for boss in utils.BOSSES:
-            subs[boss] = list(utils.get_subs(boss))
+            subs[boss] = list(api.get_subs(boss))
         return jsonify(subs)
     response.status_code = 401
 

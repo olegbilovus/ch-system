@@ -15,3 +15,13 @@ def delete_logs():
     utils.logger(f'DL: check, days: {days}')
     if days >= 10:
         db_utils.delete_logs()
+
+
+def delete_old_timers():
+    utils.logger('DOT: check')
+    for key in db.keys():
+        if key.isdigit() and key in utils.BOSSES:
+            timer = db[key]
+            if timer is not None and utils.minutes_sub(timer) <= -180:
+                utils.logger(f'DOT: deleted {key}')
+                db[key] = None

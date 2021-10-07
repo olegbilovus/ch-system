@@ -4,7 +4,6 @@ from replit import db
 from utility import utils
 
 
-
 def get_all_key_values():
     db_kv = {}
     for key in db.keys():
@@ -15,6 +14,10 @@ def get_all_key_values():
 def print_db(db_kv):
     for key, value in db_kv.items():
         print(f'{key}: {value}')
+
+
+def get_all_bosses():
+    return {boss: timer for (boss, timer) in db.items() if boss in utils.BOSSES}
 
 
 def write_logs_file(file_name='tmp.txt'):
