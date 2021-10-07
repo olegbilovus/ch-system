@@ -6,7 +6,6 @@ from bs4 import BeautifulSoup as bs
 from utility import utils
 
 
-
 class Session:
     headers = {
         'user-agent':

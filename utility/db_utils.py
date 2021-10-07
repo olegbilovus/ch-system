@@ -4,7 +4,6 @@ from replit import db
 from utility import utils
 
 
-
 def get_all_key_values():
     db_kv = {}
     for key in db.keys():
