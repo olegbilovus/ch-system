@@ -43,6 +43,7 @@ LIST_BOSSES = list(BOSSES)
 
 MINUTES_IN_A_DAY = 1440
 
+SUB_SUFFIX = 's'
 
 def minutes_sub(timer):
     return timer - (round(time.time()) // 60)
