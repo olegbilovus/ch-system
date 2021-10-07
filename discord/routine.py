@@ -2,7 +2,7 @@ from replit import db
 from datetime import date
 import db_utils
 
-import utils
+from utility import utils
 import time
 
 

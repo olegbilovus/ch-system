@@ -3,3 +3,6 @@
 log.txt
 tmp.txt
 .replit
+build/*
+dist/*
+*.egg-info/*

@@ -1,7 +1,7 @@
 from datetime import datetime
 from functools import wraps
 from flos import Session
-import utils
+from utility import utils
 import os
 
 #session = Session(os.getenv('USER'), os.getenv('PASS'), os.getenv('CLAN'))
