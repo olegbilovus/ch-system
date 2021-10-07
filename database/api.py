@@ -108,5 +108,3 @@ def remove_sub(boss, user_id):
         db[boss + utils.SUB_SUFFIX] = subs
         return True
     return False
-
-
