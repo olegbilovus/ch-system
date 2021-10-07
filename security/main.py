@@ -1,13 +1,11 @@
-from threading import Thread
-from replit import db
-from datetime import datetime
-
-import server
-import utils
 import requests
 import os
 import time
-import routine
+
+from threading import Thread
+from replit import db
+from datetime import datetime
+from utility import utils, routine, keep_alive
 
 routine.delete_logs()
 
@@ -18,7 +16,7 @@ URL3 = os.getenv('URL3')
 
 db['status'] = f'Alive since {datetime.now()}'
 
-server_s = Thread(target=server.run)
+server_s = Thread(target=keep_alive.run)
 server_s.start()
 
 while True:
