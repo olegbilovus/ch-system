@@ -122,6 +122,12 @@ def set_timer(boss, timer):
     return False
 
 
+def get_subs():
+    res = requests.post(f'{API_URL}/api/getsubs',
+                        headers={'X-ApiKey': API_KEY})
+    return res.json()
+
+
 def separator_label(category, separator='---------------------------------'):
     return separator + '\n' + category + '\n'
 

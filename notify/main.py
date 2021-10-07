@@ -1,13 +1,11 @@
 import os
 import requests
 import time
-import routine
-import utils
-import server
 
 from threading import Thread
 from datetime import datetime
 from replit import db
+from utility import utils, routine, keep_alive
 
 routine.delete_logs()
 
@@ -16,7 +14,7 @@ USERNAME = 'Notifier'
 
 db['status'] = f'Alive since {datetime.now()}'
 
-server_s = Thread(target=server.run)
+server_s = Thread(target=keep_alive.run)
 server_s.start()
 
 while True:
@@ -46,8 +44,11 @@ while True:
                     else:
                         msg += f'{boss} due in {utils.minutes_to_dhm(timer)}\n'
         if len(msg) > 0:
-            res = requests.post(
-                WEBHOOK, data={'username': USERNAME, 'content': msg})
+            res = requests.post(WEBHOOK,
+                                data={
+                                    'username': USERNAME,
+                                    'content': msg
+                                })
             utils.logger(f'NOTIFIER: res: {res.status_code}, sent: {msg}')
     utils.logger('NOTIFIER: finish check')
     if res and (res.status_code == 429):

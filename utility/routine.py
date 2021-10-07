@@ -1,8 +1,7 @@
 from replit import db
 from datetime import date
-import db_utils
+from utility import utils, db_utils
 
-import utils
 import time
 
 
