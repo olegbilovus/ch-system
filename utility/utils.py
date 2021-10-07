@@ -161,5 +161,6 @@ def status(down):
         status_message = f'Alive since {datetime.now()}'
     db['status'] = status_message
 
+
 def get_logs():
     return db['logs']
