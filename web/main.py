@@ -149,9 +149,12 @@ def change_role():
         user_id = req['user_id']
         user = api.get_user(user_id)
         print(user, req)
-        if user and user['role'] <= 4:
-            if api.change_role(user_id, role):
-                return response
+        if (
+            user
+            and user['role'] <= 4
+            and api.change_role(user_id, role)
+        ):
+            return response
         response.status_code = 404
         return response
     response.status_code = 401
