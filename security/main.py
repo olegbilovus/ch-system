@@ -19,11 +19,28 @@ db['status'] = f'Alive since {datetime.now()}'
 server_s = Thread(target=keep_alive.run)
 server_s.start()
 
+def send_msg(msg):
+    res1 = requests.post(WEBHOOK,
+                         data={
+                             'username': 'ebk-check',
+                             'content': msg
+                         })
+    res2 = requests.post(WEBHOOK2,
+                         data={
+                             'username': 'ebk-check',
+                             'content': msg
+                         })
+
+    utils.logger(f'{res1.status_code}, {res2.status_code}\n{msg}')
+
+msg = f'\nFull list of people who joined EBK:\n{db["ebk_members"]}'
+send_msg(msg)
+
 while True:
     json = requests.get(URL3).json()
     members = json['RankingDataList']
     members_db = db['ebk_members']
-    str_to_send = ''
+    str_to_send = '\nCurrent EBK members:\n'
     new_members = False
     for member in members:
 
@@ -44,17 +61,6 @@ while True:
         db['ebk_members'] = members_db
         str_to_send += '\n@everyone'
 
-    res1 = requests.post(WEBHOOK,
-                         data={
-                             'username': 'ebk-check',
-                             'content': str_to_send
-                         })
-    res2 = requests.post(WEBHOOK2,
-                         data={
-                             'username': 'ebk-check',
-                             'content': str_to_send
-                         })
-
-    utils.logger(f'{res1.status_code}, {res2.status_code}\n{str_to_send}')
+    send_msg(str_to_send)
 
     time.sleep(3600)
