@@ -19,6 +19,7 @@ db['status'] = f'Alive since {datetime.now()}'
 server_s = Thread(target=keep_alive.run)
 server_s.start()
 
+
 def send_msg(msg):
     res1 = requests.post(WEBHOOK,
                          data={
@@ -32,6 +33,7 @@ def send_msg(msg):
                          })
 
     utils.logger(f'{res1.status_code}, {res2.status_code}\n{msg}')
+
 
 msg = f'\nFull list of people who joined EBK:\n{db["ebk_members"]}'
 send_msg(msg)
