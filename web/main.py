@@ -1,13 +1,17 @@
 import os
 import api
+import secrets
+import requests
 
 from flask import Flask, render_template, session, request, redirect, Response
 from waitress import serve
 from paste.translogger import TransLogger
 from itertools import islice
 from utility import utils, routine
+from replit import db
 
 routine.delete_logs()
+WEBHOOK = os.getenv('WEBHOOK')
 
 app = Flask('', template_folder='web/templates',
             static_folder='web/static')
@@ -214,6 +218,34 @@ def boss_reset():
         response.status_code = 401
     return response
 
+
+@app.post('/key/generate')
+def key_gen():
+    keys = db['keys']
+    if 'user_id' in session:
+        key = secrets.token_hex(16)
+        user_id = session['user_id']
+        keys[user_id] = key
+        db['keys'] = keys
+        print(f'{user_id} generated {key}')
+        return key
+        
+@app.post('/key/check')
+def key_check():
+    if 'user_id' in session:
+        keys = db['keys']
+        req = request.json
+        key = req['key']
+        user_id = session['user_id']
+        if key != keys[user_id]:
+            keys[user_id] = key
+            db['keys'] = keys
+            msg = f'User {session["main"]} {user_id} changed key {key}'
+            print(msg)
+            requests.post(WEBHOOK, data={'username': 'check_key', 'content': msg})
+    return 'checked'
+            
+            
 
 def run():
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
