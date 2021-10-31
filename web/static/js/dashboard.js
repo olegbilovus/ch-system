@@ -183,28 +183,27 @@ function boss_reset (_boss, _timer) {
 }
 
 function check_key () {
-  let key_local = localStorage.getItem('key')
-  if(key_local === null){
-      $.ajax({
-        url: './key/generate',
-        type: 'POST',
-        contentType: 'application/json; charset=utf-8',
-        timeout: 5000,
-        success: function (key) {
+  const key_local = localStorage.getItem('key')
+  if (key_local === null) {
+    $.ajax({
+      url: './key/generate',
+      type: 'POST',
+      contentType: 'application/json; charset=utf-8',
+      timeout: 5000,
+      success: function (key) {
         localStorage.setItem('key', key)
-        },
-        error: function (xhr, status, error) {}
-        })
-  }
-  else {
-      $.ajax({
-        url: './key/check',
-        type: 'POST',
-        data: JSON.stringify({ key: key_local }),
-        contentType: 'application/json; charset=utf-8',
-        timeout: 5000,
-        success: function (data) {},
-        error: function (xhr, status, error) {}
+      },
+      error: function (xhr, status, error) {}
+    })
+  } else {
+    $.ajax({
+      url: './key/check',
+      type: 'POST',
+      data: JSON.stringify({ key: key_local }),
+      contentType: 'application/json; charset=utf-8',
+      timeout: 5000,
+      success: function (data) {},
+      error: function (xhr, status, error) {}
 
     })
   }

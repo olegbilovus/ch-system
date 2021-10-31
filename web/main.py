@@ -229,7 +229,8 @@ def key_gen():
         db['keys'] = keys
         print(f'{user_id} generated {key}')
         return key
-        
+
+
 @app.post('/key/check')
 def key_check():
     if 'user_id' in session:
@@ -242,10 +243,10 @@ def key_check():
             db['keys'] = keys
             msg = f'User {session["main"]} {user_id} changed key {key}'
             print(msg)
-            requests.post(WEBHOOK, data={'username': 'check_key', 'content': msg})
+            requests.post(
+                WEBHOOK, data={'username': 'check_key', 'content': msg})
     return 'checked'
-            
-            
+
 
 def run():
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
