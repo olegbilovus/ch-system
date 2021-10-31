@@ -6,3 +6,4 @@ tmp.txt
 build/*
 dist/*
 *.egg-info/*
+.breakpoints

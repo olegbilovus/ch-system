@@ -13,7 +13,10 @@ API_URL2 = os.getenv('API_URL2')
 LOGIN_API2 = {'user_id': os.getenv('USER_ID'), 'api_key': os.getenv('API_KEY')}
 
 client = nextcord.Client(intents=nextcord.Intents.all())
-chain = commands.reset_timer(commands.set_timer_2(commands.default()))
+chain = commands.get_all(
+    commands.when_boss(
+        commands.get_boss(
+            commands.reset_timer(commands.set_timer_2(commands.default())))))
 
 
 @client.event
@@ -41,8 +44,14 @@ async def on_message(message):
     global chain
     try:
         msg_to_send = chain.send(msg)
+        if msg_to_send['msg']:
+            await message.channel.send(msg_to_send['msg'])
     except Exception as e:
-        chain = commands.reset_timer(commands.set_timer_2(commands.default()))
+        chain = commands.get_all(
+            commands.when_boss(
+                commands.get_boss(
+                    commands.reset_timer(
+                        commands.set_timer_2(commands.default())))))
         utils.logger(str(e))
 
     utils.logger(msg_to_send)

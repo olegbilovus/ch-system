@@ -1,11 +1,6 @@
 from datetime import datetime
 from functools import wraps
-from flos import Session
 from utility import utils
-import os
-
-#session = Session(os.getenv('USER'), os.getenv('PASS'), os.getenv('CLAN'))
-# session.login()
 
 all_commands = ['all', 'soon']
 get_commands = ['g', 'get']
@@ -36,6 +31,7 @@ def get_all(successor=None):
     while True:
         msg = yield msg_to_send
         msg_to_send['type'] = 'all'
+        print(msg)
         if msg.length == 1 and msg.content[0] in all_commands:
             msg_to_send['msg'] = ''
             frozen = False
