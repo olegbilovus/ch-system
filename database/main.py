@@ -159,10 +159,10 @@ def api_validate():
     api_key = get_api_key(request)
     user = auth(api_key)
     response = Response()
-    if user is not None and user == WEB_NAME:
+    if user is not None:
         req = request.json
         utils.logger(
-            f'API.validate: {user} {req["user_id"]} {req["api_key"][0:5]}***')
+            f'API.validate: {user} {req["user_id"]}')
         if api.validate_apikey(req['user_id'], req['api_key']):
             response.status_code = 200
         else:
