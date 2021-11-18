@@ -28,8 +28,8 @@ while True:
         utils.logger(str(e))
     res = None
     if timers is not None and subs is not None:
-        msg = ''
         for boss, timer in timers.items():
+            msg = ''
             timer = int(timer) if timer is not None else None
             if timer is not None:
                 minutes = utils.minutes_sub(int(timer))
@@ -43,16 +43,21 @@ while True:
                         msg += '\n'
                     else:
                         msg += f'{boss} due in {utils.minutes_to_dhm(timer)}\n'
-        if len(msg) > 0:
-            res = requests.post(WEBHOOK,
+                    if len(msg) > 0:
+                        res = requests.post(WEBHOOK,
                                 data={
                                     'username': USERNAME,
                                     'content': msg
                                 })
-            utils.logger(f'NOTIFIER: res: {res.status_code}, sent: {msg}')
+                        utils.logger(f'NOTIFIER: res: {res.status_code}, sent: {msg}')
     utils.logger('NOTIFIER: finish check')
     if res and (res.status_code == 429):
         utils.logger('NOTIFIER: 429')
         os.system('kill 1')
     else:
         time.sleep(300)
+
+
+
+
+
