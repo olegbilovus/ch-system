@@ -44,21 +44,15 @@ while True:
                         msg += f'{boss} due in {utils.minutes_to_dhm(timer)}'
                     if len(msg) > 0:
                         res = requests.post(WEBHOOK,
-                                data={
-                                    'username': USERNAME,
-                                    'content': msg
-                                })
-                        utils.logger(f'NOTIFIER: res: {res.status_code}, sent: {msg}')
+                                            data={
+                                                'username': USERNAME,
+                                                'content': msg
+                                            })
+                        utils.logger(
+                            f'NOTIFIER: res: {res.status_code}, sent: {msg}')
     utils.logger('NOTIFIER: finish check')
     if res and (res.status_code == 429):
         utils.logger('NOTIFIER: 429')
         os.system('kill 1')
     else:
         time.sleep(300)
-
-
-
-
-
-
-
