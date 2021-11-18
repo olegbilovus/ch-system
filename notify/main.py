@@ -37,12 +37,11 @@ while True:
                     utils.logger(f'NOTIFIER: {boss}:{minutes} preparing')
                     subs_id = subs[boss]
                     if subs_id:
-                        msg += f'{boss} due in {utils.minutes_to_dhm(timer)} '
+                        msg += f'{boss} due in {utils.minutes_to_dhm(timer)}\n'
                         for sub_id in subs_id:
                             msg += f'<@{sub_id}>'
-                        msg += '\n'
                     else:
-                        msg += f'{boss} due in {utils.minutes_to_dhm(timer)}\n'
+                        msg += f'{boss} due in {utils.minutes_to_dhm(timer)}'
                     if len(msg) > 0:
                         res = requests.post(WEBHOOK,
                                 data={
@@ -56,6 +55,8 @@ while True:
         os.system('kill 1')
     else:
         time.sleep(300)
+
+
 
 
 
