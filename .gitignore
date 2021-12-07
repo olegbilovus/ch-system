@@ -7,3 +7,5 @@ build/*
 dist/*
 *.egg-info/*
 .breakpoints
+security/classes.png
+security/lvls.png

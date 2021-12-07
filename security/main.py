@@ -11,7 +11,7 @@ from matplotlib import pyplot as plt
 
 routine.delete_logs()
 
-WEBHOOK = os.getenv('WEBHOOK')
+WEBHOOKS = os.getenv('WEBHOOKS').split(',')
 TAGS = os.getenv('TAGS').split(',')
 URL3 = os.getenv('URL3')
 IMG_PATH_LVLS = 'security/lvls.png'
@@ -24,24 +24,26 @@ server_s.start()
 
 
 def send_msg(msg):
-    res = requests.post(WEBHOOK,
-                        data={
-                            'username': 'ebk-check',
-                            'content': msg
-                        })
-    utils.logger(f'{res.status_code}\n{msg}')
+    for WEBHOOK in WEBHOOKS:
+        res = requests.post(WEBHOOK,
+                            data={
+                                'username': 'ebk-check',
+                                'content': msg
+                            })
+        utils.logger(f'{res.status_code}\n{msg}')
 
 
 def send_img(img_path):
-    with open(img_path, 'rb') as file:
-        res = requests.post(WEBHOOK,
-                            files={
-                                'file': (file.name, file, 'application/octet-stream')
-                            },
-                            data={
-                                'username': 'ebk-check'
-                            })
-        utils.logger(f'{res.status_code}\n{img_path}')
+    for WEBHOOK in WEBHOOKS:
+        with open(img_path, 'rb') as file:
+            res = requests.post(WEBHOOK,
+                                files={
+                                    'file': (file.name, file, 'application/octet-stream')
+                                },
+                                data={
+                                    'username': 'ebk-check'
+                                })
+            utils.logger(f'{res.status_code}\n{img_path}')
 
 
 def create_plot_file(title, data, labels, img_path):
