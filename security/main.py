@@ -29,6 +29,7 @@ db['status'] = f'Alive since {datetime.now()}'
 server_s = Thread(target=server.run)
 server_s.start()
 
+
 def send_msg(msg):
     for WEBHOOK in WEBHOOKS:
         res = requests.post(WEBHOOK,
@@ -51,6 +52,7 @@ def send_img(img_path):
                                 })
             utils.logger(f'{res.status_code}\n{img_path}')
 
+
 def create_plot_pie_file(title, data, labels, img_path):
     fig1, ax1 = plt.subplots()
     ax1.pie(data, labels=labels, autopct='%1.1f%%', shadow=True, startangle=90)
@@ -58,7 +60,8 @@ def create_plot_pie_file(title, data, labels, img_path):
     plt.title(title)
     plt.savefig(img_path)
     plt.close('all')
-    
+
+
 db['ebk_members'] = sorted(db['ebk_members'])
 msg = f'------__***Full list of people who joined EBK***__------\n'
 for member in db['ebk_members']:
@@ -99,7 +102,7 @@ while True:
             levels[level][class_] += 1
 
         classes[class_] += 1
-        
+
         if name not in members_db:
             new_members = True
             members_db.append(name)
@@ -114,7 +117,7 @@ while True:
         str_to_send += '\n@everyone'
 
     send_msg(str_to_send)
-    
+
     levels_stats = {}
     warrior = {}
     druid = {}
@@ -138,7 +141,7 @@ while True:
                 mage[lvl_str] += levels[lvl_]['Mage']
                 ranger[lvl_str] += levels[lvl_]['Ranger']
                 rogue[lvl_str] += levels[lvl_]['Rogue']
-        
+
         if levels_stats[lvl_str] == 0:
             del levels_stats[lvl_str]
         if warrior[lvl_str] == 0:
@@ -151,22 +154,26 @@ while True:
             del ranger[lvl_str]
         if rogue[lvl_str] == 0:
             del rogue[lvl_str]
-    
+
     create_plot_pie_file('Level of current members',
-                     levels_stats.values(), levels_stats.keys(), IMG_PATH_LVLS)
+                         levels_stats.values(), levels_stats.keys(), IMG_PATH_LVLS)
     send_img(IMG_PATH_LVLS)
     create_plot_pie_file('Classes of current members',
-                     classes.values(), classes.keys(), IMG_PATH_CLASSES)
+                         classes.values(), classes.keys(), IMG_PATH_CLASSES)
     send_img(IMG_PATH_CLASSES)
-    create_plot_pie_file('Warrior', warrior.values(), warrior.keys(), IMG_PATH_LVL_WARRIOR)
+    create_plot_pie_file('Warrior', warrior.values(),
+                         warrior.keys(), IMG_PATH_LVL_WARRIOR)
     send_img(IMG_PATH_LVL_WARRIOR)
-    create_plot_pie_file('Druid', druid.values(), druid.keys(), IMG_PATH_LVL_DRUID)
+    create_plot_pie_file('Druid', druid.values(),
+                         druid.keys(), IMG_PATH_LVL_DRUID)
     send_img(IMG_PATH_LVL_DRUID)
     create_plot_pie_file('Mage', mage.values(), mage.keys(), IMG_PATH_LVL_MAGE)
     send_img(IMG_PATH_LVL_MAGE)
-    create_plot_pie_file('Ranger', ranger.values(), ranger.keys(), IMG_PATH_LVL_RANGER)
+    create_plot_pie_file('Ranger', ranger.values(),
+                         ranger.keys(), IMG_PATH_LVL_RANGER)
     send_img(IMG_PATH_LVL_RANGER)
-    create_plot_pie_file('Rogue', rogue.values(), rogue.keys(), IMG_PATH_LVL_ROGUE)
+    create_plot_pie_file('Rogue', rogue.values(),
+                         rogue.keys(), IMG_PATH_LVL_ROGUE)
     send_img(IMG_PATH_LVL_ROGUE)
-   
+
     time.sleep(3600)
