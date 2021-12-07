@@ -29,7 +29,6 @@ db['status'] = f'Alive since {datetime.now()}'
 server_s = Thread(target=server.run)
 server_s.start()
 
-
 def send_msg(msg):
     for WEBHOOK in WEBHOOKS:
         res = requests.post(WEBHOOK,
@@ -51,7 +50,6 @@ def send_img(img_path):
                                     'username': 'ebk-check'
                                 })
             utils.logger(f'{res.status_code}\n{img_path}')
-
 
 def create_plot_pie_file(title, data, labels, img_path):
     fig1, ax1 = plt.subplots()
@@ -170,8 +168,5 @@ while True:
     send_img(IMG_PATH_LVL_RANGER)
     create_plot_pie_file('Rogue', rogue.values(), rogue.keys(), IMG_PATH_LVL_ROGUE)
     send_img(IMG_PATH_LVL_ROGUE)
-
-        
-    
-    
+   
     time.sleep(3600)
