@@ -1,4 +1,4 @@
-from flask import Flask, jsonify 
+from flask import Flask, jsonify
 from waitress import serve
 from paste.translogger import TransLogger
 from replit import db
@@ -12,6 +12,7 @@ app = Flask('')
 @app.route('/')
 def home():
     return db['status']
+
 
 @app.get(f'/{os.getenv("URI1")}')
 def get_members():

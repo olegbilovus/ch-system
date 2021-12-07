@@ -25,22 +25,24 @@ server_s.start()
 
 def send_msg(msg):
     res = requests.post(WEBHOOK,
-                         data={
-                             'username': 'ebk-check',
-                             'content': msg
-                         })
+                        data={
+                            'username': 'ebk-check',
+                            'content': msg
+                        })
     utils.logger(f'{res.status_code}\n{msg}')
+
 
 def send_img(img_path):
     with open(img_path, 'rb') as file:
         res = requests.post(WEBHOOK,
-                           files={
-                               'file': (file.name, file, 'application/octet-stream') 
-                           },
-                           data={
-                             'username': 'ebk-check'
-                         })
+                            files={
+                                'file': (file.name, file, 'application/octet-stream')
+                            },
+                            data={
+                                'username': 'ebk-check'
+                            })
         utils.logger(f'{res.status_code}\n{img_path}')
+
 
 def create_plot_file(title, data, labels, img_path):
     fig1, ax1 = plt.subplots()
@@ -49,7 +51,7 @@ def create_plot_file(title, data, labels, img_path):
     plt.title(title)
     plt.savefig(img_path)
     plt.close(fig1)
-    
+
 
 db['ebk_members'] = sorted(db['ebk_members'])
 msg = f'------__***Full list of people who joined EBK***__------\n'
@@ -60,7 +62,7 @@ send_msg(msg)
 while True:
     json = requests.get(URL3).json()
     db['ebk_json_current'] = json
-    members = sorted(json['RankingDataList'], key= lambda v: v['Name'])
+    members = sorted(json['RankingDataList'], key=lambda v: v['Name'])
     members_db = db['ebk_members']
     str_to_send = '------__***Current EBK members***__------\n'
     new_members = False
@@ -84,7 +86,7 @@ while True:
             levels[level] += 1
 
         classes[class_] += 1
-        
+
         if name not in members_db:
             new_members = True
             members_db.append(name)
@@ -100,9 +102,11 @@ while True:
 
     send_msg(str_to_send)
 
-    create_plot_file('Level of current members', levels.values(), levels.keys(), IMG_PATH_LVLS)
+    create_plot_file('Level of current members',
+                     levels.values(), levels.keys(), IMG_PATH_LVLS)
     send_img(IMG_PATH_LVLS)
-    create_plot_file('Classes of current members', classes.values(), classes.keys(), IMG_PATH_CLASSES)
+    create_plot_file('Classes of current members',
+                     classes.values(), classes.keys(), IMG_PATH_CLASSES)
     send_img(IMG_PATH_CLASSES)
-    
+
     time.sleep(3600)
