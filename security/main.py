@@ -50,11 +50,12 @@ def send_img(img_path):
                                     'username': 'ebk-check'
                                 })
             utils.logger(f'{res.status_code}\n{img_path}')
-            
+
 
 def create_plot_pie_file(title, data, labels, img_path):
     fig1, ax1 = plt.subplots()
-    ax1.pie(data, labels=labels, autopct=lambda x : '{:.2f}%\n({:.0f})'.format(x, sum(data) * x / 100))
+    ax1.pie(data, labels=labels, autopct=lambda x: '{:.2f}%\n({:.0f})'.format(
+        x, sum(data) * x / 100))
     ax1.axis('equal')
     plt.title(title)
     plt.savefig(img_path)
