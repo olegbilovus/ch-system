@@ -44,7 +44,7 @@ async def on_message(message):
         msg_to_send = chain.send(msg)
     except Exception as e:
         chain = commands.reset_timer(
-                        commands.set_timer_2(commands.default()))
+            commands.set_timer_2(commands.default()))
         utils.logger(str(e))
 
     utils.logger(msg_to_send)
