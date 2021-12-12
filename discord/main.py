@@ -66,8 +66,8 @@ server_s.start()
 
 try:
     client.run(os.getenv('TOKEN'))
-except nextcord.errors.HTTPException as e:
-    message_error = str(e)
+except nextcord.errors.HTTPException as ex:
+    message_error = str(ex)
     utils.logger(message_error)
     if '429' in message_error:
         utils.status(True)

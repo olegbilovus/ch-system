@@ -118,3 +118,4 @@ def create_user_local(user_id, role, main):
         db['users'] = users
         return True
     return False
+    

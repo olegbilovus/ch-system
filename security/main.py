@@ -63,10 +63,10 @@ def create_plot_pie_file(title, data, labels, img_path):
 
 
 db['ebk_members'] = sorted(db['ebk_members'])
-msg = f'------__***Full list of people who joined EBK***__------\n'
+msg_start = '------__***Full list of people who joined EBK***__------\n'
 for member in db['ebk_members']:
-    msg += f'{member}, '
-send_msg(msg)
+    msg_start += f'{member}, '
+send_msg(msg_start)
 
 while True:
     json = requests.get(URL3).json()
