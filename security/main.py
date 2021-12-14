@@ -163,7 +163,7 @@ def run(clan, WEBHOOKS, URL):
             del ranger[lvl_str]
         if rogue[lvl_str] == 0:
             del rogue[lvl_str]
-    
+
     create_plot_pie_file('Level of current members',
                          levels_stats.values(), levels_stats.keys(), IMG_PATH_LVLS)
     send_img(IMG_PATH_LVLS, WEBHOOKS, username)
@@ -184,7 +184,7 @@ def run(clan, WEBHOOKS, URL):
     create_plot_pie_file('Rogue', rogue.values(),
                          rogue.keys(), IMG_PATH_LVL_ROGUE)
     send_img(IMG_PATH_LVL_ROGUE, WEBHOOKS, username)
- 
+
 
 send_full_list(USERNAME_EBK, WEBHOOKS_EBK)
 time.sleep(5)
