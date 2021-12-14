@@ -11,9 +11,12 @@ from matplotlib import pyplot as plt
 
 routine.delete_logs()
 
-WEBHOOKS = os.getenv('WEBHOOKS').split(',')
-TAGS = os.getenv('TAGS').split(',')
+WEBHOOKS_EBK = os.getenv('WEBHOOKS_EBK').split(',')
+USERNAME_EBK = 'ebk'
+WEBHOOKS_MISFIT = os.getenv('WEBHOOKS_MISFIT').split(',')
+USERNAME_MISFIT = 'misfit'
 URL3 = os.getenv('URL3')
+URL4 = os.getenv('URL4')
 IMG_PATH_LVLS = 'security/lvls.png'
 IMG_PATH_CLASSES = 'security/classes.png'
 IMG_PATH_LVL_WARRIOR = 'security/lvl_warrior.png'
@@ -29,17 +32,17 @@ server_s = Thread(target=server.run)
 server_s.start()
 
 
-def send_msg(msg):
+def send_msg(msg, WEBHOOKS, username):
     for WEBHOOK in WEBHOOKS:
         res = requests.post(WEBHOOK,
                             data={
-                                'username': 'ebk-check',
+                                'username': username,
                                 'content': msg
                             })
         utils.logger(f'{res.status_code}\n{msg}')
 
 
-def send_img(img_path):
+def send_img(img_path, WEBHOOKS, username):
     for WEBHOOK in WEBHOOKS:
         with open(img_path, 'rb') as file:
             res = requests.post(WEBHOOK,
@@ -47,7 +50,7 @@ def send_img(img_path):
                                     'file': (file.name, file, 'application/octet-stream')
                                 },
                                 data={
-                                    'username': 'ebk-check'
+                                    'username': username
                                 })
             utils.logger(f'{res.status_code}\n{img_path}')
 
@@ -62,18 +65,22 @@ def create_plot_pie_file(title, data, labels, img_path):
     plt.close('all')
 
 
-db['ebk_members'] = sorted(db['ebk_members'])
-msg_start = '------__***Full list of people who joined EBK***__------\n'
-for member in db['ebk_members']:
-    msg_start += f'{member}, '
-send_msg(msg_start)
+def send_full_list(clan, WEBHOOKS):
+    db_key = f'{clan}_members'
+    db[db_key] = sorted(db[db_key])
+    msg_start = f'------__***Full list of people who joined {clan}***__------\n'
+    for member in db[db_key]:
+        msg_start += f'{member}, '
+    send_msg(msg_start, WEBHOOKS, f'{clan}-check')
 
-while True:
-    json = requests.get(URL3).json()
-    db['ebk_json_current'] = json
+
+def run(clan, WEBHOOKS, URL):
+    json = requests.get(URL).json()
+    db[f'{clan}_json_current'] = json
     members = sorted(json['RankingDataList'], key=lambda v: v['Name'])
-    members_db = db['ebk_members']
-    str_to_send = '------__***Current EBK members***__------\n'
+    db_key = f'{clan}_members'
+    members_db = db[db_key]
+    str_to_send = f'------__***Current {clan} members***__------\n'
     new_members = False
     levels = {}
     classes = {
@@ -113,10 +120,12 @@ while True:
     str_to_send += f'number members: {json["TotalResults"]}'
 
     if new_members:
-        db['ebk_members'] = members_db
+        db[db_key] = members_db
         str_to_send += '\n@everyone'
 
-    send_msg(str_to_send)
+    username = f'{clan}-check'
+
+    send_msg(str_to_send, WEBHOOKS, username)
 
     levels_stats = {}
     warrior = {}
@@ -154,26 +163,35 @@ while True:
             del ranger[lvl_str]
         if rogue[lvl_str] == 0:
             del rogue[lvl_str]
-
+    
     create_plot_pie_file('Level of current members',
                          levels_stats.values(), levels_stats.keys(), IMG_PATH_LVLS)
-    send_img(IMG_PATH_LVLS)
+    send_img(IMG_PATH_LVLS, WEBHOOKS, username)
     create_plot_pie_file('Classes of current members',
                          classes.values(), classes.keys(), IMG_PATH_CLASSES)
-    send_img(IMG_PATH_CLASSES)
+    send_img(IMG_PATH_CLASSES, WEBHOOKS, username)
     create_plot_pie_file('Warrior', warrior.values(),
                          warrior.keys(), IMG_PATH_LVL_WARRIOR)
-    send_img(IMG_PATH_LVL_WARRIOR)
+    send_img(IMG_PATH_LVL_WARRIOR, WEBHOOKS, username)
     create_plot_pie_file('Druid', druid.values(),
                          druid.keys(), IMG_PATH_LVL_DRUID)
-    send_img(IMG_PATH_LVL_DRUID)
+    send_img(IMG_PATH_LVL_DRUID, WEBHOOKS, username)
     create_plot_pie_file('Mage', mage.values(), mage.keys(), IMG_PATH_LVL_MAGE)
-    send_img(IMG_PATH_LVL_MAGE)
+    send_img(IMG_PATH_LVL_MAGE, WEBHOOKS, username)
     create_plot_pie_file('Ranger', ranger.values(),
                          ranger.keys(), IMG_PATH_LVL_RANGER)
-    send_img(IMG_PATH_LVL_RANGER)
+    send_img(IMG_PATH_LVL_RANGER, WEBHOOKS, username)
     create_plot_pie_file('Rogue', rogue.values(),
                          rogue.keys(), IMG_PATH_LVL_ROGUE)
-    send_img(IMG_PATH_LVL_ROGUE)
+    send_img(IMG_PATH_LVL_ROGUE, WEBHOOKS, username)
+ 
 
+send_full_list(USERNAME_EBK, WEBHOOKS_EBK)
+time.sleep(5)
+send_full_list(USERNAME_MISFIT, WEBHOOKS_MISFIT)
+
+while True:
+    run(USERNAME_EBK, WEBHOOKS_EBK, URL3)
+    time.sleep(5)
+    run(USERNAME_MISFIT, WEBHOOKS_MISFIT, URL4)
     time.sleep(3600)
