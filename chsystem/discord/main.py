@@ -3,10 +3,12 @@ import time
 import commands
 import nextcord
 import requests
+import utils
+import routine
+import keep_alive
 
 from threading import Thread
 from replit import db
-from utility import utils, routine, keep_alive
 
 BOTS_NAMES = os.getenv('BOTS').split(',')
 CHANNELS = os.getenv('CHANNELS').split(',')

@@ -1,6 +1,7 @@
+import utils
+
 from datetime import datetime
 from functools import wraps
-from utility import utils
 
 all_commands = ['all', 'soon']
 get_commands = ['g', 'get']

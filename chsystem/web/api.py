@@ -2,7 +2,7 @@ import requests
 import os
 
 from replit import db
-from utility.utils import API_URL, API_KEY
+from utils import API_URL, API_KEY
 
 ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
 ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']

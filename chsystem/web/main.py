@@ -2,12 +2,13 @@ import os
 import api
 import secrets
 import requests
+import utils
+import routine
 
 from flask import Flask, render_template, session, request, redirect, Response
 from waitress import serve
 from paste.translogger import TransLogger
 from itertools import islice
-from utility import utils, routine
 from replit import db
 
 routine.delete_logs()

@@ -1,5 +1,7 @@
 import os
 import api
+import utils
+import routine
 
 from flask import Flask, request, Response, jsonify
 from replit import db
@@ -7,7 +9,6 @@ from waitress import serve
 from paste.translogger import TransLogger
 from secrets import compare_digest
 from datetime import datetime
-from utility import utils, routine
 
 NOTIFIER_NAME = os.getenv('NOTIFIER')
 WEB_NAME = os.getenv('WEB')

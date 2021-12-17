@@ -1,8 +1,8 @@
 import secrets
 import os
+import utils
 
 from replit import db
-from utility import utils
 
 key = os.getenv('KEY')
 

@@ -1,9 +1,9 @@
 import js2py
 import os
 import requests
+import utils
 
 from bs4 import BeautifulSoup as bs
-from utility import utils
 
 
 class Session:

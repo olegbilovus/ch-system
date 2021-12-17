@@ -2,11 +2,12 @@ import requests
 import os
 import time
 import server
+import utils
+import routine
 
 from threading import Thread
 from replit import db
 from datetime import datetime
-from utility import utils, routine
 from matplotlib import pyplot as plt
 
 routine.delete_logs()

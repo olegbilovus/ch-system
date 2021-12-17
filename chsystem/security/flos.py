@@ -3,7 +3,7 @@ import os
 import requests
 
 from bs4 import BeautifulSoup as bs
-from utility.utils import logger
+from utils import logger
 from replit import db
 
 

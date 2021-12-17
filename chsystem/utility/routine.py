@@ -1,9 +1,9 @@
 import time
+import utils
+import db_utils
 
 from replit import db
 from datetime import date
-import utils
-import db_utils
 
 
 def delete_logs():
