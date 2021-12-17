@@ -1,7 +1,7 @@
 import time
 
 from replit import db
-from utility import utils
+import utils
 
 
 def get_all_key_values():

@@ -2,7 +2,7 @@ import time
 
 from replit import db
 from datetime import date
-from utility import utils, db_utils
+import utils, db_utils
 
 
 def delete_logs():

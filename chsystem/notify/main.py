@@ -5,7 +5,7 @@ import time
 from threading import Thread
 from datetime import datetime
 from replit import db
-from utility import utils, routine, keep_alive
+import utils, routine, keep_alive
 
 routine.delete_logs()
 

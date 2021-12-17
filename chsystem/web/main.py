@@ -13,8 +13,8 @@ from replit import db
 routine.delete_logs()
 WEBHOOK = os.getenv('WEBHOOK')
 
-app = Flask('', template_folder='web/templates',
-            static_folder='web/static')
+app = Flask('', template_folder='chsystem/web/templates',
+            static_folder='chsystem/web/static')
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
