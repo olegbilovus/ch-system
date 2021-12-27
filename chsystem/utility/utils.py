@@ -1,45 +1,11 @@
 import time
 import requests
 import os
+from db import get_bosses_default
 
-from replit import db
 from datetime import datetime
 
-_429 = 1200
 
-API_URL = os.getenv('API_URL')
-API_KEY = os.getenv('API_KEY')
-
-BOSSES = {
-    '110': 30,
-    '115': 35,
-    '120': 40,
-    '125': 45,
-    '130': 50,
-    '140': 55,
-    '155': 60,
-    '160': 65,
-    '165': 70,
-    '170': 80,
-    '180': 90,
-    '185': 75,
-    '190': 85,
-    '195': 95,
-    '200': 105,
-    '205': 115,
-    '210': 125,
-    '215': 135,
-    'aggy': 1894,
-    'mord': 2160,
-    'hrung': 2160,
-    'necro': 2160,
-    'prot': 1190,
-    'gele': 2880,
-    'bt': 4320,
-    'dino': 4320
-}
-
-LIST_BOSSES = list(BOSSES)
 
 MINUTES_IN_A_DAY = 1440
 
@@ -150,19 +116,3 @@ def logger(msg):
     log = f'[{datetime.now()}] {msg}'
     print(log)
     db['logs'] = db['logs'] + log + '\n'
-
-
-def status(down):
-    status_message = ''
-    if down:
-        logger('429')
-        db['429'] = True
-        status_message = f'Down for 20mins since {datetime.now()}'
-    else:
-        db['429'] = False
-        status_message = f'Alive since {datetime.now()}'
-    db['status'] = status_message
-
-
-def get_logs():
-    return db['logs']
