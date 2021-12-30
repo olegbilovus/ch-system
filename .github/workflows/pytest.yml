@@ -46,9 +46,23 @@ jobs:
       - name: Install library
         run: poetry install --no-interaction
       #----------------------------------------------
+      #              write .env database
+      #----------------------------------------------
+      - name: Create .env database
+        run: |
+          cat << EOF > ./chsystem/database/.env
+          URL_MONGODB=${{ secrets.URL_MONGODB }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          EOF
+      #----------------------------------------------
       #              run test suite
       #----------------------------------------------
       - name: Run tests
         run: |
           source .venv/bin/activate
           pytest -v
+      #----------------------------------------------
+      #              delete .env database
+      #----------------------------------------------
+      - name: Delete .env database
+        run: rm ./chsystem/database/.env
