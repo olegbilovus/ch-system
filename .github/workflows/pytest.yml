@@ -50,12 +50,10 @@ jobs:
       #----------------------------------------------
       - name: Create .env database
         run: |
-          cat << EOF > $HOME/work/chsystem/chsystem/database/.env
+          cat << EOF > .env
           URL_MONGODB=${{ secrets.URL_MONGODB }}
           DB_NAME=${{ secrets.DB_NAME }}
           EOF
-          pwd
-          ls -la ./database
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
