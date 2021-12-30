@@ -4,8 +4,7 @@ import bcrypt
 import pymongo
 from dotenv import dotenv_values
 
-working_dir = '/home/ubuntu/chsystem/chsystem/database'
-config = dotenv_values(f'{working_dir}/.env')
+config = dotenv_values('.env')
 
 db = pymongo.MongoClient(config['URL_MONGODB'])[config['DB_NAME']]
 
@@ -59,7 +58,7 @@ def get_user_stats(main_account, server):
     return db.user_stats.find_one({'_id': build_id_account(main_account, server)})
 
 
-def get_role_stats(server, clan, role):
+def get_role_stats(clan, role):
     return db.role_stats.find_one({'_id': build_id_role_stats(clan, role)})
 
 
@@ -73,7 +72,8 @@ def create_clan(clan, server, name, count_users=0):
     if not get_server(server):
         return {'success': False, 'msg': ERROR_MESSAGES['server_not_found']}
 
-    db.clan.insert_one({'_id': clan, 'server': server, 'name': name, 'count_users': count_users})
+    db.clan.insert_one({'_id': clan, 'server': server,
+                       'name': name, 'count_users': count_users})
     return {'success': True, 'msg': 'Clan created'}
 
 
@@ -94,7 +94,8 @@ def create_server(server, name, count_users=0, status='Online'):
     if get_server(server):
         return {'success': False, 'msg': ERROR_MESSAGES['server_already_exists']}
 
-    db.server.insert_one({'_id': server, 'name': name, 'count_users': count_users, 'status': status})
+    db.server.insert_one({'_id': server, 'name': name,
+                         'count_users': count_users, 'status': status})
     return {'success': True, 'msg': 'Server created'}
 
 
@@ -132,8 +133,10 @@ def add_sub_to_boss_timer(server, clan, main_account, boss):
     if db.boss_timer.find_one({'_id': id_boss_timer, 'boss': {'$in': [boss]}}):
         return {'success': False, 'msg': ERROR_MESSAGES['sub_already_exists']}
 
-    db.user.update_one({'_id': build_id_account(main_account, server)}, {'$push': {'subs': boss}})
-    db.boss_timer.update_one({'_id': id_boss_timer, 'boss': boss}, {'$push': {'subs': user['discord_id']}})
+    db.user.update_one({'_id': build_id_account(main_account, server)}, {
+                       '$push': {'subs': boss}})
+    db.boss_timer.update_one({'_id': id_boss_timer, 'boss': boss}, {
+                             '$push': {'subs': user['discord_id']}})
 
     return {'success': True, 'msg': 'User added to boss timer subs'}
 
@@ -148,8 +151,10 @@ def remove_sub_from_boss_timer(server, clan, main_account, boss):
     if not db.boss_timer.find_one({'_id': id_boss_timer, 'boss': {'$in': [boss]}}):
         return {'success': False, 'msg': ERROR_MESSAGES['sub_not_found']}
 
-    db.boss_timer.update_one({'_id': id_boss_timer, 'boss': boss}, {'$pull': {'subs': user['discord_id']}})
-    db.user.update_one({'_id': build_id_account(main_account, server)}, {'$pull': {'subs': boss}})
+    db.boss_timer.update_one({'_id': id_boss_timer, 'boss': boss}, {
+                             '$pull': {'subs': user['discord_id']}})
+    db.user.update_one({'_id': build_id_account(main_account, server)}, {
+                       '$pull': {'subs': boss}})
 
     return {'success': True, 'msg': 'User removed from boss timer subs'}
 
@@ -215,7 +220,8 @@ def create_user(main_account,
             response = add_sub_to_boss_timer(server, clan, main_account, boss)
             if not response['success']:
                 return response
-            db.user.update_one({'_id': id_acc}, {'$push': {'bosses_subbed': boss}})
+            db.user.update_one({'_id': id_acc}, {
+                               '$push': {'bosses_subbed': boss}})
 
     return {'success': True, 'msg': 'User account created'}
 
@@ -237,7 +243,8 @@ def delete_user(main_account, server):
     db.clan.update_one({'_id': user['clan']}, {'$inc': {'count_users': -1}})
     if 'bosses_subbed' in user:
         for boss in user['bosses_subbed']:
-            response = remove_sub_from_boss_timer(server, user['clan'], main_account, boss)
+            response = remove_sub_from_boss_timer(
+                server, user['clan'], main_account, boss)
             if not response['success']:
                 return response
 

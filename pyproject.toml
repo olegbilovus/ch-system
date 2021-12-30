@@ -1,15 +1,15 @@
 [tool.poetry]
-name = "repl_python3_ch-discordbot"
-version = "0.1.0"
-description = ""
-authors = ["ArgoPanoptes <<>>"]
+name = "chsystem"
+version = "0.3.0"
+description = "It contains multiple services for Celtic Heroes players"
+authors = ["OB <ob>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
 bs4 = "^0.0.1"
 Flask = "^2.0.2"
 Js2Py = "^0.71"
-replit = "^3.2.4"
 waitress = "^2.0.0"
 Paste = "^3.5.0"
 nextcord = "^2.0.0a4"
@@ -20,8 +20,11 @@ orjson = "^3.6.5"
 cutandpaste = "^0.4.0"
 bcrypt = "^3.2.0"
 pymongo = "^4.0.1"
+dnspython = "^2.0.0"
+python-dotenv = "^0.19.2"
 
 [tool.poetry.dev-dependencies]
+pytest = "^6.2.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
