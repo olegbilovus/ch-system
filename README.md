@@ -1,1 +1,1 @@
-mv # ch-system
+[![test](https://github.com/OB-UNISA/ch-system/actions/workflows/pytest.yml/badge.svg)](https://github.com/OB-UNISA/ch-system/actions/workflows/pytest.yml)
