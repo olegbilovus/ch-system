@@ -58,7 +58,7 @@ def get_user_stats(main_account, server):
     return db.user_stats.find_one({'_id': build_id_account(main_account, server)})
 
 
-def get_role_stats(server, clan, role):
+def get_role_stats(clan, role):
     return db.role_stats.find_one({'_id': build_id_role_stats(clan, role)})
 
 
