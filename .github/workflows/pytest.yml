@@ -60,10 +60,9 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          pwd
           pytest -v
       #----------------------------------------------
       #              delete .env database
       #----------------------------------------------
       - name: Delete .env database
-        run: rm .$HOME/work/chsystem/chsystem/database/.env
+        run: rm .env
