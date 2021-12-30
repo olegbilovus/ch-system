@@ -9,3 +9,5 @@ dist/*
 .breakpoints
 security/*.png
 **/.env
+.idea/*
+*/.env

@@ -1,15 +1,15 @@
 import time
-import requests
-import os
-from db import get_bosses_default
-
 from datetime import datetime
 
-
+import requests
 
 MINUTES_IN_A_DAY = 1440
 
 SUB_SUFFIX = 's'
+
+
+def is_int(integer):
+    return isinstance(integer, int)
 
 
 def minutes_sub(timer):
