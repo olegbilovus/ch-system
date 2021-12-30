@@ -54,6 +54,7 @@ jobs:
           URL_MONGODB=${{ secrets.URL_MONGODB }}
           DB_NAME=${{ secrets.DB_NAME }}
           EOF
+          ls -la ./chsystem/database
       #----------------------------------------------
       #              run test suite
       #----------------------------------------------
