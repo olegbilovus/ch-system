@@ -28,15 +28,15 @@ PROJECTS_MONGODB = {
 
 
 def build_id_account(main_account, server):
-    return f'{main_account}_{server}'
+    return f'{server}_{main_account}'
 
 
 def build_id_role_stats(clan, role):
-    return f'{clan}_{role}'
+    return f'{role}_{clan}'
 
 
-def build_id_boss_timer(server, clan, boss):
-    return f'{server}_{clan}_{boss}'
+def build_id_boss_timer(clan, boss):
+    return f'{boss}_{clan}'
 
 
 def get_bosses_default():
@@ -87,7 +87,8 @@ def delete_clan(clan):
         return {'success': False, 'msg': ERROR_MESSAGES['clan_not_found']}
 
     db.clan.delete_one({'_id': clan})
-    db.role_stats.delete_many({'_id': {'$regex': f'{clan}_'}})
+    db.role_stats.delete_many({'_id': {'$regex': f'*_{clan}'}})
+    db.boss_timer.delete_many({'_id': {'$regex': f'*_{clan}'}})
     return {'success': True, 'msg': 'Clan deleted'}
 
 
@@ -129,7 +130,7 @@ def check_boss_is_valid(boss):
 
 
 def add_sub_to_boss_timer(server, clan, main_account, boss):
-    id_boss_timer = build_id_boss_timer(server, clan, boss)
+    id_boss_timer = build_id_boss_timer(clan, boss)
     user = get_user(main_account, server, PROJECTS_MONGODB['user.discord_id'])
     if not user:
         return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
@@ -138,16 +139,14 @@ def add_sub_to_boss_timer(server, clan, main_account, boss):
     if db.boss_timer.find_one({'_id': id_boss_timer, 'subs': {'$in': [user['discord_id']]}}, PROJECTS_MONGODB['check']):
         return {'success': False, 'msg': ERROR_MESSAGES['sub_already_exists']}
 
-    db.user.update_one({'_id': build_id_account(main_account, server)}, {
-        '$push': {'subs': boss}})
-    db.boss_timer.update_one({'_id': id_boss_timer}, {
-        '$push': {'subs': user['discord_id']}}, upsert=True)
+    db.user.update_one({'_id': build_id_account(main_account, server)}, {'$push': {'subs': boss}})
+    db.boss_timer.update_one({'_id': id_boss_timer}, {'$push': {'subs': user['discord_id']}}, upsert=True)
 
     return {'success': True, 'msg': 'User added to boss timer subs'}
 
 
 def remove_sub_from_boss_timer(server, clan, main_account, boss):
-    id_boss_timer = build_id_boss_timer(server, clan, boss)
+    id_boss_timer = build_id_boss_timer(clan, boss)
     user = get_user(main_account, server, PROJECTS_MONGODB['user.discord_id'])
     if not user:
         return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
