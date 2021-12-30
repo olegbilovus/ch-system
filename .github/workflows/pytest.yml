@@ -50,7 +50,8 @@ jobs:
       #----------------------------------------------
       - name: Create .env database
         run: |
-          cat << EOF > ./chsystem/database/.env
+          cd ./database
+          cat << EOF > .env
           URL_MONGODB=${{ secrets.URL_MONGODB }}
           DB_NAME=${{ secrets.DB_NAME }}
           EOF
@@ -67,4 +68,4 @@ jobs:
       #              delete .env database
       #----------------------------------------------
       - name: Delete .env database
-        run: rm ./chsystem/database/.env
+        run: rm .env
