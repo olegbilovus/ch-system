@@ -1,10 +1,11 @@
 import time
+from pathlib import Path
 
 import bcrypt
 import pymongo
 from dotenv import dotenv_values
 
-working_dir = '/home/ubuntu/chsystem/chsystem/database'
+working_dir = f'{str(Path.home())}/chsystem/chsystem/database'
 config = dotenv_values(f'{working_dir}/.env')
 
 db = pymongo.MongoClient(config['URL_MONGODB'])[config['DB_NAME']]
