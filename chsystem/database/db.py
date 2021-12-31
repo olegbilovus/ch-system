@@ -6,7 +6,7 @@ from dotenv import dotenv_values
 
 config = dotenv_values('.env')
 
-db = pymongo.MongoClient(config['URL_MONGODB'])[config['DB_NAME']]
+db = pymongo.MongoClient(config['URL_MONGODB'], wTimeoutMS=5000)[config['DB_NAME']]
 
 ERROR_MESSAGES = {
     'boss_not_found': 'Boss not found',
