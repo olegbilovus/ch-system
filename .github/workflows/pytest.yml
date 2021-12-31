@@ -60,7 +60,7 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          pytest -v
+          poetry run pytest -n auto -v
       #----------------------------------------------
       #              delete .env database
       #----------------------------------------------
