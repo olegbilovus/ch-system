@@ -87,8 +87,8 @@ def delete_clan(clan):
         return {'success': False, 'msg': ERROR_MESSAGES['clan_not_found']}
 
     db.clan.delete_one({'_id': clan})
-    db.role_stats.delete_many({'_id': {'$regex': f'*_{clan}'}})
-    db.boss_timer.delete_many({'_id': {'$regex': f'*_{clan}'}})
+    db.role_stats.delete_many({'_id': {'$regex': f'_{clan}'}})
+    db.boss_timer.delete_many({'_id': {'$regex': f'_{clan}'}})
     return {'success': True, 'msg': 'Clan deleted'}
 
 
