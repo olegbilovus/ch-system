@@ -90,6 +90,96 @@ def get_user(server, main_account, project=None):
     return db.user.find_one({'_id': build_id_account(server, main_account)}, project)
 
 
+def create_user(main_account,
+                pw,
+                role,
+                server,
+                clan,
+                subs=None,
+                discord_id=None,
+                alts=None,
+                bans=None,
+                notes=None,
+                change_pw=False):
+    if get_user(server, main_account, PROJECTS_MONGODB['check']) is not None:
+        return {'success': False, 'msg': ERROR_MESSAGES['user_already_exists']}
+    user_references = check_user_references_exists(clan, server)
+    if not user_references['success']:
+        return user_references
+    if not check_role_is_valid(role):
+        return {'success': False, 'msg': ERROR_MESSAGES['role_not_found']}
+
+    id_acc = build_id_account(server, main_account)
+
+    db.user.insert_one({
+        '_id': id_acc,
+        'main_account': main_account,
+        'role': role,
+        'server': server,
+        'clan': clan,
+        'discord_id': discord_id
+    })
+    db.user_details.insert_one({
+        '_id': id_acc,
+        'alts': alts,
+        'bans': bans,
+        'notes': notes
+    })
+    db.user_sensitive.insert_one({
+        '_id': id_acc,
+        'hash_pw': bcrypt.hashpw(str.encode(pw), bcrypt.gensalt()).decode(),
+        'change_pw': change_pw
+    })
+    db.user_stats.insert_one({
+        '_id': id_acc,
+        'last_login': 0,
+        'count_login': 0,
+        'count_bosses_reset': 0
+    })
+    db.role_stats.update_one({'_id': build_id_role_stats(role, clan), 'role': role},
+                             {'$inc': {'count_users': 1},
+                              '$push': {'users': {'_id': id_acc,
+                                                  'date_assigned': int(
+                                                      time.time())}}},
+                             upsert=True)
+    db.server.update_one({'_id': server}, {'$inc': {'count_users': 1}})
+    db.clan.update_one({'_id': clan}, {'$inc': {'count_users': 1}})
+    if subs:
+        for boss in subs:
+            if not check_boss_is_valid(boss):
+                return {'success': False, 'msg': ERROR_MESSAGES['boss_not_found']}
+            response = add_sub_to_boss_timer(server, clan, main_account, boss)
+            if not response['success']:
+                return response
+
+    return {'success': True, 'msg': 'User account created'}
+
+
+def delete_user(main_account, server):
+    user = get_user(server, main_account, {'clan': 1, 'role': 1})
+    if not user:
+        return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
+
+    id_acc = build_id_account(server, main_account)
+
+    db.user.delete_one({'_id': id_acc})
+    db.user_details.delete_one({'_id': id_acc})
+    db.user_sensitive.delete_one({'_id': id_acc})
+    db.user_stats.delete_one({'_id': id_acc})
+    db.role_stats.update_one({'_id': build_id_role_stats(user['clan'], user['role'])},
+                             {'$inc': {'count_users': -1}, '$pull': {'users': {'_id': id_acc}}})
+    db.server.update_one({'_id': server}, {'$inc': {'count_users': -1}})
+    db.clan.update_one({'_id': user['clan']}, {'$inc': {'count_users': -1}})
+    if 'subs' in user:
+        for boss in user['subs']:
+            response = remove_sub_from_boss_timer(
+                server, user['clan'], main_account, boss)
+            if not response['success']:
+                return response
+
+    return {'success': True, 'msg': 'User account deleted'}
+
+
 def get_user_details(server, main_account, project=None):
     return db.user_details.find_one({'_id': build_id_account(server, main_account)}, project)
 
@@ -207,93 +297,3 @@ def remove_sub_from_boss_timer(server, clan, main_account, boss):
         '$pull': {'subs': boss}})
 
     return {'success': True, 'msg': 'User removed from boss timer subs'}
-
-
-def create_user(main_account,
-                pw,
-                role,
-                server,
-                clan,
-                subs=None,
-                discord_id=None,
-                alts=None,
-                bans=None,
-                notes=None,
-                change_pw=False):
-    if get_user(server, main_account, PROJECTS_MONGODB['check']) is not None:
-        return {'success': False, 'msg': ERROR_MESSAGES['user_already_exists']}
-    user_references = check_user_references_exists(clan, server)
-    if not user_references['success']:
-        return user_references
-    if not check_role_is_valid(role):
-        return {'success': False, 'msg': ERROR_MESSAGES['role_not_found']}
-
-    id_acc = build_id_account(server, main_account)
-
-    db.user.insert_one({
-        '_id': id_acc,
-        'main_account': main_account,
-        'role': role,
-        'server': server,
-        'clan': clan,
-        'discord_id': discord_id
-    })
-    db.user_details.insert_one({
-        '_id': id_acc,
-        'alts': alts,
-        'bans': bans,
-        'notes': notes
-    })
-    db.user_sensitive.insert_one({
-        '_id': id_acc,
-        'hash_pw': bcrypt.hashpw(str.encode(pw), bcrypt.gensalt()).decode(),
-        'change_pw': change_pw
-    })
-    db.user_stats.insert_one({
-        '_id': id_acc,
-        'last_login': 0,
-        'count_login': 0,
-        'count_bosses_reset': 0
-    })
-    db.role_stats.update_one({'_id': build_id_role_stats(role, clan), 'role': role},
-                             {'$inc': {'count_users': 1},
-                              '$push': {'users': {'_id': id_acc,
-                                                  'date_assigned': int(
-                                                      time.time())}}},
-                             upsert=True)
-    db.server.update_one({'_id': server}, {'$inc': {'count_users': 1}})
-    db.clan.update_one({'_id': clan}, {'$inc': {'count_users': 1}})
-    if subs:
-        for boss in subs:
-            if not check_boss_is_valid(boss):
-                return {'success': False, 'msg': ERROR_MESSAGES['boss_not_found']}
-            response = add_sub_to_boss_timer(server, clan, main_account, boss)
-            if not response['success']:
-                return response
-
-    return {'success': True, 'msg': 'User account created'}
-
-
-def delete_user(main_account, server):
-    user = get_user(server, main_account, {'clan': 1, 'role': 1})
-    if not user:
-        return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
-
-    id_acc = build_id_account(server, main_account)
-
-    db.user.delete_one({'_id': id_acc})
-    db.user_details.delete_one({'_id': id_acc})
-    db.user_sensitive.delete_one({'_id': id_acc})
-    db.user_stats.delete_one({'_id': id_acc})
-    db.role_stats.update_one({'_id': build_id_role_stats(user['clan'], user['role'])},
-                             {'$inc': {'count_users': -1}, '$pull': {'users': {'_id': id_acc}}})
-    db.server.update_one({'_id': server}, {'$inc': {'count_users': -1}})
-    db.clan.update_one({'_id': user['clan']}, {'$inc': {'count_users': -1}})
-    if 'subs' in user:
-        for boss in user['subs']:
-            response = remove_sub_from_boss_timer(
-                server, user['clan'], main_account, boss)
-            if not response['success']:
-                return response
-
-    return {'success': True, 'msg': 'User account deleted'}
