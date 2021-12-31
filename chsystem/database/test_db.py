@@ -1,13 +1,22 @@
 from secrets import token_hex
 
+import pytest
 from dotenv import dotenv_values
 
 import db
 
 config = dotenv_values('.env')
-db_name = f'{config["DB_NAME"]}_test_database'
-db.get_db(config['URL_MONGODB']).drop_database(db_name)
-db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1)
+
+
+@pytest.fixture(autouse=True, scope='session')
+def setup_db():
+    db_name = f'{config["DB_NAME"]}_test_database'
+    db.get_db(config['URL_MONGODB']).drop_database(db_name)
+    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1)
+
+    yield
+
+    db.get_db(config['URL_MONGODB']).drop_database(db_name)
 
 
 def test_db_create_delete_server():
