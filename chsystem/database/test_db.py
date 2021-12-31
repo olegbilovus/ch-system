@@ -1,27 +1,17 @@
 from secrets import token_hex
 
-import pytest
 from dotenv import dotenv_values
 
 import db
 
 config = dotenv_values('.env')
-
-server = clan = 1
-
-
-@pytest.fixture(autouse=True)
-def setup_db():
-    db_name = f'{config["DB_NAME"]}_test'
-    db.get_db(config['URL_MONGODB']).drop_database(db_name)
-    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1)
-
-    yield
-
-    db.get_db(config['URL_MONGODB']).drop_database(db_name)
+db_name = f'{config["DB_NAME"]}_test_database'
+db.get_db(config['URL_MONGODB']).drop_database(db_name)
+db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1)
 
 
 def test_db_create_delete_server():
+    server = token_hex(8)
     response = db.create_server(server, 'test_server')
     assert response['success']
     server_from_db = db.get_server(server)
@@ -29,6 +19,8 @@ def test_db_create_delete_server():
 
 
 def test_db_create_delete_clan():
+    server = token_hex(8)
+    clan = token_hex(8)
     db.create_server(server, 'test_server')
     response = db.create_clan(clan, server, 'test_clan')
     assert response['success']
@@ -37,6 +29,8 @@ def test_db_create_delete_clan():
 
 
 def test_db_create_delete_user():
+    server = token_hex(8)
+    clan = token_hex(8)
     main_account = token_hex(8)
     pw = token_hex(8)
     role = 1

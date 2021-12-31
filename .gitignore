@@ -10,4 +10,4 @@ dist/*
 security/*.png
 **/.env
 .idea/*
-*/.env
+**/.coverage
