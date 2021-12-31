@@ -3,7 +3,7 @@ name: pytest database
 on: push
 
 jobs:
-  test:
+  pytest_database:
     runs-on: ubuntu-latest
     steps:
       #----------------------------------------------
