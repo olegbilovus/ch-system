@@ -12,8 +12,7 @@ config = dotenv_values('.env')
 @pytest.fixture(autouse=True)
 def setup_db():
     db_name = f'{config["DB_NAME"]}_test'
-    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1).with_options(
-        bypassDocumentValidation=True)
+    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1)
 
     yield
 
