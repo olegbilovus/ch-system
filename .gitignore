@@ -11,3 +11,4 @@ security/*.png
 **/.env
 .idea/*
 **/.coverage
+/chsystem/database/data/
