@@ -44,6 +44,8 @@ def test_db_create_delete_user():
     main_account = token_hex(8)
     pw = token_hex(8)
     role = 1
+    clazz = 'Druid'
+    level = 50
     subs = [1, 2]
     bosses_type = 1
     discord_id = token_hex(8)
@@ -55,7 +57,7 @@ def test_db_create_delete_user():
     for boss in subs:
         db.create_boss(boss, bosses_type, 0)
 
-    user = (main_account, pw, role, server, clan)
+    user = (main_account, pw, role, clazz, level, server, clan)
     response = db.create_user(*user, subs=subs, discord_id=discord_id)
 
     assert response['success'], response['msg']
@@ -64,6 +66,8 @@ def test_db_create_delete_user():
     assert user_from_db['server'] == server
     assert user_from_db['clan'] == clan
     assert user_from_db['role'] == role
+    assert user_from_db['class'] == clazz
+    assert user_from_db['level'] == level
     assert user_from_db['subs'] == subs
     assert user_from_db['discord_id'] == discord_id
 
