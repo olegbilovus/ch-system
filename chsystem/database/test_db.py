@@ -12,7 +12,7 @@ config = dotenv_values('.env')
 def setup_db():
     db_name = f'{config["DB_NAME"]}_test_database'
     db.get_db(config['URL_MONGODB']).drop_database(db_name)
-    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1)
+    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=0)
 
     yield
 
