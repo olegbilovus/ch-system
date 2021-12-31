@@ -1,3 +1,4 @@
+from random import randint
 from secrets import token_hex
 
 import pytest
@@ -11,7 +12,8 @@ config = dotenv_values('.env')
 @pytest.fixture(autouse=True)
 def setup_db():
     db_name = f'{config["DB_NAME"]}_test'
-    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1)
+    db.db = db.get_db(config['URL_MONGODB'], db_name, wTimeoutMS=5000, w=1).with_options(
+        bypassDocumentValidation=True)
 
     yield
 
@@ -19,7 +21,7 @@ def setup_db():
 
 
 def test_db_create_delete_server():
-    server = token_hex(8)
+    server = randint(1, 100)
     response = db.create_server(server, 'test_server')
     assert response['success']
     server_from_db = db.get_server(server)
@@ -27,8 +29,8 @@ def test_db_create_delete_server():
 
 
 def test_db_create_delete_clan():
-    server = token_hex(8)
-    clan = token_hex(8)
+    server = randint(1, 100)
+    clan = randint(1, 100)
     db.create_server(server, 'test_server')
     response = db.create_clan(clan, server, 'test_clan')
     assert response['success']
@@ -39,8 +41,8 @@ def test_db_create_delete_clan():
 def test_db_create_delete_user():
     main_account = token_hex(8)
     pw = token_hex(8)
-    server = token_hex(8)
-    clan = token_hex(8)
+    server = randint(1, 100)
+    clan = randint(1, 100)
     role = 1
     subs = [1, 2]
     bosses_type = 1
