@@ -50,8 +50,8 @@ jobs:
         with:
           name: coverage-database
           path: |
-            /htmlcov
-            !/htmlcov/.gitignore
+            ./htmlcov
+            !./htmlcov/.gitignore
           if-no-files-found: error
 
   coverage-to-repo:
