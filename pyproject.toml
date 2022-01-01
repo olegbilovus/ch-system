@@ -24,7 +24,8 @@ dnspython = "^2.0.0"
 python-dotenv = "^0.19.2"
 
 [tool.poetry.dev-dependencies]
-pytest-cov = "^3.0.0"
+pytest = "^6.2.5"
+coverage = "^6.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
