@@ -1,1 +1,2 @@
 [![test](https://github.com/OB-UNISA/ch-system/actions/workflows/pytest.yml/badge.svg)](https://github.com/OB-UNISA/ch-system/actions/workflows/pytest.yml)
+[![codecov](https://codecov.io/gh/OB-UNISA/ch-system/branch/main/graph/badge.svg?token=JU7H68ZTM4)](https://codecov.io/gh/OB-UNISA/ch-system)
