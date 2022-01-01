@@ -39,10 +39,13 @@ jobs:
           poetry run coverage run -m pytest -v -k test_db.py
       - name: Delete .env database
         run: rm .env
-      - name: Generate report and upload to artifact
+      - name: Generate report
         run: |
           source .venv/bin/activate
           poetry run coverage html
+          pwd 
+          ls -a
+      - name: Upload report to artifact
         uses: actions/upload-artifact@v2
         with:
           name: coverage-database
