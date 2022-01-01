@@ -30,7 +30,7 @@ jobs:
       - name: Create .env database
         run: |
           cat << EOF > .env
-          URL_MONGODB=${{ secrets.URL_MONGODB }}
+          URL_MONGODB=${{ secrets.URL_MONGODB_GH_NEW_DATA_EXTERNAL }}
           DB_NAME=${{ secrets.DB_NAME }}
           CH_SERVERS_URL=${{ secrets.CH_SERVERS_URL }}
           CH_CLANS_URL=${{ secrets.CH_CLANS_URL }}
@@ -71,7 +71,7 @@ jobs:
       - name: Create .env database
         run: |
           cat << EOF > .env
-          URL_MONGODB=${{ secrets.URL_MONGODB }}
+          URL_MONGODB=${{ secrets.URL_MONGODB_GH_NEW_DATA_EXTERNAL }}
           DB_NAME=${{ secrets.DB_NAME }}
           CH_SERVERS_URL=${{ secrets.CH_SERVERS_URL }}
           CH_CLANS_URL=${{ secrets.CH_CLANS_URL }}
@@ -112,7 +112,7 @@ jobs:
       - name: Create .env database
         run: |
           cat << EOF > .env
-          URL_MONGODB=${{ secrets.URL_MONGODB }}
+          URL_MONGODB=${{ secrets.URL_MONGODB_GH_NEW_DATA_EXTERNAL }}
           DB_NAME=${{ secrets.DB_NAME }}
           CH_SERVERS_URL=${{ secrets.CH_SERVERS_URL }}
           CH_CLANS_URL=${{ secrets.CH_CLANS_URL }}
