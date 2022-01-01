@@ -39,11 +39,10 @@ jobs:
           poetry run coverage run -m pytest -v -k test_db.py
       - name: Delete .env database
         run: rm .env
-      - name: Generate report
+      - name: Generate report and upload to artifact
         run: |
           source .venv/bin/activate
           poetry run coverage html
-      - name: Upload coverage report artifacts
         uses: actions/upload-artifact@v2
         with:
           name: coverage-database
@@ -61,11 +60,11 @@ jobs:
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
         id: extract_branch
-      - name: Download database-set artifact
+      - name: Download database-test artifact
         uses: actions/download-artifact@v2
         with:
-          name: database-set
-          path: ./docs/database-coverage
+          name: coverage-database
+          path: ./docs/coverage-database
       - name: Push to repository
         run: |
           git add .
