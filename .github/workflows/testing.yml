@@ -69,7 +69,7 @@ jobs:
           name: coverage-database
       - name: Combine coverages and generate html report
         run: |
-          coverage html -d ./docs
+          coverage html --omit="*test*.py" -d ./docs
           rm -rf ./docs/.gitignore
       - name: Push to repository
         run: |
