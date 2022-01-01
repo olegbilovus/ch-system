@@ -17,6 +17,7 @@ ERROR_MESSAGES = {
     'clan_not_found': 'Clan not found',
     'clan_already_exists': 'Clan already exists',
     'server_not_found': 'Server not found',
+    'server_already_exists': 'Server already exists',
     'sub_already_exists': 'Sub already exists',
     'sub_not_found': 'Sub not found',
 }
