@@ -40,7 +40,9 @@ jobs:
       - name: Delete .env database
         run: rm .env
       - name: Generate report
-        run: coverage report > coverage.txt
+        run: |
+          source .venv/bin/activate
+          poetry run coverage report > coverage.txt
       - name: Upload coverage report
         uses: actions/upload-artifact@v2
         with:
