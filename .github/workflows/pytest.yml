@@ -39,19 +39,12 @@ jobs:
           poetry run coverage run -m pytest -v -k test_db.py
       - name: Delete .env database
         run: rm .env
-      - name: Generate report
-        run: |
-          source .venv/bin/activate
-          poetry run coverage html
-          pwd 
-          ls -a
       - name: Upload report to artifact
         uses: actions/upload-artifact@v2
         with:
           name: coverage-database
           path: |
-            ./htmlcov
-            !./htmlcov/.gitignore
+            ./**/.coverage
           if-no-files-found: error
 
   coverage-to-repo:
@@ -60,6 +53,12 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.x
+      - name: Install Coverage.py
+        run: pip install coverage
       - name: Extract branch name
         shell: bash
         run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
@@ -68,7 +67,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: coverage-database
-          path: ./docs/coverage-database
+          path: .
+      - name: Combine coverages and generate html report
+        run: |
+          coverage combine
+          coverage html -d ./docs
       - name: Push to repository
         run: |
           echo ${{ steps.extract_branch.outputs.branch }}
