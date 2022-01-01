@@ -34,7 +34,7 @@ def get_db(url_db, server_name=None, *vargs, **kwargs):
                                                                                                               **kwargs)
 
 
-db = get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=0)
+db = None
 
 
 def get_bosses():
@@ -64,7 +64,7 @@ def check_boss_type_is_valid(_type):
 
 def create_boss_type(_type):
     if check_boss_type_is_valid(_type):
-        return {'success': False, 'msg': ERROR_MESSAGES['bose_type_already_exists']}
+        return {'success': False, 'msg': ERROR_MESSAGES['boss_type_already_exists']}
     db.boss_type.insert_one({'type': _type})
     return {'success': True, 'msg': 'Boss type created'}
 
@@ -267,3 +267,7 @@ def remove_sub_from_boss_timer(server, clan, main_account, boss):
         '$pull': {'subs': user['discord_id']}})
 
     return {'success': True, 'msg': 'User removed from boss timer subs'}
+
+
+if __name__ == '__main__':
+    db = get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)

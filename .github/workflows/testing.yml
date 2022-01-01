@@ -30,8 +30,8 @@ jobs:
       - name: Create .env database
         run: |
           cat << EOF > .env
-          URL_MONGODB=${{ secrets.URL_MONGODB_TEST }}
-          DB_NAME=${{ secrets.DB_NAME }}
+          URL_MONGODB_TEST=${{ secrets.URL_MONGODB_TEST }}
+          DB_NAME_TEST=${{ secrets.DB_NAME_TEST }}
           EOF
       - name: Run tests
         run: |

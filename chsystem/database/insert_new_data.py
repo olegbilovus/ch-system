@@ -73,6 +73,7 @@ def threads_create_start(data, threads, target, logs=False):
 
 if __name__ == '__main__':
     if len(sys.argv) == 4:
+        db.db = db.get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)
         thr = int(sys.argv[2])
         logs = sys.argv[3] == '1'
         print('--- Start ---')
