@@ -52,6 +52,7 @@ jobs:
           path: |
             /htmlcov
             !/htmlcov/.gitignore
+          if-no-files-found: error
 
   coverage-to-repo:
     needs: [ database-test ]
