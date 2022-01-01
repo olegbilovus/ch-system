@@ -42,9 +42,32 @@ jobs:
       - name: Generate report
         run: |
           source .venv/bin/activate
-          poetry run coverage report > coverage.txt
-      - name: Upload coverage report
+          poetry run coverage html
+      - name: Upload coverage report artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: coverage-database-report.txt
-          path: ./coverage.txt
+          name: coverage-database
+          path: |
+            /htmlcov
+            !/htmlcov/.gitignore
+
+  coverage-to-repo:
+    needs: [ database-test ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Download database-set artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: database-set
+          path: ./docs/database-coverage
+      - name: Push to repository
+        run: |
+          git add .
+          git commit -m "Update database coverage"
+          echo ${{ steps.extract_branch.outputs.branch }}
