@@ -39,15 +39,10 @@ jobs:
           poetry run coverage run -m pytest -v -k test_db.py
       - name: Delete .env database
         run: rm .env
-
-  coverage:
-    needs: [ database-test ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate coverage report
-        run: |
-          coverage html
-      - name: Upload coverage report to repository
-        run: |
-          pwd
-          ls
+      - name: Generate report
+        run: coverage report > coverage.txt
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-database-report.txt
+          path: ./coverage.txt
