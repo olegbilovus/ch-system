@@ -1,7 +1,5 @@
 name: update data
-on:
-  schedule:
-    - cron: '0 0 * * 0'
+on: push
 jobs:
   update-servers:
     runs-on: ubuntu-latest
