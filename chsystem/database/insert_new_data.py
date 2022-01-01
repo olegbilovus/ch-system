@@ -51,7 +51,7 @@ def insert_clans(clans, t_n, logs=False):
     for clan in clans:
         res = db.create_clan(clan['ClanName'], clan['WorldName'])
         if logs:
-            print(t_n, res)
+            print(t_n, res, clan['Index'])
 
 
 def threads_create_start(data, threads, target, logs=False):
