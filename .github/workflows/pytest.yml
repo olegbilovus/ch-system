@@ -67,7 +67,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: coverage-database
-          path: .
+          path: ./
       - name: Combine coverages and generate html report
         run: |
         #coverage combine to use when will have more than one coverage file. If used now, will generate error
