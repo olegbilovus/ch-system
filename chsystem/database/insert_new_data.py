@@ -1,3 +1,4 @@
+import sys
 import threading
 from secrets import token_hex
 
@@ -71,11 +72,16 @@ def threads_create_start(data, threads, target, logs=False):
 
 
 if __name__ == '__main__':
-    thr = 20
-    print('--- Start ---')
-    print('--- Insert servers ---')
-    threads_create_start(get_servers(config['CH_SERVERS_URL']), thr, insert_servers, logs=True)
-    print('--- Insert clans ---')
-    threads_create_start(get_data(config['CH_CLANS_URL'], 'TheClanDataList'), thr, insert_clans, logs=True)
-    print('--- Insert players ---')
-    threads_create_start(get_data(config['CH_PLAYERS_URL'], 'RankingDataList'), thr, insert_players, logs=True)
+    if len(sys.argv) == 4:
+        thr = int(sys.argv[2])
+        logs = sys.argv[3] == '1'
+        print('--- Start ---')
+        if sys.argv[1] == 'servers':
+            print('--- Insert servers ---')
+            threads_create_start(get_servers(config['CH_SERVERS_URL']), thr, insert_servers, logs=logs)
+        elif sys.argv[1] == 'clans':
+            print('--- Insert clans ---')
+            threads_create_start(get_data(config['CH_CLANS_URL'], 'TheClanDataList'), thr, insert_clans, logs=logs)
+        elif sys.argv[1] == 'players':
+            print('--- Insert players ---')
+            threads_create_start(get_data(config['CH_PLAYERS_URL'], 'RankingDataList'), thr, insert_players, logs=logs)

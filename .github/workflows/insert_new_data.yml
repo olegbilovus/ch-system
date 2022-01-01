@@ -1,0 +1,122 @@
+name: update data
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+jobs:
+  update-servers:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.x
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Install library
+        run: poetry install --no-interaction
+      - name: Create .env database
+        run: |
+          cat << EOF > .env
+          CH_SERVERS_URL=${{ secrets.CH_SERVERS_URL }}
+          CH_CLANS_URL=${{ secrets.CH_CLANS_URL }}
+          CH_PLAYERS_URL=${{ secrets.CH_PLAYERS_URL }}
+          EOF
+      - name: Run insert script
+        run: |
+          source .venv/bin/activate
+          poetry run python3 insert_new_data.py servers 5 1
+      - name: Delete .env database
+        run: rm .env
+  update-clans:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.x
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Install library
+        run: poetry install --no-interaction
+      - name: Create .env database
+        run: |
+          cat << EOF > .env
+          CH_SERVERS_URL=${{ secrets.CH_SERVERS_URL }}
+          CH_CLANS_URL=${{ secrets.CH_CLANS_URL }}
+          CH_PLAYERS_URL=${{ secrets.CH_PLAYERS_URL }}
+          EOF
+      - name: Run insert script
+        run: |
+          source .venv/bin/activate
+          poetry run python3 insert_new_data.py clans 20 1
+      - name: Delete .env database
+        run: rm .env
+  update-players:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Set up python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.x
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+          installer-parallel: true
+      - name: Load cached venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v2
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+      - name: Install dependencies
+        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
+        run: poetry install --no-interaction --no-root
+      - name: Install library
+        run: poetry install --no-interaction
+      - name: Create .env database
+        run: |
+          cat << EOF > .env
+          CH_SERVERS_URL=${{ secrets.CH_SERVERS_URL }}
+          CH_CLANS_URL=${{ secrets.CH_CLANS_URL }}
+          CH_PLAYERS_URL=${{ secrets.CH_PLAYERS_URL }}
+          EOF
+      - name: Run insert script
+        run: |
+          source .venv/bin/activate
+          poetry run python3 insert_new_data.py players 20 1
+      - name: Delete .env database
+        run: rm .env
