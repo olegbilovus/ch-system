@@ -70,6 +70,7 @@ jobs:
       - name: Combine coverages and generate html report
         run: |
           coverage html -d ./docs
+          rm -rf ./docs/.gitignore
       - name: Push to repository
         run: |
           echo ${{ steps.extract_branch.outputs.branch }}
