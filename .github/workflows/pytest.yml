@@ -69,7 +69,6 @@ jobs:
           name: coverage-database
       - name: Combine coverages and generate html report
         run: |
-  #coverage combine to be used when will have more than one .coverage file. If used now, will generate error
           coverage html -d ./docs
       - name: Push to repository
         run: |
