@@ -131,10 +131,9 @@ def create_user(main_account,
 
 
 def delete_user(main_account, server):
-    user = get_user(server, main_account, {'clan': 1, 'role': 1})
+    user = get_user(server, main_account)
     if not user:
         return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
-    db.user.delete_one({'server': server, 'main_account': main_account})
     db.role_stats.update_one({'role': user['role'], 'server': server, 'clan': user['clan']},
                              {'$inc': {'count_users': -1}})
     db.server.update_one({'server': server}, {'$inc': {'count_users': -1}})
@@ -145,6 +144,7 @@ def delete_user(main_account, server):
                 server, user['clan'], main_account, boss)
             if not response['success']:
                 return response
+    db.user.delete_one({'server': server, 'main_account': main_account})
 
     return {'success': True, 'msg': 'User account deleted'}
 
@@ -256,9 +256,10 @@ def remove_sub_from_boss_timer(server, clan, main_account, boss):
     user = get_user(server, main_account, PROJECTS_MONGODB['user.discord_id'])
     if not user:
         return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
-    if user['discord_id']:
+    if not user['discord_id']:
         return {'success': False, 'msg': ERROR_MESSAGES['user_no_discord_id']}
-    if not db.boss_timer.find_one({'server': server, 'boss': boss, 'clan': clan, 'subs': {'$in': [boss]}}):
+    if not db.boss_timer.find_one(
+            {'server': server, 'boss': boss, 'clan': clan, 'subs': {'$in': [user['discord_id']]}}):
         return {'success': False, 'msg': ERROR_MESSAGES['sub_not_found']}
 
     db.user.update_one({'server': server, 'main_account': main_account}, {

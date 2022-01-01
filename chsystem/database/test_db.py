@@ -25,9 +25,9 @@ def test_create_boss_01():
     """Test to create a boss with invalid boss type"""
     boss = 1
     boss_type = 1
-    res = db.create_boss(boss, boss_type, 0)
-    assert not res['success']
-    assert res['msg'] == db.ERROR_MESSAGES['boss_type_not_found']
+    response = db.create_boss(boss, boss_type, 0)
+    assert not response['success']
+    assert response['msg'] == db.ERROR_MESSAGES['boss_type_not_found']
 
 
 def test_create_boss_02():
@@ -36,18 +36,27 @@ def test_create_boss_02():
     _type = 1
     db.create_boss_type(_type)
     db.create_boss(boss, _type, 0)
-    res = db.create_boss(boss, _type, 0)
-    assert not res['success']
-    assert res['msg'] == db.ERROR_MESSAGES['boss_already_exists']
+    response = db.create_boss(boss, _type, 0)
+    assert not response['success']
+    assert response['msg'] == db.ERROR_MESSAGES['boss_already_exists']
 
 
 def test_create_boss_type_01():
     """Test to create a type which already exists"""
     boss_type = 1
     db.create_boss_type(boss_type)
-    res = db.create_boss_type(boss_type)
-    assert not res['success']
-    assert res['msg'] == db.ERROR_MESSAGES['boss_type_already_exists']
+    response = db.create_boss_type(boss_type)
+    assert not response['success']
+    assert response['msg'] == db.ERROR_MESSAGES['boss_type_already_exists']
+
+
+def test_create_server_01():
+    """Test to create a server"""
+    server = token_hex(8)
+    response = db.create_server(server)
+    assert response['success'], response['msg']
+    server_from_db = db.get_server(server)
+    assert server_from_db['server'] == server
 
 
 def test_delete_server_01():
@@ -55,7 +64,7 @@ def test_delete_server_01():
     server = token_hex(8)
     db.create_server(server)
     response = db.delete_server(server)
-    assert response['success']
+    assert response['success'], response['msg']
     assert not db.get_server(server)
 
 
@@ -67,29 +76,41 @@ def test_delete_server_02():
     assert response['msg'] == db.ERROR_MESSAGES['server_not_found']
 
 
-def test_db_create_delete_server_01():
-    """Test to create and delete a server"""
-    server = token_hex(8)
-    response = db.create_server(server)
-    assert response['success']
-    server_from_db = db.get_server(server)
-    assert server_from_db['server'] == server
-
-
-def test_db_create_delete_clan_01():
-    """Test to create and delete a clan"""
+def test_create_clan_01():
+    """Test to create a clan"""
     server = token_hex(8)
     clan = token_hex(8)
     db.create_server(server)
     response = db.create_clan(clan, server)
-    assert response['success']
+    assert response['success'], response['msg']
     clan_from_db = db.get_clan(clan, server)
     assert clan_from_db['clan'] == clan
     assert clan_from_db['server'] == server
 
 
-def test_db_create_delete_user_01():
-    """Test to create and delete a user"""
+def test_delete_clan_01():
+    """Test to delete a clan"""
+    server = token_hex(8)
+    clan = token_hex(8)
+    db.create_server(server)
+    db.create_clan(clan, server)
+    response = db.delete_clan(clan, server)
+    assert response['success'], response['msg']
+    assert not db.get_clan(clan, server)
+
+
+def test_delete_clan_02():
+    """Test to delete a clan which doesn't exist"""
+    server = token_hex(8)
+    clan = token_hex(8)
+    db.create_server(server)
+    response = db.delete_clan(clan, server)
+    assert not response['success']
+    assert response['msg'] == db.ERROR_MESSAGES['clan_not_found']
+
+
+def test_create_user_01():
+    """Test to create a user"""
     server = token_hex(8)
     clan = token_hex(8)
     main_account = token_hex(8)
@@ -124,6 +145,48 @@ def test_db_create_delete_user_01():
 
     role_stats_from_db = db.get_role_stats(role, clan, server)
     assert role_stats_from_db['count_users'] == 1
+    server_from_db = db.get_server(server)
+    assert server_from_db['count_users'] == 1
+    clan_from_db = db.get_clan(clan, server)
+    assert clan_from_db['count_users'] == 1
 
     for boss in subs:
         assert discord_id in db.get_bosses_timer(boss, clan, server)['subs'], f'discord_id not in {boss} subs'
+
+
+def test_delete_user_01():
+    """Test to delete a user"""
+    server = token_hex(8)
+    clan = token_hex(8)
+    main_account = token_hex(8)
+    pw = token_hex(8)
+    role = 1
+    clazz = 'Druid'
+    level = 50
+    subs = [1, 2]
+    bosses_type = 1
+    discord_id = token_hex(8)
+
+    db.create_server(server)
+    db.create_clan(clan, server)
+    db.create_role(role)
+    db.create_boss_type(bosses_type, )
+    for boss in subs:
+        db.create_boss(boss, bosses_type, 0)
+
+    user = (main_account, pw, role, clazz, level, server, clan)
+    db.create_user(*user, subs=subs, discord_id=discord_id)
+
+    response = db.delete_user(main_account, server)
+    assert response['success'], response['msg']
+    assert not db.get_user(server, main_account)
+
+    role_stats_from_db = db.get_role_stats(role, clan, server)
+    assert role_stats_from_db['count_users'] == 0
+    server_from_db = db.get_server(server)
+    assert server_from_db['count_users'] == 0
+    clan_from_db = db.get_clan(clan, server)
+    assert clan_from_db['count_users'] == 0
+
+    for boss in subs:
+        assert discord_id not in db.get_bosses_timer(boss, clan, server)['subs'], f'discord_id in {boss} subs'
