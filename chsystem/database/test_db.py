@@ -1,5 +1,7 @@
+from random import randint
 from secrets import token_hex
 
+import bcrypt
 import pytest
 from dotenv import dotenv_values
 
@@ -12,22 +14,48 @@ def generate_user():
     server = token_hex(8)
     clan = token_hex(8)
     main_account = token_hex(8)
-    pw = token_hex(8)
-    role = 1
-    clazz = 'Druid'
-    level = 50
-    subs = [1, 2]
-    bosses_type = 1
+    pw = str(token_hex(8))
+    role = randint(1, 5)
+    clazz = token_hex(8)
+    level = randint(1, 240)
+    subs = [x for x in range(randint(1, 10))]
+    bosses_type_len = randint(3, 10)
+    bosses_types = [x for x in range(bosses_type_len)]
     discord_id = token_hex(8)
 
     db.create_server(server)
     db.create_clan(clan, server)
     db.create_role(role)
-    db.create_boss_type(bosses_type, )
+    for bosses_type in bosses_types:
+        db.create_boss_type(bosses_type)
     for boss in subs:
-        db.create_boss(boss, bosses_type, 0)
+        db.create_boss(boss, randint(1, bosses_type_len - 1), randint(10, 2000))
 
     return main_account, pw, role, clazz, level, server, clan, subs, discord_id
+
+
+def asserts_user(user):
+    user_from_db = db.get_user(user['server'], user['main_account'])
+    assert user_from_db['main_account'] == user['main_account']
+    assert bcrypt.checkpw(user['pw'].encode('utf-8'), user_from_db['hash_pw'].encode('utf-8'))
+    assert user_from_db['role'] == user['role']
+    assert user_from_db['class'] == user['class']
+    assert user_from_db['level'] == user['level']
+    assert user_from_db['server'] == user['server']
+    assert user_from_db['clan'] == user['clan']
+    assert user_from_db['subs'] == user['subs']
+    assert user_from_db['discord_id'] == user['discord_id']
+
+    role_stats_from_db = db.get_role_stats(user['role'], user['clan'], user['server'])
+    assert role_stats_from_db['count_users'] == 1
+    server_from_db = db.get_server(user['server'])
+    assert server_from_db['count_users'] == 1
+    clan_from_db = db.get_clan(user['clan'], user['server'])
+    assert clan_from_db['count_users'] == 1
+
+    for boss in user['subs']:
+        assert user['discord_id'] in db.get_bosses_timer(boss, user['clan'], user['server'])[
+            'subs'], f'discord_id not in {boss} subs'
 
 
 @pytest.fixture(autouse=True, scope='session')
@@ -138,25 +166,9 @@ def test_create_user_01():
     response = db.create_user(*user, subs=subs, discord_id=discord_id)
 
     assert response['success'], response['msg']
-    user_from_db = db.get_user(server, main_account)
-    assert user_from_db['main_account'] == main_account
-    assert user_from_db['server'] == server
-    assert user_from_db['clan'] == clan
-    assert user_from_db['role'] == role
-    assert user_from_db['class'] == clazz
-    assert user_from_db['level'] == level
-    assert user_from_db['subs'] == subs
-    assert user_from_db['discord_id'] == discord_id
-
-    role_stats_from_db = db.get_role_stats(role, clan, server)
-    assert role_stats_from_db['count_users'] == 1
-    server_from_db = db.get_server(server)
-    assert server_from_db['count_users'] == 1
-    clan_from_db = db.get_clan(clan, server)
-    assert clan_from_db['count_users'] == 1
-
-    for boss in subs:
-        assert discord_id in db.get_bosses_timer(boss, clan, server)['subs'], f'discord_id not in {boss} subs'
+    asserts_user(
+        {'main_account': main_account, 'pw': pw, 'role': role, 'class': clazz, 'level': level, 'server': server,
+         'clan': clan, 'subs': subs, 'discord_id': discord_id})
 
 
 def test_delete_user_01():
@@ -173,6 +185,30 @@ def test_delete_user_01():
     assert role_stats_from_db['count_users'] == 0
     server_from_db = db.get_server(server)
     assert server_from_db['count_users'] == 0
+    clan_from_db = db.get_clan(clan, server)
+    assert clan_from_db['count_users'] == 0
+
+    for boss in subs:
+        assert discord_id not in db.get_bosses_timer(boss, clan, server)['subs'], f'discord_id in {boss} subs'
+
+
+def test_update_user_01():
+    """Test to update a user"""
+    main_account, pw, role, clazz, level, server, clan, subs, discord_id = generate_user()
+    user = (main_account, pw, role, clazz, level, server, clan)
+    db.create_user(*user, subs=subs, discord_id=discord_id)
+
+    main_account2, pw, role2, clazz, level, server2, clan2, subs2, discord_id = generate_user()
+    response = db.update_user(main_account, server, clan=clan2, pw=pw, role=role2, clazz=clazz, level=level, subs=subs2,
+                              discord_id=discord_id)
+
+    assert response['success'], response['msg']
+    asserts_user(
+        {'main_account': main_account, 'pw': pw, 'role': role2, 'class': clazz, 'level': level, 'server': server,
+         'clan': clan2, 'subs': subs2, 'discord_id': discord_id})
+
+    role_stats_from_db = db.get_role_stats(role, clan, server)
+    assert role_stats_from_db['count_users'] == 0
     clan_from_db = db.get_clan(clan, server)
     assert clan_from_db['count_users'] == 0
 

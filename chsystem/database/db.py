@@ -109,7 +109,7 @@ def create_user(main_account,
         'alts': alts,
         'bans': bans,
         'notes': notes,
-        'hash_pw': bcrypt.hashpw(str.encode(pw), bcrypt.gensalt()).decode(),
+        'hash_pw': bcrypt.hashpw(pw.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
         'change_pw': change_pw,
         'last_login': 0,
         'count_login': 0,
@@ -149,6 +149,65 @@ def delete_user(main_account, server):
     return {'success': True, 'msg': 'User account deleted'}
 
 
+def update_user(main_account, server, **kwargs):
+    user = get_user(server, main_account)
+    if not user:
+        return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
+    old_clan = user['clan']
+    if 'clan' in kwargs:
+        db.clan.update_one({'server': server, 'clan': old_clan}, {'$inc': {'count_users': -1}})
+        db.clan.update_one({'server': server, 'clan': kwargs['clan']}, {'$inc': {'count_users': 1}}, upsert=True)
+        user['clan'] = kwargs['clan']
+    if 'role' in kwargs:
+        if not check_role_is_valid(kwargs['role']):
+            return {'success': False, 'msg': ERROR_MESSAGES['role_not_found']}
+        db.role_stats.update_one({'role': user['role'], 'server': server, 'clan': old_clan},
+                                 {'$inc': {'count_users': -1}})
+        db.role_stats.update_one({'role': kwargs['role'], 'server': server, 'clan': user['clan']},
+                                 {'$inc': {'count_users': 1}}, upsert=True)
+        user['role'] = kwargs['role']
+    if 'clazz' in kwargs:
+        user['class'] = kwargs['clazz']
+    if 'pw' in kwargs:
+        user['hash_pw'] = bcrypt.hashpw(str.encode(kwargs['pw']), bcrypt.gensalt()).decode()
+    if 'level' in kwargs:
+        user['level'] = kwargs['level']
+    if 'discord_id' in kwargs:
+        user['discord_id'] = kwargs['discord_id']
+    if 'alts' in kwargs:
+        user['alts'] = kwargs['alts']
+    if 'bans' in kwargs:
+        user['bans'] = kwargs['bans']
+    if 'notes' in kwargs:
+        user['notes'] = kwargs['notes']
+    if 'change_pw' in kwargs:
+        user['change_pw'] = kwargs['change_pw']
+    if 'last_login' in kwargs:
+        user['last_login'] = kwargs['last_login']
+    if 'count_login' in kwargs:
+        user['count_login'] = kwargs['count_login']
+    if 'count_bosses_reset' in kwargs:
+        user['count_bosses_reset'] = kwargs['count_bosses_reset']
+    if 'subs' in kwargs:
+        for boss in user['subs']:
+            response = remove_sub_from_boss_timer(
+                server, old_clan, main_account, boss)
+            if not response['success']:
+                return response
+        user['subs'] = []
+        db.user.update_one({'server': server, 'main_account': main_account}, {'$set': user})
+        for boss in kwargs['subs']:
+            if not check_boss_is_valid(boss):
+                return {'success': False, 'msg': ERROR_MESSAGES['boss_not_found']}
+            response = add_sub_to_boss_timer(server, user['clan'], user['main_account'], boss)
+            if not response['success']:
+                return response
+    else:
+        db.user.update_one({'server': server, 'main_account': main_account}, {'$set': user})
+
+    return {'success': True, 'msg': 'User account updated'}
+
+
 def get_user_details(server, main_account):
     return db.user.find_one({'server': server, 'main_account': main_account},
                             {'_id': 0, 'alts': 1, 'bans': 1, 'notes': 1})
@@ -161,7 +220,7 @@ def get_user_sensitive(server, main_account):
 
 def get_user_stats(server, main_account, project=None):
     return db.user_stats.find_one({'server': server, 'main_account': main_account},
-                                  {'_id': 0, 'last_login': 1, 'count_login': 1, 'count_bosses_reset': 1})
+                                  {'_id': 0, 'last_login': 1, 'count_login': 1, 'count_bosses_reset': 1}, project)
 
 
 def get_role_stats(role, clan, server, project=None):
