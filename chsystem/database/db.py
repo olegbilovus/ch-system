@@ -106,9 +106,10 @@ def create_user(main_account,
         'class': clazz,
         'level': level,
         'discord_id': discord_id,
-        'alts': alts,
-        'bans': bans,
-        'notes': notes,
+        'alts': alts if alts else [],
+        'bans': bans if bans else [],
+        'notes': notes if notes else [],
+        'subs': [],
         'hash_pw': bcrypt.hashpw(pw.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'),
         'change_pw': change_pw,
         'last_login': 0,
@@ -154,11 +155,11 @@ def update_user(main_account, server, **kwargs):
     if not user:
         return {'success': False, 'msg': ERROR_MESSAGES['user_not_found']}
     old_clan = user['clan']
-    if 'clan' in kwargs:
+    if 'clan' in kwargs and kwargs['clan'] != old_clan:
         db.clan.update_one({'server': server, 'clan': old_clan}, {'$inc': {'count_users': -1}})
         db.clan.update_one({'server': server, 'clan': kwargs['clan']}, {'$inc': {'count_users': 1}}, upsert=True)
         user['clan'] = kwargs['clan']
-    if 'role' in kwargs:
+    if 'role' in kwargs and kwargs['role'] != user['role']:
         if not check_role_is_valid(kwargs['role']):
             return {'success': False, 'msg': ERROR_MESSAGES['role_not_found']}
         db.role_stats.update_one({'role': user['role'], 'server': server, 'clan': old_clan},
@@ -188,7 +189,7 @@ def update_user(main_account, server, **kwargs):
         user['count_login'] = kwargs['count_login']
     if 'count_bosses_reset' in kwargs:
         user['count_bosses_reset'] = kwargs['count_bosses_reset']
-    if 'subs' in kwargs:
+    if 'subs' in kwargs and kwargs['subs'] != user['subs']:
         for boss in user['subs']:
             response = remove_sub_from_boss_timer(
                 server, old_clan, main_account, boss)

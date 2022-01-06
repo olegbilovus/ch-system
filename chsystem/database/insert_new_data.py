@@ -32,6 +32,11 @@ def insert_players(players, t_n, logs=False):
                              change_pw=True)
         if logs:
             print(t_n, res, player['Index'])
+
+        if res['msg'] == db.ERROR_MESSAGES['user_exists']:
+            db.update_user(player['Name'], player['WorldName'],
+                           **{'clazz': player['ClassName'], 'level': player['Level'], 'clan': player['ClanName']})
+
         if res['msg'] == db.ERROR_MESSAGES['clan_not_found']:
             db.create_clan(player['ClanName'], player['WorldName'])
             print('Clan created')
@@ -75,14 +80,14 @@ if __name__ == '__main__':
     if len(sys.argv) == 4:
         db.db = db.get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)
         thr = int(sys.argv[2])
-        logs = sys.argv[3] == '1'
+        log = sys.argv[3] == '1'
         print('--- Start ---')
         if sys.argv[1] == 'servers':
             print('--- Insert servers ---')
-            threads_create_start(get_servers(config['CH_SERVERS_URL']), thr, insert_servers, logs=logs)
+            threads_create_start(get_servers(config['CH_SERVERS_URL']), thr, insert_servers, logs=log)
         elif sys.argv[1] == 'clans':
             print('--- Insert clans ---')
-            threads_create_start(get_data(config['CH_CLANS_URL'], 'TheClanDataList'), thr, insert_clans, logs=logs)
+            threads_create_start(get_data(config['CH_CLANS_URL'], 'TheClanDataList'), thr, insert_clans, logs=log)
         elif sys.argv[1] == 'players':
             print('--- Insert players ---')
-            threads_create_start(get_data(config['CH_PLAYERS_URL'], 'RankingDataList'), thr, insert_players, logs=logs)
+            threads_create_start(get_data(config['CH_PLAYERS_URL'], 'RankingDataList'), thr, insert_players, logs=log)
