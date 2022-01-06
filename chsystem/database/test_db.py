@@ -8,6 +8,28 @@ import db
 config = dotenv_values('.env')
 
 
+def generate_user():
+    server = token_hex(8)
+    clan = token_hex(8)
+    main_account = token_hex(8)
+    pw = token_hex(8)
+    role = 1
+    clazz = 'Druid'
+    level = 50
+    subs = [1, 2]
+    bosses_type = 1
+    discord_id = token_hex(8)
+
+    db.create_server(server)
+    db.create_clan(clan, server)
+    db.create_role(role)
+    db.create_boss_type(bosses_type, )
+    for boss in subs:
+        db.create_boss(boss, bosses_type, 0)
+
+    return main_account, pw, role, clazz, level, server, clan, subs, discord_id
+
+
 @pytest.fixture(autouse=True, scope='session')
 def setup_db():
     db_name = config['DB_NAME_TEST']
@@ -111,24 +133,7 @@ def test_delete_clan_02():
 
 def test_create_user_01():
     """Test to create a user"""
-    server = token_hex(8)
-    clan = token_hex(8)
-    main_account = token_hex(8)
-    pw = token_hex(8)
-    role = 1
-    clazz = 'Druid'
-    level = 50
-    subs = [1, 2]
-    bosses_type = 1
-    discord_id = token_hex(8)
-
-    db.create_server(server)
-    db.create_clan(clan, server)
-    db.create_role(role)
-    db.create_boss_type(bosses_type, )
-    for boss in subs:
-        db.create_boss(boss, bosses_type, 0)
-
+    main_account, pw, role, clazz, level, server, clan, subs, discord_id = generate_user()
     user = (main_account, pw, role, clazz, level, server, clan)
     response = db.create_user(*user, subs=subs, discord_id=discord_id)
 
@@ -156,24 +161,7 @@ def test_create_user_01():
 
 def test_delete_user_01():
     """Test to delete a user"""
-    server = token_hex(8)
-    clan = token_hex(8)
-    main_account = token_hex(8)
-    pw = token_hex(8)
-    role = 1
-    clazz = 'Druid'
-    level = 50
-    subs = [1, 2]
-    bosses_type = 1
-    discord_id = token_hex(8)
-
-    db.create_server(server)
-    db.create_clan(clan, server)
-    db.create_role(role)
-    db.create_boss_type(bosses_type, )
-    for boss in subs:
-        db.create_boss(boss, bosses_type, 0)
-
+    main_account, pw, role, clazz, level, server, clan, subs, discord_id = generate_user()
     user = (main_account, pw, role, clazz, level, server, clan)
     db.create_user(*user, subs=subs, discord_id=discord_id)
 
