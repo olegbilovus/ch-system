@@ -33,7 +33,7 @@ def insert_players(players, t_n, logs=False):
         if logs:
             print(t_n, res, player['Index'])
 
-        if res['msg'] == db.ERROR_MESSAGES['user_exists']:
+        if res['msg'] == db.ERROR_MESSAGES['user_already_exists']:
             db.update_user(player['Name'], player['WorldName'],
                            **{'clazz': player['ClassName'], 'level': player['Level'], 'clan': player['ClanName']})
 
