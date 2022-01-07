@@ -8,3 +8,6 @@ else
 fi
 
 python3 $1
+
+
+
