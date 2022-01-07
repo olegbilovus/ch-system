@@ -16,7 +16,8 @@ API_URL2 = os.getenv('API_URL2')
 LOGIN_API2 = {'user_id': os.getenv('USER_ID'), 'api_key': os.getenv('API_KEY')}
 
 client = nextcord.Client(intents=nextcord.Intents.all())
-chain = commands.get_all(commands.reset_timer(commands.set_timer_2(commands.default())))
+chain = commands.get_all(commands.reset_timer(
+    commands.set_timer_2(commands.default())))
 
 
 @client.event
@@ -76,7 +77,3 @@ except nextcord.errors.HTTPException as ex:
         utils.status(True)
         time.sleep(utils._429)
         utils.status(False)
-
-
-
-
