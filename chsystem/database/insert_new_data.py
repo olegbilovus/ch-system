@@ -21,6 +21,7 @@ def get_servers(url):
 
 def insert_players(players, t_n, logs=False):
     print('---', t_n, len(players))
+    new_users = 0
     for player in players:
         res = db.create_user(player['Name'],
                              token_hex(8),
@@ -36,6 +37,8 @@ def insert_players(players, t_n, logs=False):
         if res['msg'] == db.ERROR_MESSAGES['user_already_exists']:
             db.update_user(player['Name'], player['WorldName'],
                            **{'clazz': player['ClassName'], 'level': player['Level'], 'clan': player['ClanName']})
+        else:
+            new_users += 1
 
         if res['msg'] == db.ERROR_MESSAGES['clan_not_found']:
             db.create_clan(player['ClanName'], player['WorldName'])
@@ -43,6 +46,7 @@ def insert_players(players, t_n, logs=False):
         elif res['msg'] == db.ERROR_MESSAGES['server_not_found']:
             db.create_server(player['WorldName'])
             print('Server created')
+    print('---', t_n, new_users)
 
 
 def insert_servers(servers, t_n, logs=False):
@@ -76,18 +80,17 @@ def threads_create_start(data, threads, target, logs=False):
         t.start()
 
 
-if __name__ == '__main__':
-    if len(sys.argv) == 4:
-        db.db = db.get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)
-        thr = int(sys.argv[2])
-        log = sys.argv[3] == '1'
-        print('--- Start ---')
-        if sys.argv[1] == 'servers':
-            print('--- Insert servers ---')
-            threads_create_start(get_servers(config['CH_SERVERS_URL']), thr, insert_servers, logs=log)
-        elif sys.argv[1] == 'clans':
-            print('--- Insert clans ---')
-            threads_create_start(get_data(config['CH_CLANS_URL'], 'TheClanDataList'), thr, insert_clans, logs=log)
-        elif sys.argv[1] == 'players':
-            print('--- Insert players ---')
-            threads_create_start(get_data(config['CH_PLAYERS_URL'], 'RankingDataList'), thr, insert_players, logs=log)
+if __name__ == '__main__' and len(sys.argv) == 4:
+    db.db = db.get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)
+    thr = int(sys.argv[2])
+    log = sys.argv[3] == '1'
+    print('--- Start ---')
+    if sys.argv[1] == 'servers':
+        print('--- Insert servers ---')
+        threads_create_start(get_servers(config['CH_SERVERS_URL']), thr, insert_servers, logs=log)
+    elif sys.argv[1] == 'clans':
+        print('--- Insert clans ---')
+        threads_create_start(get_data(config['CH_CLANS_URL'], 'TheClanDataList'), thr, insert_clans, logs=log)
+    elif sys.argv[1] == 'players':
+        print('--- Insert players ---')
+        threads_create_start(get_data(config['CH_PLAYERS_URL'], 'RankingDataList'), thr, insert_players, logs=log)
