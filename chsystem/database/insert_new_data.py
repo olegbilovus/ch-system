@@ -1,3 +1,4 @@
+import queue
 import sys
 import threading
 from secrets import token_hex
@@ -15,69 +16,115 @@ def get_data(url, key):
     return requests.get(f'{url}{count}').json()[key]
 
 
-def get_servers(url):
-    return list(requests.get(url).json()['WorldDictionary'].values())
+def get_servers(url, key):
+    return list(requests.get(url).json()[key].values())
 
 
-def insert_players(players, t_n, logs=False):
-    print('---', t_n, len(players))
-    new_users = 0
-    for player in players:
-        res = db.create_user(player['Name'],
-                             token_hex(8),
-                             'Created',
-                             player['ClassName'],
-                             player['Level'],
-                             player['WorldName'],
-                             player['ClanName'],
-                             change_pw=True)
-        if logs:
-            print(t_n, res, player['Index'])
+def worker_players(jobs, results, t_n, logs=False):
+    while True:
+        try:
+            player = jobs.get()
+            res = db.create_user(player['Name'],
+                                 token_hex(8),
+                                 'Created',
+                                 player['ClassName'],
+                                 player['Level'],
+                                 player['WorldName'],
+                                 player['ClanName'],
+                                 change_pw=True)
+            if logs:
+                print(t_n, res, player['Index'])
 
-        if res['msg'] == db.ERROR_MESSAGES['user_already_exists']:
-            db.update_user(player['Name'], player['WorldName'],
-                           **{'clazz': player['ClassName'], 'level': player['Level'], 'clan': player['ClanName']})
-        else:
-            new_users += 1
+            if res['msg'] == db.ERROR_MESSAGES['user_already_exists']:
+                db.update_user(player['Name'], player['WorldName'],
+                               **{'clazz': player['ClassName'], 'level': player['Level'], 'clan': player['ClanName']})
+            else:
+                results[t_n] = results[t_n] + 1
 
-        if res['msg'] == db.ERROR_MESSAGES['clan_not_found']:
-            db.create_clan(player['ClanName'], player['WorldName'])
-            print('Clan created')
-        elif res['msg'] == db.ERROR_MESSAGES['server_not_found']:
-            db.create_server(player['WorldName'])
-            print('Server created')
-    print('---', t_n, new_users)
-
-
-def insert_servers(servers, t_n, logs=False):
-    for server in servers:
-        res = db.create_server(server)
-        if logs:
-            print(t_n, res)
+            if res['msg'] == db.ERROR_MESSAGES['clan_not_found']:
+                db.create_clan(player['ClanName'], player['WorldName'])
+                print('Clan created')
+            elif res['msg'] == db.ERROR_MESSAGES['server_not_found']:
+                db.create_server(player['WorldName'])
+                print('Server created')
+        finally:
+            jobs.task_done()
 
 
-def insert_clans(clans, t_n, logs=False):
-    for clan in clans:
-        res = db.create_clan(clan['ClanName'], clan['WorldName'])
-        if logs:
-            print(t_n, res, clan['Index'])
+def worker_clans(jobs, results, t_n, logs=False):
+    while True:
+        try:
+            clan = jobs.get()
+            res = db.create_clan(clan['ClanName'], clan['WorldName'])
+            if logs:
+                print(t_n, res, clan['Index'])
+            if res['success']:
+                results[t_n] = results[t_n] + 1
+        finally:
+            jobs.task_done()
 
 
-def threads_create_start(data, threads, target, logs=False):
-    data_len = len(data)
-    mult = data_len // threads
+def worker__servers(jobs, results, t_n, logs=False):
+    while True:
+        try:
+            server = jobs.get()
+            res = db.create_server(server)
+            if logs:
+                print(t_n, res)
+            if res['success']:
+                results[t_n] = results[t_n] + 1
+        finally:
+            jobs.task_done()
 
-    for i in range(threads):
-        start = i * mult
-        if i < threads - 1:
-            t = threading.Thread(target=target,
-                                 args=(data[start:(i + 1) * mult], i + 1, logs))
-            print(i + 1, start, (i + 1) * mult)
-        else:
-            t = threading.Thread(target=target,
-                                 args=(data[start:data_len - 1], i + 1, logs))
-            print(i + 1, start, data_len - 1)
+
+def worker_add_jobs(jobs, data):
+    for d in data:
+        jobs.put(d)
+
+
+def add_jobs(data_extractor, jobs, url, key):
+    data = data_extractor(url, key)
+    t = threading.Thread(target=worker_add_jobs, args=(jobs, data))
+    t.daemon = True
+    t.start()
+
+
+def create_threads(worker, jobs, results, threads, logs=False):
+    for t in range(threads):
+        t = threading.Thread(target=worker, args=(jobs, results, t, logs))
+        t.daemon = True
         t.start()
+
+
+def process(jobs, results, threads):
+    jobs.join()
+    for t in range(threads):
+        print(f'{t} - {results[t]}')
+    print(f'Total: {sum(results)}')
+
+
+def main_players(threads, logs=False):
+    jobs = queue.Queue()
+    results = [0] * threads
+    add_jobs(get_data, jobs, config['CH_PLAYERS_URL'], 'RankingDataList')
+    create_threads(worker_players, jobs, results, threads, logs)
+    process(jobs, results, threads)
+
+
+def main_clans(threads, logs=False):
+    jobs = queue.Queue()
+    results = [0] * threads
+    add_jobs(get_data, jobs, config['CH_CLANS_URL'], 'TheClanDataList')
+    create_threads(worker_clans, jobs, results, threads, logs)
+    process(jobs, results, threads)
+
+
+def main_servers(threads, logs=False):
+    jobs = queue.Queue()
+    results = [0] * threads
+    add_jobs(get_servers, jobs, config['CH_SERVERS_URL'], 'WorldDictionary')
+    create_threads(worker__servers, jobs, results, threads, logs)
+    process(jobs, results, threads)
 
 
 if __name__ == '__main__':
@@ -88,12 +135,12 @@ if __name__ == '__main__':
         print('--- Start ---')
         if sys.argv[1] == 'servers':
             print('--- Insert servers ---')
-            threads_create_start(get_servers(config['CH_SERVERS_URL']), thr, insert_servers, logs=log)
+            main_servers(thr, log)
         elif sys.argv[1] == 'clans':
             print('--- Insert clans ---')
-            threads_create_start(get_data(config['CH_CLANS_URL'], 'TheClanDataList'), thr, insert_clans, logs=log)
+            main_clans(thr, log)
         elif sys.argv[1] == 'players':
             print('--- Insert players ---')
-            threads_create_start(get_data(config['CH_PLAYERS_URL'], 'RankingDataList'), thr, insert_players, logs=log)
+            main_players(thr, logs=log)
     else:
         print('Usage: python3 insert_new_data.py [servers|clans|players] [threads] [logs]')
