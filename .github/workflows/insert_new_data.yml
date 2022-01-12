@@ -42,7 +42,7 @@ jobs:
       - name: Run insert script
         run: |
           source .venv/bin/activate
-          poetry run python3 ./chsystem/database/insert_new_data.py servers 5 1
+          poetry run python3 ./chsystem/database/insert_new_data.py servers 5 0
       - name: Delete .env database
         run: rm .env
   update-clans:
@@ -83,7 +83,7 @@ jobs:
       - name: Run insert script
         run: |
           source .venv/bin/activate
-          poetry run python3 ./chsystem/database/insert_new_data.py clans 20 1
+          poetry run python3 ./chsystem/database/insert_new_data.py clans 20 0
       - name: Delete .env database
         run: rm .env
   update-players:
@@ -124,6 +124,6 @@ jobs:
       - name: Run insert script
         run: |
           source .venv/bin/activate
-          poetry run python3 ./chsystem/database/insert_new_data.py players 20 1
+          poetry run python3 ./chsystem/database/insert_new_data.py players 20 0
       - name: Delete .env database
         run: rm .env
