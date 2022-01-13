@@ -6,9 +6,10 @@ from secrets import token_hex
 import requests
 from dotenv import dotenv_values
 
-import db
+from database import MongoDB
 
 config = dotenv_values('.env')
+db = MongoDB(config['URL_MONGODB'], config['DB_NAME'])
 
 
 def get_data(url, key):
@@ -129,7 +130,6 @@ def main_servers(threads, logs=False):
 
 if __name__ == '__main__':
     if len(sys.argv) == 4:
-        db.db = db.get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)
         thr = int(sys.argv[2])
         log = sys.argv[3] == '1'
         print('--- Start ---')

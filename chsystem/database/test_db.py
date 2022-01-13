@@ -5,11 +5,13 @@ import bcrypt
 import pytest
 from dotenv import dotenv_values
 
-import db
+from database import MongoDB
 
 config = dotenv_values('.env')
 db_name = config['DB_NAME_TEST']
 db_url = config['URL_MONGODB_TEST']
+db = MongoDB(db_url, db_name)
+db._db.drop_database(db_name)
 
 
 def generate_user():
@@ -57,11 +59,10 @@ def asserts_user(user):
             'subs'], f'discord_id not in {boss} subs'
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture(autouse=True, scope='session')
 def setup_db():
-    db.set_db(db_url)
-    db.db.drop_database(db_name)
-    db.set_db(db_url, db_name, wTimeoutMS=5000, w=1)
+    yield
+    db._db.drop_database(db_name)
 
 
 def test_create_server_01():
