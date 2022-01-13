@@ -2,13 +2,9 @@ import bcrypt
 import pymongo
 from dotenv import dotenv_values
 
-config = dotenv_values('.env')
-
 ERROR_MESSAGES = {
     'boss_not_found': 'Boss not found',
     'boss_already_exists': 'Boss already exists',
-    'boss_type_already_exists': 'Boss type already exists',
-    'boss_type_not_found': 'Boss type not found',
     'user_not_found': 'User not found',
     'user_already_exists': 'User already exists',
     'user_no_discord_id': 'User has no discord id',
@@ -27,14 +23,19 @@ PROJECTS_MONGODB = {
     'user.discord_id': {'discord_id': 1},
 }
 
-
-def get_db(url_db, server_name=None, *vargs, **kwargs):
-    return pymongo.MongoClient(url_db, *vargs, **kwargs)[server_name] if server_name else pymongo.MongoClient(url_db,
-                                                                                                              *vargs,
-                                                                                                              **kwargs)
-
-
 db = None
+
+
+def set_db(url_db, server_name=None, *vargs, **kwargs):
+    global db
+    db = pymongo.MongoClient(url_db, *vargs, **kwargs)[server_name] if server_name else pymongo.MongoClient(url_db,
+                                                                                                            *vargs,
+                                                                                                            **kwargs)
+
+
+def set_default_db():
+    config = dotenv_values('.env')
+    set_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)
 
 
 def get_bosses():
@@ -48,25 +49,8 @@ def check_boss_is_valid(boss):
 def create_boss(boss, _type, reset, alias=None):
     if check_boss_is_valid(boss):
         return {'success': False, 'msg': ERROR_MESSAGES['boss_already_exists']}
-    if not check_boss_type_is_valid(_type):
-        return {'success': False, 'msg': ERROR_MESSAGES['boss_type_not_found']}
     db.boss.insert_one({'boss': boss, 'type': _type, 'reset': reset, 'alias': alias})
     return {'success': True, 'msg': 'Boss created'}
-
-
-def get_bosses_type():
-    return db.boss_type.find({})
-
-
-def check_boss_type_is_valid(_type):
-    return db.boss_type.find_one({'type': _type}, PROJECTS_MONGODB['check'])
-
-
-def create_boss_type(_type):
-    if check_boss_type_is_valid(_type):
-        return {'success': False, 'msg': ERROR_MESSAGES['boss_type_already_exists']}
-    db.boss_type.insert_one({'type': _type})
-    return {'success': True, 'msg': 'Boss type created'}
 
 
 def get_bosses_timer(boss, clan, server, project=None):
@@ -328,7 +312,3 @@ def remove_sub_from_boss_timer(server, clan, main_account, boss):
         '$pull': {'subs': user['discord_id']}})
 
     return {'success': True, 'msg': 'User removed from boss timer subs'}
-
-
-if __name__ == '__main__':
-    db = get_db(config['URL_MONGODB'], config['DB_NAME'], wTimeoutMS=5000, w=1)

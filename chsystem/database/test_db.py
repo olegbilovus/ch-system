@@ -8,6 +8,8 @@ from dotenv import dotenv_values
 import db
 
 config = dotenv_values('.env')
+db_name = config['DB_NAME_TEST']
+db_url = config['URL_MONGODB_TEST']
 
 
 def generate_user():
@@ -20,14 +22,11 @@ def generate_user():
     level = randint(1, 240)
     subs = [x for x in range(randint(1, 10))]
     bosses_type_len = randint(3, 10)
-    bosses_types = [x for x in range(bosses_type_len)]
     discord_id = token_hex(8)
 
     db.create_server(server)
     db.create_clan(clan, server)
     db.create_role(role)
-    for bosses_type in bosses_types:
-        db.create_boss_type(bosses_type)
     for boss in subs:
         db.create_boss(boss, randint(1, bosses_type_len - 1), randint(10, 2000))
 
@@ -58,46 +57,11 @@ def asserts_user(user):
             'subs'], f'discord_id not in {boss} subs'
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(autouse=True)
 def setup_db():
-    db_name = config['DB_NAME_TEST']
-    db_url = config['URL_MONGODB_TEST']
-
-    db.get_db(db_url).drop_database(db_name)
-    db.db = db.get_db(db_url, db_name, wTimeoutMS=5000, w=1)
-
-    yield
-
-    db.get_db(db_url).drop_database(db_name)
-
-
-def test_create_boss_01():
-    """Test to create a boss with invalid boss type"""
-    boss = 1
-    boss_type = 1
-    response = db.create_boss(boss, boss_type, 0)
-    assert not response['success']
-    assert response['msg'] == db.ERROR_MESSAGES['boss_type_not_found']
-
-
-def test_create_boss_02():
-    """Test to create a boss which already exists"""
-    boss = 1
-    _type = 1
-    db.create_boss_type(_type)
-    db.create_boss(boss, _type, 0)
-    response = db.create_boss(boss, _type, 0)
-    assert not response['success']
-    assert response['msg'] == db.ERROR_MESSAGES['boss_already_exists']
-
-
-def test_create_boss_type_01():
-    """Test to create a type which already exists"""
-    boss_type = 1
-    db.create_boss_type(boss_type)
-    response = db.create_boss_type(boss_type)
-    assert not response['success']
-    assert response['msg'] == db.ERROR_MESSAGES['boss_type_already_exists']
+    db.set_db(db_url)
+    db.db.drop_database(db_name)
+    db.set_db(db_url, db_name, wTimeoutMS=5000, w=1)
 
 
 def test_create_server_01():
@@ -214,3 +178,13 @@ def test_update_user_01():
 
     for boss in subs:
         assert discord_id not in db.get_bosses_timer(boss, clan, server)['subs'], f'discord_id in {boss} subs'
+
+
+def test_create_boss_01():
+    """Test to create a boss which already exists"""
+    boss = 1
+    _type = 1
+    db.create_boss(boss, _type, 0)
+    response = db.create_boss(boss, _type, 0)
+    assert not response['success']
+    assert response['msg'] == db.ERROR_MESSAGES['boss_already_exists']
