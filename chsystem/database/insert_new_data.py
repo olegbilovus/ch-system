@@ -27,7 +27,7 @@ def worker_players(jobs, results, t_n, logs=False):
             player = jobs.get()
             res = db.create_user(player['Name'],
                                  token_hex(8),
-                                 'Created',
+                                 0,
                                  player['ClassName'],
                                  player['Level'],
                                  player['WorldName'],

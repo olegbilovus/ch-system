@@ -200,10 +200,10 @@ class MongoDB:
     def check_role_is_valid(self, role):
         return self.db.role.find_one({'role': role}, MongoDB.PROJECTS_MONGODB['check'])
 
-    def create_role(self, role):
+    def create_role(self, role, name):
         if self.check_role_is_valid(role):
             return {'success': False, 'msg': MongoDB.ERROR_MESSAGES['role_already_exists']}
-        self.db.role.insert_one({'role': role})
+        self.db.role.insert_one({'role': role, 'name': name})
         return {'success': True, 'msg': 'Role created'}
 
     def get_clan(self, clan, server, project=None):

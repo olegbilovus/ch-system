@@ -28,7 +28,7 @@ def generate_user():
 
     db.create_server(server)
     db.create_clan(clan, server)
-    db.create_role(role)
+    db.create_role(role, token_hex(8))
     for boss in subs:
         db.create_boss(boss, randint(1, bosses_type_len - 1), randint(10, 2000))
 
