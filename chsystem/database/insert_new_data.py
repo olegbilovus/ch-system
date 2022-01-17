@@ -39,15 +39,16 @@ def worker_players(jobs, results, t_n, logs=False):
             if res['msg'] == db.ERROR_MESSAGES['user_already_exists']:
                 db.update_user(player['Name'], player['WorldName'],
                                **{'clazz': player['ClassName'], 'level': player['Level'], 'clan': player['ClanName']})
-            else:
+            elif res['success']:
                 results[t_n] = results[t_n] + 1
-
-            if res['msg'] == db.ERROR_MESSAGES['clan_not_found']:
+            elif res['msg'] == db.ERROR_MESSAGES['clan_not_found']:
                 db.create_clan(player['ClanName'], player['WorldName'])
                 print('Clan created')
             elif res['msg'] == db.ERROR_MESSAGES['server_not_found']:
                 db.create_server(player['WorldName'])
                 print('Server created')
+            else:
+                print(res)
         finally:
             jobs.task_done()
 
