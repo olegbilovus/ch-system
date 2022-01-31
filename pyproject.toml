@@ -20,7 +20,7 @@ orjson = "^3.6.6"
 cutandpaste = "^0.4.0"
 bcrypt = "^3.2.0"
 pymongo = "^4.0.1"
-dnspython = "^2.0.0"
+dnspython = "^2.2.0"
 python-dotenv = "^0.19.2"
 requests = "^2.26.0"
 
