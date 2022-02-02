@@ -12,3 +12,4 @@ security/*.png
 .idea/*
 **/.coverage
 /chsystem/database/data/
+**/.vscode/*
