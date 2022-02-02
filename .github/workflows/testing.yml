@@ -36,7 +36,7 @@ jobs:
       - name: Run tests
         run: |
           source .venv/bin/activate
-          poetry run coverage run -m pytest -v -k test_db.py
+          poetry run coverage run -m pytest -v -k test_database.py
       - name: Delete .env database
         run: rm .env
       - name: Upload report to artifact
