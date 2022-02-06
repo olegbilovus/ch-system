@@ -1,7 +1,7 @@
 import os
 import time
 import commands
-import nextcord
+import discord
 import requests
 import utils
 import routine
@@ -15,7 +15,7 @@ CHANNELS = os.getenv('CHANNELS').split(',')
 API_URL2 = os.getenv('API_URL2')
 LOGIN_API2 = {'user_id': os.getenv('USER_ID'), 'api_key': os.getenv('API_KEY')}
 
-client = nextcord.Client(intents=nextcord.Intents.all())
+client = discord.Client(intents=discord.Intents.all())
 chain = commands.reset_timer(commands.set_timer_2(commands.default()))
 
 
@@ -68,7 +68,7 @@ server_s.start()
 
 try:
     client.run(os.getenv('TOKEN'))
-except nextcord.errors.HTTPException as ex:
+except discord.errors.HTTPException as ex:
     message_error = str(ex)
     utils.logger(message_error)
     if '429' in message_error:
