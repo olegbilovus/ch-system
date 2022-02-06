@@ -209,13 +209,16 @@ class MongoDB:
     def get_clan(self, clan, server, project=None):
         return self.db.clan.find_one({'server': server, 'clan': clan}, project)
 
-    def create_clan(self, clan, server, count_users=0):
+    def create_clan(self, clan, server, count_users=0, discord=False, discord_guild_id=None, discord_channel_id=None):
         if self.get_clan(clan, server, MongoDB.PROJECTS_MONGODB['check']):
             return {'success': False, 'msg': MongoDB.ERROR_MESSAGES['clan_already_exists']}
         if not self.get_server(server, MongoDB.PROJECTS_MONGODB['check']):
             return {'success': False, 'msg': MongoDB.ERROR_MESSAGES['server_not_found']}
 
-        self.db.clan.insert_one({'clan': clan, 'server': server, 'count_users': count_users})
+        self.db.clan.insert_one(
+            {'clan': clan, 'server': server, 'count_users': count_users, 'discord': discord,
+             'discord_guild_id': discord_guild_id,
+             'discord_channel_id': discord_channel_id})
         return {'success': True, 'msg': 'Clan created'}
 
     def delete_clan(self, clan, server):
