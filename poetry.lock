@@ -174,7 +174,7 @@ python-versions = "*"
 
 [[package]]
 name = "flask"
-version = "2.0.2"
+version = "2.0.3"
 description = "A simple framework for building complex web applications."
 category = "main"
 optional = false
@@ -471,7 +471,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "df386bf73b7dead1e39009818d93c465cbb9093cbe59ec243da9f38bb97ca7c4"
+content-hash = "9ed4becb73f6a72db6b3e920f7c6f68af24aaa1e6a4dbe157213272d97fa13af"
 
 [metadata.files]
 aiodns = [
@@ -756,8 +756,8 @@ cutandpaste = [
     {file = "cutandpaste-0.4.0.tar.gz", hash = "sha256:47ff5ee305812fe977406ab1018432a1196c98912bb004046ff554efeb637966"},
 ]
 flask = [
-    {file = "Flask-2.0.2-py3-none-any.whl", hash = "sha256:cb90f62f1d8e4dc4621f52106613488b5ba826b2e1e10a33eac92f723093ab6a"},
-    {file = "Flask-2.0.2.tar.gz", hash = "sha256:7b2fb8e934ddd50731893bdcdb00fc8c0315916f9fcd50d22c7cc1a95ab634e2"},
+    {file = "Flask-2.0.3-py3-none-any.whl", hash = "sha256:59da8a3170004800a2837844bfa84d49b022550616070f7cb1a659682b2e7c9f"},
+    {file = "Flask-2.0.3.tar.gz", hash = "sha256:e1120c228ca2f553b470df4a5fa927ab66258467526069981b3eb0a91902687d"},
 ]
 frozenlist = [
     {file = "frozenlist-1.2.0-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:977a1438d0e0d96573fd679d291a1542097ea9f4918a8b6494b06610dfeefbf9"},
