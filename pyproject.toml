@@ -16,7 +16,7 @@ nextcord = "^2.0.0a5"
 aiodns = "^3.0.0"
 Brotli = "^1.0.9"
 cchardet = "^2.1.7"
-orjson = "^3.6.7"
+orjson = "^3.6.8"
 cutandpaste = "^0.4.0"
 
 [tool.poetry.dev-dependencies]
