@@ -300,7 +300,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "paste"
-version = "3.5.0"
+version = "3.5.1"
 description = "Tools for using a Web Server Gateway Interface stack"
 category = "main"
 optional = false
@@ -500,7 +500,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "011d7e60a3193699a69d53906b21a709c663138f79235fe654867e7320c9d856"
+content-hash = "77e4f46c7b05c08687d34d7fe651dc9fc6fcf67b8ec17747ade20bb440b80ab3"
 
 [metadata.files]
 aiodns = [
@@ -1065,8 +1065,8 @@ orjson = [
     {file = "orjson-3.6.7.tar.gz", hash = "sha256:a4bb62b11289b7620eead2f25695212e9ac77fcfba76f050fa8a540fb5c32401"},
 ]
 paste = [
-    {file = "Paste-3.5.0-py2.py3-none-any.whl", hash = "sha256:8e08200a570f7e29dfafd4eea0e1b38a6193cfda6446bb515db74250b632c53b"},
-    {file = "Paste-3.5.0.tar.gz", hash = "sha256:1b095c42dc91d426f3ae85101796b14d265887f8f36f3aad143a5f29effdc39d"},
+    {file = "Paste-3.5.1-py2.py3-none-any.whl", hash = "sha256:64afc22e4f390d8fb8ce3d55a520d846cb402afcb3196f78ace4c07f6335d0d5"},
+    {file = "Paste-3.5.1.tar.gz", hash = "sha256:bc80a94ca696fa733910a2fbc62a8c88971ebbcfa888bd3ee40c81835b7bfc95"},
 ]
 pycares = [
     {file = "pycares-4.1.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:71b99b9e041ae3356b859822c511f286f84c8889ec9ed1fbf6ac30fb4da13e4c"},
