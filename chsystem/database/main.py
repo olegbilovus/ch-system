@@ -36,6 +36,11 @@ def status():
     return db['status']
 
 
+@app.route('/ping')
+def ping():
+    return 'pong'
+
+
 @app.post('/api/get')
 def api_get():
     api_key = get_api_key(request)
