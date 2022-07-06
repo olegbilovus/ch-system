@@ -32,7 +32,6 @@ def get_all(successor=None):
     while True:
         msg = yield msg_to_send
         msg_to_send['type'] = 'all'
-        print(msg)
         if msg.length == 1 and msg.content[0] in all_commands:
             msg_to_send['msg'] = ''
             frozen = False
@@ -95,23 +94,20 @@ def copy(successor=None):
         if msg.content[0] == 'copy':
             msg.content = ' '.join(msg.content)
             msg.content = msg.content.split('\n')
-            print(msg.content)
             
             data = {}
             for t in msg.content:
                 if ' in ' in t:
                     s = t.split(' in ')
                     data[s[0].lower()] = s[1][:-1].replace('minutes', 'm').replace('days', 'd').replace('hours', 'h').replace(',', '').replace('.', '')
-            print(data)
             for boss, t in data.items():
                 array_tmp = t.split(' ')
                 array_values = []
                 for i in range(0, len(array_tmp), 2):
                     array_values.append(array_tmp[i] + array_tmp[i + 1])
 
-                print(boss, array_values)
                 timer = utils.days_hours_mins_to_mins(array_values)
-                print(utils.set_timer(boss, timer))
+                utils.set_timer(boss, timer)
             msg.content = [all_commands[0]]
             msg.length = 1
 
