@@ -26,6 +26,11 @@ def home():
     return render_template('index.html')
 
 
+@app.route('/ping')
+def ping():
+    return 'pong'
+
+
 @app.post('/login')
 def login():
     req = request.form
