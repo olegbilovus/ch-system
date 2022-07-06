@@ -12,12 +12,12 @@ Js2Py = "^0.71"
 replit = "^3.2.4"
 waitress = "^2.0.0"
 Paste = "^3.5.0"
-nextcord = "^2.0.0a5"
 aiodns = "^3.0.0"
 Brotli = "^1.0.9"
 cchardet = "^2.1.7"
 orjson = "^3.6.5"
 cutandpaste = "^0.4.0"
+"discord.py" = "^1.7.3"
 
 [tool.poetry.dev-dependencies]
 
