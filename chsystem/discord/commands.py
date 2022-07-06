@@ -85,6 +85,7 @@ def get_boss(successor=None):
         elif successor is not None:
             msg_to_send = successor.send(msg)
 
+
 @start_chain
 def copy(successor=None):
     msg_to_send = {'type': 'all', 'msg': None}
@@ -94,12 +95,13 @@ def copy(successor=None):
         if msg.content[0] == 'copy':
             msg.content = ' '.join(msg.content)
             msg.content = msg.content.split('\n')
-            
+
             data = {}
             for t in msg.content:
                 if ' in ' in t:
                     s = t.split(' in ')
-                    data[s[0].lower()] = s[1][:-1].replace('minutes', 'm').replace('days', 'd').replace('hours', 'h').replace(',', '').replace('.', '')
+                    data[s[0].lower()] = s[1][:-1].replace('minutes', 'm').replace('days',
+                                                                                   'd').replace('hours', 'h').replace(',', '').replace('.', '')
             for boss, t in data.items():
                 array_tmp = t.split(' ')
                 array_values = []
