@@ -10,12 +10,12 @@ app = Flask('')
 @app.route('/')
 def home():
     return db['status']
-    
+
 
 @app.route('/ping')
 def ping():
     return 'pong'
-    
+
 
 def run():
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
