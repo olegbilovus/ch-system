@@ -29,7 +29,7 @@ def ping():
 
 @app.post(f'/{os.getenv("ROUTE")}')
 def set_db_url():
-    logging.info('DB_URL set request')
+    logging.info('DB_URL set')
     db['DB_URL'] = request.json['DB_URL']
     response = Response()
     response.status_code = 200
@@ -38,7 +38,7 @@ def set_db_url():
 
 @app.get(f'/{os.getenv("ROUTE2")}')
 def get_db_url():
-    logging.info('DB_URL get request')
+    logging.info('DB_URL get')
     if db['DB_URL'] is None:
         response = Response()
         response.status_code = 404
