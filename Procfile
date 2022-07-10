@@ -1,1 +1,1 @@
-database: bash init.sh chsystem/database/main.py
+web: bash init.sh chsystem/database/dburl.py
