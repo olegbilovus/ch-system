@@ -13,7 +13,15 @@ from datetime import datetime
 
 NOTIFIER_NAME = os.getenv('NOTIFIER')
 WEB_NAME = os.getenv('WEB')
-db['DB_URL'] = requests.get(os.getenv('DB_URL'))
+
+res = requests.get(os.getenv('DB_URL'))
+if res.status_code == 200:
+    db['DB_URL'] = res.text
+    utils.logging('Got DB_URL')
+else:
+    db['DB_URL'] = None
+    utils.logging('ERROR DB_URL')
+
 
 
 def auth(api_key):

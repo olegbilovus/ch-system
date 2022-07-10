@@ -26,6 +26,6 @@ def ping():
 format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
 serve(TransLogger(app, format=format_logger),
       host='0.0.0.0',
-      port=8080,
+      port=os.getenv('PORT'),
       url_scheme='https',
       ident=None)
