@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS server CASCADE ;
+DROP TABLE IF EXISTS server CASCADE;
 CREATE TABLE server
 (
     ID   SMALLSERIAL PRIMARY KEY,
@@ -51,6 +51,16 @@ CREATE TABLE discordID
     discordID     VARCHAR(30),
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS discordChannelID CASCADE;
+CREATE TABLE discordChannelID
+(
+    clanID           SERIAL PRIMARY KEY,
+    discordChannelID VARCHAR(30),
+    FOREIGN KEY (clanID)
+        REFERENCES clan (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
