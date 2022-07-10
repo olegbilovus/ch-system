@@ -32,6 +32,10 @@ class Database:
             Database.db_uri = uri if uri is not None else Database.db_uri
             Database.db_url = url if url is not None else Database.db_url
 
+        if self.conn is not None:
+            self.conn.close()
+            self.cur = None
+            self.conn = None
         self.conn = psycopg2.connect(Database.db_uri)
         self.cur = self.conn.cursor()
         self.cur.execute('SELECT version()')
@@ -67,5 +71,61 @@ class Clan(Database):
 
     def delete(self, clan_id):
         self.cur.execute('DELETE FROM clan WHERE id = %s', (clan_id,))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+
+class UserProfile(Database):
+
+    def get_by_clan_and_server(self, clan_id, server_id):
+        self.cur.execute('SELECT * FROM userprofile WHERE clanid = %s AND serverid = %s', (clan_id, server_id))
+        return self.cur.fetchall()
+
+    def get_by_id(self, user_id):
+        self.cur.execute('SELECT * FROM userprofile WHERE id = %s', (user_id,))
+        return self.cur.fetchone()
+
+    def get_by_name_and_server(self, user_name, server_id):
+        self.cur.execute('SELECT * FROM userprofile WHERE name = %s AND serverid = %s', (user_name, server_id))
+        return self.cur.fetchone()
+
+    def create(self, user_name, server_id, clan_id, role, hash_pw):
+        self.cur.execute(
+            'INSERT INTO userprofile (name, serverid, clanid, role, hash_pw, change_pw) VALUES (%s, %s, %s, %s, %s)',
+            (user_name, server_id, clan_id, role, hash_pw, True))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+    def update(self, user_id, user_name, server_id, clan_id, role, hash_pw, change_pw):
+        self.cur.execute(
+            'UPDATE userprofile SET name = %s, serverid = %s, clanid = %s, role = %s, hash_pw = %s, change_pw = %s WHERE id = %s',
+            (user_name, server_id, clan_id, role, hash_pw, change_pw, user_id))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+    def delete(self, user_id):
+        self.cur.execute('DELETE FROM userprofile WHERE id = %s', (user_id,))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+
+class ApiKey(Database):
+
+    def get_by_user_id(self, user_id):
+        self.cur.execute('SELECT * FROM apikey WHERE userprofileid = %s', (user_id,))
+        return self.cur.fetchone()
+
+    def create(self, user_id, key):
+        self.cur.execute('INSERT INTO apikey (userprofileid, key) VALUES (%s, %s)', (user_id, key))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+    def update(self, user_id, key):
+        self.cur.execute('UPDATE apikey SET key = %s WHERE userprofileid = %s', (key, user_id))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+    def delete(self, user_id):
+        self.cur.execute('DELETE FROM apikey WHERE userprofileid = %s', (user_id,))
         self.conn.commit()
         return self.cur.fetchone()
