@@ -6,7 +6,8 @@ from flask import Flask
 from waitress import serve
 from paste.translogger import TransLogger
 
-res = requests.post(os.getenv('DB_SERVER_URL'), json={'DB_URL': os.getenv('DATABASE_URL')})
+res = requests.post(os.getenv('DB_SERVER_URL'), json={
+                    'DB_URL': os.getenv('DATABASE_URL')})
 utils.logger(res.status_code)
 
 app = Flask('')

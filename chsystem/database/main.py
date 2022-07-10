@@ -50,7 +50,7 @@ def set_db_url():
     response = Response()
     response.status_code = 201
     return response
-    
+
 
 @app.post('/api/get')
 def api_get():
