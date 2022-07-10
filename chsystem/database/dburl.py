@@ -1,6 +1,5 @@
 import os
 import requests
-import utils
 
 from flask import Flask
 from waitress import serve
@@ -8,13 +7,14 @@ from paste.translogger import TransLogger
 
 res = requests.post(os.getenv('DB_SERVER_URL'), json={
                     'DB_URL': os.getenv('DATABASE_URL')})
-utils.logger(res.status_code)
+print(res.status_code)
 
 app = Flask('')
 
 
 @app.route(f'/{os.getenv("ROUTE")}')
 def get_url():
+    print('Requested DATABASE_URL')
     return os.getenv('DATABASE_URL')
 
 
