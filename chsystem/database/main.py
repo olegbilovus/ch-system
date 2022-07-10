@@ -17,11 +17,10 @@ WEB_NAME = os.getenv('WEB')
 res = requests.get(os.getenv('DB_URL'))
 if res.status_code == 200:
     db['DB_URL'] = res.text
-    utils.logging('Got DB_URL')
+    utils.logger('Got DB_URL')
 else:
     db['DB_URL'] = None
-    utils.logging('ERROR DB_URL')
-
+    utils.logger('ERROR DB_URL')
 
 
 def auth(api_key):
