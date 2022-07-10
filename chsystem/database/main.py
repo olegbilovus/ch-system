@@ -2,6 +2,7 @@ import os
 import api
 import utils
 import routine
+import requests
 
 from flask import Flask, request, Response, jsonify
 from replit import db
@@ -12,6 +13,7 @@ from datetime import datetime
 
 NOTIFIER_NAME = os.getenv('NOTIFIER')
 WEB_NAME = os.getenv('WEB')
+db['DB_URL'] = requests.get(os.getenv('DB_URL'))
 
 
 def auth(api_key):
@@ -39,6 +41,15 @@ def status():
 @app.route('/ping')
 def ping():
     return 'pong'
+
+
+@app.post(f'/{os.getenv("ROUTE")}')
+def set_db_url():
+    utils.logger('DB_URL request')
+    db['DB_URL'] = request.json['DB_URL']
+    response = Response()
+    response.status_code = 201
+    return response
 
 
 @app.post('/api/get')
