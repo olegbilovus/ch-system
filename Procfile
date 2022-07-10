@@ -1,0 +1,1 @@
+database: bash init.sh chsystem/database/main.py

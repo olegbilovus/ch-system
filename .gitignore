@@ -3,6 +3,8 @@
 log.txt
 tmp.txt
 .replit
+replit.nix
+venv/*
 build/*
 dist/*
 *.egg-info/*
