@@ -10,14 +10,17 @@ from paste.translogger import TransLogger
 logging.basicConfig(format='%(levelname)s %(asctime)s - %(message)s',
                     level=logging.INFO)
 
-res = requests.get(os.getenv('DB_URL'))
-if res.status_code == 200:
-    db['DB_URL'] = res.text
-    logging.info('Got DB_URL')
-else:
-    db['DB_URL'] = None
-    logging.info('ERROR DB_URL')
+def update_url():
+    res = requests.get(os.getenv('DB_URL'))
+    if res.status_code == 200:
+        db['DB_URL'] = res.text
+        logging.info('Got DB_URL')
+    else:
+        db['DB_URL'] = None
+        logging.info('ERROR DB_URL')
 
+
+update_url()
 
 app = Flask('')
 
@@ -39,6 +42,8 @@ def set_db_url():
 @app.get(f'/{os.getenv("ROUTE2")}')
 def get_db_url():
     logging.info('DB_URL get')
+    if request.args.get('update') == '1':
+        update_url()
     if db['DB_URL'] is None:
         response = Response()
         response.status_code = 404
