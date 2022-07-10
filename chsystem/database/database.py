@@ -1,18 +1,7 @@
 import os
-import api
-import utils
-import routine
 import requests
 
-from flask import Flask, request, Response, jsonify
-from replit import db
-from waitress import serve
-from paste.translogger import TransLogger
-from secrets import compare_digest
 from datetime import datetime
-
-NOTIFIER_NAME = os.getenv('NOTIFIER')
-WEB_NAME = os.getenv('WEB')
 
 res = requests.get(os.getenv('DB_URL'))
 if res.status_code == 200:
@@ -23,26 +12,7 @@ else:
     utils.logger('ERROR DB_URL')
 
 
-def auth(api_key):
-    api_keys = db['api_keys']
-    for user, key in api_keys.items():
-        if compare_digest(api_key, key):
-            return user
-
-    return None
-
-
-def get_api_key(_request):
-    api_key = _request.headers.get('X-ApiKey', type=str)
-    return api_key if api_key is not None else ''
-
-
 app = Flask('')
-
-
-@app.route('/')
-def status():
-    return db['status']
 
 
 @app.route('/ping')
