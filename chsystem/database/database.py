@@ -1,32 +1,35 @@
 import os
+import logging
 import requests
+
+import psycopg2
 
 from datetime import datetime
 
-res = requests.get(os.getenv('DB_URL'))
-if res.status_code == 200:
-    db['DB_URL'] = res.text
-    utils.logger('Got DB_URL')
-else:
-    db['DB_URL'] = None
-    utils.logger('ERROR DB_URL')
+logging.basicConfig(format='%(levelname)s %(asctime)s - %(message)s', level=logging.INFO)
 
 
-app = Flask('')
+class Database:
 
+    def __init__(self):
+        self.update_url()
+        self.db_uri = None
+        self.conn = psycopg2.connect(os.getenv('DB_URI'))
+        self.cur = self.conn.cursor()
 
-@app.route('/ping')
-def ping():
-    return 'pong'
-
-
-@app.post(f'/{os.getenv("ROUTE")}')
-def set_db_url():
-    utils.logger('DB_URL request')
-    db['DB_URL'] = request.json['DB_URL']
-    response = Response()
-    response.status_code = 201
-    return response
+    def update_url(self, force=False):
+        res = requests.get(os.getenv('DB_URL'), data={'update': '1' if force else '0'})
+        if res.status_code == 200:
+            os.putenv('DB_URI', res.text)
+            self.db_uri = res.text
+            logging.info('Got DB_URL')
+            self.conn = psycopg2.connect(self.db_uri)
+            self.cur = self.conn.cursor()
+        else:
+            logging.error('ERROR DB_URL')
+            self.db_uri = None
+            self.conn = None
+            self.cur = None
 
 
 @app.post('/api/get')

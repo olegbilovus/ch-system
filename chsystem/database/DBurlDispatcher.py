@@ -7,8 +7,8 @@ from replit import db
 from waitress import serve
 from paste.translogger import TransLogger
 
-logging.basicConfig(format='%(levelname)s %(asctime)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(format='%(levelname)s %(asctime)s - %(message)s', level=logging.INFO)
+
 
 def update_url():
     res = requests.get(os.getenv('DB_URL'))
@@ -48,7 +48,7 @@ def get_db_url():
         response = Response()
         response.status_code = 404
         return response
-    
+
     return db['DB_URL']
 
 
@@ -60,5 +60,6 @@ def run():
           url_scheme='https',
           ident=None,
           threads=6)
+
 
 run()
