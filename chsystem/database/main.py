@@ -23,7 +23,6 @@ else:
     utils.logging('ERROR DB_URL')
 
 
-
 def auth(api_key):
     api_keys = db['api_keys']
     for user, key in api_keys.items():
