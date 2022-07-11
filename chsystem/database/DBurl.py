@@ -8,6 +8,7 @@ from paste.translogger import TransLogger
 import logging
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 res = requests.post(os.getenv('DB_SERVER_URL'), json={'DB_URL': os.getenv('DATABASE_URL')})
 logger.info(f'DB_URL set: {res.status_code}')
