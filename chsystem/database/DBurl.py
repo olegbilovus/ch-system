@@ -5,15 +5,9 @@ from flask import Flask
 from waitress import serve
 from paste.translogger import TransLogger
 
-from logtail import LogtailHandler
 import logging
 
-handler = LogtailHandler(source_token=os.getenv('LOGTAIL_TOKEN'))
-
 logger = logging.getLogger(__name__)
-logger.handlers = []
-logger.setLevel(logging.INFO)
-logger.addHandler(handler)
 
 res = requests.post(os.getenv('DB_SERVER_URL'), json={'DB_URL': os.getenv('DATABASE_URL')})
 logger.info(f'DB_URL set: {res.status_code}')
