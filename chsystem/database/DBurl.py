@@ -1,5 +1,6 @@
 import os
 import requests
+import sys
 
 from flask import Flask
 from waitress import serve
@@ -7,8 +8,8 @@ from paste.translogger import TransLogger
 
 import logging
 
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 res = requests.post(os.getenv('DB_SERVER_URL'), json={'DB_URL': os.getenv('DATABASE_URL')})
 logger.info(f'DB_URL set: {res.status_code}')
