@@ -1,5 +1,7 @@
-Flask
-waitress
-Paste
+Flask~=2.1.2
+waitress~=2.1.2
+Paste~=3.5.1
 cutandpaste
-requests
+requests~=2.28.1
+psycopg2~=2.9.3
+logtail-python~=0.1.3

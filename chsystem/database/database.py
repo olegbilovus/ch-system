@@ -1,10 +1,16 @@
 import os
-import logging
 import requests
-
 import psycopg2
 
-logging.basicConfig(format='%(levelname)s %(asctime)s - %(message)s', level=logging.INFO)
+from logtail import LogtailHandler
+import logging
+
+handler = LogtailHandler(source_token=os.getenv('LOGTAIL_TOKEN'))
+
+logger = logging.getLogger(__name__)
+logger.handlers = []
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 
 class Database:
