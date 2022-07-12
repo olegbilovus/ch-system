@@ -5,21 +5,24 @@ import sys
 from dotenv import load_dotenv
 
 load_dotenv()
-if os.getenv('LOGTAIL_TOKEN') is not None:
+if os.getenv('DB_URL') is not None:
     print('Loaded successfully env variables')
 else:
-    print('Failed to load env variables')
-    sys.exit(1)
+    sys.exit('Failed to load env variables')
 
-def get_logger(logtail=True, stdout=True, name=__name__):
+
+def get_logger(name, token, logtail=True, stdout=True, stderr=True):
     logger = logging.getLogger(name)
     logger.handlers = []
 
     if logtail:
-        handler = LogtailHandler(source_token=os.getenv('LOGTAIL_TOKEN'))
+        handler = LogtailHandler(source_token=token)
         logger.addHandler(handler)
     if stdout:
         handler = logging.StreamHandler(sys.stdout)
+        logger.addHandler(handler)
+    if stderr:
+        handler = logging.StreamHandler(sys.stderr)
         logger.addHandler(handler)
 
     logger.setLevel(logging.INFO)

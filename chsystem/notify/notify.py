@@ -1,4 +1,5 @@
 import requests
+import os
 
 import logs
 import database
@@ -7,7 +8,7 @@ timer_db = database.Timer()
 subscriber_db = database.Subscriber()
 notifyWebhook_db = database.NotifyWebhook()
 
-logger = logs.get_logger(name='notify')
+logger = logs.get_logger('Notify', os.getenv('LOGTAIL_NOTIFY'))
 
 USERNAME = 'Notifier'
 
@@ -25,7 +26,6 @@ for clan_id, webhook in webhooks:
 
             res = requests.post(webhook, data={'username': USERNAME, 'content': msg})
             logger.info(f'response: {res.status_code}, sent: {msg}')
-
 
 timer_db.close()
 logger.info('Finish check')
