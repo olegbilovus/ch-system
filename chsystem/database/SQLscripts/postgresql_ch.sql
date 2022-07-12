@@ -19,7 +19,7 @@ CREATE TABLE clan
 DROP TABLE IF EXISTS userProfile CASCADE;
 CREATE TABLE userProfile
 (
-    ID        SERIAL PRIMARY KEY,
+    ID       BIGSERIAL PRIMARY KEY,
     name      VARCHAR(30),
     serverID  SMALLSERIAL,
     clanID    SERIAL,
@@ -37,7 +37,7 @@ CREATE TABLE userProfile
 DROP TABLE IF EXISTS apiKey CASCADE;
 CREATE TABLE apiKey
 (
-    userProfileID SERIAL PRIMARY KEY,
+    userProfileID BIGSERIAL PRIMARY KEY,
     key           VARCHAR(50) UNIQUE,
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
@@ -47,7 +47,7 @@ CREATE TABLE apiKey
 DROP TABLE IF EXISTS discordID CASCADE;
 CREATE TABLE discordID
 (
-    userProfileID SERIAL PRIMARY KEY,
+    userProfileID BIGSERIAL PRIMARY KEY,
     discordID     VARCHAR(30),
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
@@ -67,7 +67,7 @@ CREATE TABLE discordChannelID
 DROP TABLE IF EXISTS timer CASCADE;
 CREATE TABLE timer
 (
-    ID       SERIAL PRIMARY KEY,
+    ID       BIGSERIAL PRIMARY KEY,
     bossName VARCHAR(50),
     type     VARCHAR(20),
     timer    BIGINT,
@@ -84,8 +84,8 @@ CREATE TABLE timer
 DROP TABLE IF EXISTS subscriber CASCADE;
 CREATE TABLE subscriber
 (
-    userProfileID SERIAL,
-    timerID       SERIAL,
+    userProfileID BIGSERIAL,
+    timerID       BIGSERIAL,
     PRIMARY KEY (timerID, userProfileID),
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
