@@ -22,9 +22,9 @@ class Database:
             if res.status_code == 200:
                 os.putenv('DB_URI', res.text)
                 Database.db_uri = res.text
-                logging.info('Got DB_URL')
+                logger.info('Got DB_URL')
             else:
-                logging.error('ERROR DB_URL')
+                logger.error('ERROR DB_URL')
                 Database.db_uri = None
                 self.conn = None
                 self.cur = None
@@ -39,7 +39,7 @@ class Database:
         self.conn = psycopg2.connect(Database.db_uri)
         self.cur = self.conn.cursor()
         self.cur.execute('SELECT version()')
-        logging.info(self.cur.fetchone())
+        logger.info(self.cur.fetchone())
 
 
 class Server(Database):
