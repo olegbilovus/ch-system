@@ -8,9 +8,6 @@ import logs
 
 logger = logs.get_logger(logtail=False, name='DBurl')
 
-res = requests.post(os.getenv('DB_SERVER_URL'), json={'DB_URL': os.getenv('DATABASE_URL')})
-logger.info(f'DB_URL set: {res.status_code}')
-
 app = Flask('')
 
 
