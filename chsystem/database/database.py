@@ -8,36 +8,49 @@ logger = logs.get_logger(name='database')
 
 
 class Database:
-    db_url = os.getenv('DB_URL')
-    db_uri = os.getenv('DB_URI')
-    conn = None
-    cur = None
+    _shared_state = {
+        'conn': None,
+        'cur': None,
+        'db_uri': os.getenv('DB_URI'),
+        'db_url': os.getenv('DB_URL')
+    }
+
+    def __new__(cls, *args, **kwargs):
+        obj = super().__new__(cls, *args, **kwargs)
+        obj.__dict__ = cls._shared_state
+        return obj
 
     def __init__(self, uri=None, url=None):
-        if Database.conn is None:
+        if self.conn is None:
             self.update_url(uri, url)
 
     def update_url(self, uri=None, url=None, force=False):
-        if uri is None and Database.db_uri is None:
-            res = requests.get(Database.db_url if url is None else url, data={'update': '1' if force else '0'})
+        if uri is None and self.db_uri is None:
+            res = requests.get(self.db_url if url is None else url, data={'update': '1' if force else '0'})
             if res.status_code == 200:
                 os.putenv('DB_URI', res.text)
-                Database.db_uri = res.text
+                self.db_uri = res.text
                 logger.info('Got DB_URL')
             else:
                 logger.error('ERROR DB_URL')
-                Database.db_uri = None
+                self.db_uri = None
                 self.conn = None
                 self.cur = None
         else:
-            Database.db_uri = uri if uri is not None else Database.db_uri
-            Database.db_url = url if url is not None else Database.db_url
+            self.db_uri = uri if uri is not None else self.db_uri
+            self.db_url = url if url is not None else self.db_url
 
         if self.conn is None:
-            self.conn = psycopg2.connect(Database.db_uri)
+            self.conn = psycopg2.connect(self.db_uri)
             self.cur = self.conn.cursor()
             self.cur.execute('SELECT version()')
             logger.info(self.cur.fetchone())
+
+    def close(self):
+        if self.conn is not None:
+            self.conn.close()
+            self.conn = None
+            self.cur = None
 
 
 class Server(Database):
