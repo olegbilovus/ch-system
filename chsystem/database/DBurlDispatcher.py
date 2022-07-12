@@ -8,7 +8,7 @@ from paste.translogger import TransLogger
 
 import logs
 
-logger = logs.get_logger()
+logger = logs.get_logger(name='DBurlDispatcher')
 
 
 def update_url():

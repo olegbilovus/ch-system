@@ -4,7 +4,7 @@ import psycopg2
 
 import logs
 
-logger = logs.get_logger()
+logger = logs.get_logger(name='database')
 
 
 class Database:
