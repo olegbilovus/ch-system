@@ -189,9 +189,9 @@ class Timer(Database):
         self.cur.execute('SELECT * FROM timer WHERE clanid = %s AND id = %s', (clan_id, timer_id))
         return self.cur.fetchone()
 
-    def create(self, boss_name, boss_type, timer, server_id, clan_id):
-        self.cur.execute('INSERT INTO timer (bossName, type, timer, serverid, clanid) VALUES (%s, %s, %s, %s, %s)',
-                         (boss_name, boss_type, timer, server_id, clan_id))
+    def create(self, boss_name, boss_type, timer, clan_id):
+        self.cur.execute('INSERT INTO timer (bossName, type, timer, clanid) VALUES (%s, %s, %s, %s)',
+                         (boss_name, boss_type, timer, clan_id))
         self.conn.commit()
         return self.cur.fetchone()
 

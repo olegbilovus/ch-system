@@ -61,13 +61,9 @@ CREATE TABLE timer
     bossName VARCHAR(50),
     type     VARCHAR(20),
     timer    BIGINT,
-    serverID SMALLSERIAL,
     clanID   SERIAL,
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
-        ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (serverID)
-        REFERENCES server (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
