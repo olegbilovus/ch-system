@@ -14,7 +14,7 @@ class Database:
     cur = None
 
     def __init__(self, uri=None, url=None):
-        if self.conn is None:
+        if Database.conn is None:
             self.update_url(uri, url)
 
     def update_url(self, uri=None, url=None, force=False):
