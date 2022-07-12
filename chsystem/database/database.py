@@ -172,7 +172,9 @@ class NotifyWebhook(Database):
 class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
-        self.cur.execute('SELECT id, timer, bossname FROM timer WHERE clanid = %s', (clan_id,))
+        self.cur.execute(
+            'SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer.timer >= 0 AND timer.timer <= 10',
+            (clan_id,))
         return self.cur.fetchall()
 
     def get_by_clan_id(self, clan_id):
@@ -217,17 +219,40 @@ class Timer(Database):
         return self.cur.fetchone()
 
 
+class DiscordID(Database):
+    def get_by_user_id(self, user_id):
+        self.cur.execute('SELECT * FROM discordid WHERE userprofileid = %s', (user_id,))
+        return self.cur.fetchone()
+
+    def create(self, user_id, discord_id):
+        self.cur.execute('INSERT INTO discordid (userprofileid, discordid) VALUES (%s, %s)', (user_id, discord_id))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+    def update(self, user_id, discord_id):
+        self.cur.execute('UPDATE discordid SET discordid = %s WHERE userprofileid = %s', (discord_id, user_id))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+    def delete(self, user_id):
+        self.cur.execute('DELETE FROM discordid WHERE userprofileid = %s', (user_id,))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+
 class Subscriber(Database):
     def get_by_user_id(self, user_id):
         self.cur.execute('SELECT * FROM subscriber WHERE userprofileid = %s', (user_id,))
         return self.cur.fetchone()
 
-    def get_discord_ids_by_timer_id_clan_id(self, timer_id, clan_id):
-        self.cur.execute('SELECT discordid FROM subscriber WHERE timerid = %s AND clanid = %s', (timer_id, clan_id))
+    def get_discord_ids_by_timer_id_clan_id(self, timer_id):
+        self.cur.execute(
+            'SELECT discordid FROM subscriber, discordid WHERE timerid = %s AND subscriber.userprofileid = discordid.userprofileid',
+            (timer_id,))
         return self.cur.fetchall()
 
     def create(self, user_id, timer_id, discord_id, clan_id):
-        self.cur.execute('INSERT INTO subscriber (userprofileid, timerid, discordid, clanid) VALUES (%s, %s, %s, %s)',
+        self.cur.execute('INSERT INTO subscriber (userprofileid, timerid, clanid) VALUES (%s, %s, %s)',
                          (user_id, timer_id, discord_id, clan_id))
         self.conn.commit()
         return self.cur.fetchone()
