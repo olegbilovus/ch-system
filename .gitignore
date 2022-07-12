@@ -12,3 +12,4 @@ dist/*
 security/*.png
 **/.env
 /.idea/dataSources.xml
+/.idea/sonarlint/*
