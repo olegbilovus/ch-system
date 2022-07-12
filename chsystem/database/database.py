@@ -32,7 +32,7 @@ class Database:
             Database.db_uri = uri if uri is not None else Database.db_uri
             Database.db_url = url if url is not None else Database.db_url
 
-        if self.conn is not None:
+        if self.conn is None:
             self.conn = psycopg2.connect(Database.db_uri)
             self.cur = self.conn.cursor()
             self.cur.execute('SELECT version()')
