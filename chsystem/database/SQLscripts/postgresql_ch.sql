@@ -19,7 +19,7 @@ CREATE TABLE clan
 DROP TABLE IF EXISTS userProfile CASCADE;
 CREATE TABLE userProfile
 (
-    ID       BIGSERIAL PRIMARY KEY,
+    ID        BIGSERIAL PRIMARY KEY,
     name      VARCHAR(30),
     serverID  SMALLSERIAL,
     clanID    SERIAL,
@@ -44,21 +44,11 @@ CREATE TABLE apiKey
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-DROP TABLE IF EXISTS discordID CASCADE;
-CREATE TABLE discordID
+DROP TABLE IF EXISTS notifyWebhook CASCADE;
+CREATE TABLE notifyWebhook
 (
-    userProfileID BIGSERIAL PRIMARY KEY,
-    discordID     VARCHAR(30),
-    FOREIGN KEY (userProfileID)
-        REFERENCES userProfile (ID)
-        ON UPDATE CASCADE ON DELETE CASCADE
-);
-
-DROP TABLE IF EXISTS discordChannelID CASCADE;
-CREATE TABLE discordChannelID
-(
-    clanID           SERIAL PRIMARY KEY,
-    discordChannelID VARCHAR(30),
+    clanID        SERIAL PRIMARY KEY,
+    notifyWebhook VARCHAR(100),
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -86,11 +76,16 @@ CREATE TABLE subscriber
 (
     userProfileID BIGSERIAL,
     timerID       BIGSERIAL,
+    discordID     VARCHAR(30),
+    clanID        SERIAL,
     PRIMARY KEY (timerID, userProfileID),
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
         ON UPDATE CASCADE ON DELETE CASCADE,
     FOREIGN KEY (timerID)
         REFERENCES timer (ID)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (clanID)
+        REFERENCES clan (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
