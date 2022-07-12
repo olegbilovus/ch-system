@@ -8,7 +8,7 @@ timer_db = database.Timer()
 subscriber_db = database.Subscriber()
 notifyWebhook_db = database.NotifyWebhook()
 
-logger = logs.get_logger('Notify', os.getenv('LOGTAIL_NOTIFY'))
+logger = logs.get_logger('Notify', token=os.getenv('LOGTAIL_NOTIFY'))
 
 USERNAME = 'Notifier'
 

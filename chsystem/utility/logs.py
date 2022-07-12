@@ -11,7 +11,7 @@ else:
     sys.exit('Failed to load env variables')
 
 
-def get_logger(name, token, logtail=True, stdout=True, stderr=True):
+def get_logger(name, token=None, logtail=True, stdout=True, stderr=True):
     logger = logging.getLogger(name)
     logger.handlers = []
 
