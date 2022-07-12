@@ -204,6 +204,13 @@ class Timer(Database):
         self.conn.commit()
         return self.cur.fetchone()
 
+    def update_bulk(self, clan_id, data: dict):
+        for boss_name, timer in data.items():
+            self.cur.execute('UPDATE timer SET timer = %s WHERE clanid = %s AND bossName = %s',
+                             (timer, clan_id, boss_name))
+        self.conn.commit()
+        return self.cur.fetchone()
+
     def delete(self, clan_id, boss_name):
         self.cur.execute('DELETE FROM timer WHERE clanid = %s AND bossName = %s', (clan_id, boss_name))
         self.conn.commit()
