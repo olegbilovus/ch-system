@@ -48,7 +48,7 @@ DROP TABLE IF EXISTS notifyWebhook CASCADE;
 CREATE TABLE notifyWebhook
 (
     clanID        SERIAL PRIMARY KEY,
-    notifyWebhook VARCHAR(100),
+    notifyWebhook VARCHAR(1000),
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -76,7 +76,7 @@ CREATE TABLE subscriber
 (
     userProfileID BIGSERIAL,
     timerID       BIGSERIAL,
-    discordID     VARCHAR(30),
+    discordID     VARCHAR(50),
     clanID        SERIAL,
     PRIMARY KEY (timerID, userProfileID),
     FOREIGN KEY (userProfileID)
