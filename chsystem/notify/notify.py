@@ -26,4 +26,6 @@ for clan_id, webhook in webhooks:
             res = requests.post(webhook, data={'username': USERNAME, 'content': msg})
             logger.info(f'response: {res.status_code}, sent: {msg}')
 
+
+timer_db.close()
 logger.info('Finish check')
