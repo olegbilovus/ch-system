@@ -33,13 +33,10 @@ class Database:
             Database.db_url = url if url is not None else Database.db_url
 
         if self.conn is not None:
-            self.conn.close()
-            self.cur = None
-            self.conn = None
-        self.conn = psycopg2.connect(Database.db_uri)
-        self.cur = self.conn.cursor()
-        self.cur.execute('SELECT version()')
-        logger.info(self.cur.fetchone())
+            self.conn = psycopg2.connect(Database.db_uri)
+            self.cur = self.conn.cursor()
+            self.cur.execute('SELECT version()')
+            logger.info(self.cur.fetchone())
 
 
 class Server(Database):
@@ -162,11 +159,11 @@ class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
         self.cur.execute('SELECT id, timer, bossname FROM timer WHERE clanid = %s', (clan_id,))
-        return self.cur.fetchone()
+        return self.cur.fetchall()
 
     def get_by_clan_id(self, clan_id):
         self.cur.execute('SELECT * FROM timer WHERE clanid = %s', (clan_id,))
-        return self.cur.fetchone()
+        return self.cur.fetchall()
 
     def get_by_clan_id_and_boss_name(self, clan_id, boss_name):
         self.cur.execute('SELECT * FROM timer WHERE clanid = %s AND bossName = %s', (clan_id, boss_name))
@@ -211,9 +208,9 @@ class Subscriber(Database):
         self.cur.execute('SELECT * FROM subscriber WHERE userprofileid = %s', (user_id,))
         return self.cur.fetchone()
 
-    def get_discord_id_by_timer_id_clan_id(self, timer_id, clan_id):
+    def get_discord_ids_by_timer_id_clan_id(self, timer_id, clan_id):
         self.cur.execute('SELECT discordid FROM subscriber WHERE timerid = %s AND clanid = %s', (timer_id, clan_id))
-        return self.cur.fetchone()
+        return self.cur.fetchall()
 
     def create(self, user_id, timer_id, discord_id, clan_id):
         self.cur.execute('INSERT INTO subscriber (userprofileid, timerid, discordid, clanid) VALUES (%s, %s, %s, %s)',
