@@ -6,7 +6,7 @@ from paste.translogger import TransLogger
 
 import logs
 
-logger = logs.get_logger(logatile=False)
+logger = logs.get_logger(logtail=False)
 
 res = requests.post(os.getenv('DB_SERVER_URL'), json={'DB_URL': os.getenv('DATABASE_URL')})
 logger.info(f'DB_URL set: {res.status_code}')
