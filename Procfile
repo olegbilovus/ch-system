@@ -1,1 +1,1 @@
-web: python3 chsystem/database/DBurl.py
+web: bash init.sh "chsystem/database/DBurl.py"
