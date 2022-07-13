@@ -142,29 +142,33 @@ class ApiKey(Database):
         return self.cur.fetchone()
 
 
-class NotifyWebhook(Database):
-    def get_all(self):
-        self.cur.execute('SELECT * FROM notifywebhook')
+class ClanDiscord(Database):
+    def get_all_notify_webhooks(self):
+        self.cur.execute('SELECT * FROM clandiscord WHERE notifywebhook IS NOT NULL')
         return self.cur.fetchall()
 
     def get_by_clan_id(self, clan_id):
-        self.cur.execute('SELECT * FROM notifywebhook WHERE clanid = %s', (clan_id,))
+        self.cur.execute('SELECT * FROM clandiscord WHERE clanid = %s', (clan_id,))
         return self.cur.fetchone()
 
-    def create(self, clan_id, notify_webhook):
-        self.cur.execute('INSERT INTO notifywebhook (clanid, notifywebhook) VALUES (%s, %s)',
-                         (clan_id, notify_webhook))
+    def get_by_discord_guild_id(self, discord_guild_id):
+        self.cur.execute('SELECT * FROM clandiscord WHERE discordguildid = %s', (discord_guild_id,))
+        return self.cur.fetchone()
+
+    def create(self, clan_id, notify_webhook, discord_guild_id):
+        self.cur.execute('INSERT INTO clandiscord (clanid, notifywebhook, discordguildid) VALUES (%s, %s, %s)',
+                         (clan_id, notify_webhook, discord_guild_id))
         self.conn.commit()
         return self.cur.fetchone()
 
-    def update(self, clan_id, notify_webhook):
-        self.cur.execute('UPDATE notifywebhook SET notifywebhook = %s WHERE clanid = %s',
-                         (notify_webhook, clan_id))
+    def update(self, clan_id, notify_webhook, discord_guild_id):
+        self.cur.execute('UPDATE clandiscord SET notifywebhook = %s, discordguildid = %s WHERE clanid = %s',
+                         (notify_webhook, discord_guild_id, clan_id))
         self.conn.commit()
         return self.cur.fetchone()
 
     def delete(self, clan_id):
-        self.cur.execute('DELETE FROM notifywebhook WHERE clanid = %s', (clan_id,))
+        self.cur.execute('DELETE FROM clandiscord WHERE clanid = %s', (clan_id,))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -232,13 +236,15 @@ class DiscordID(Database):
         self.cur.execute('SELECT * FROM discordid WHERE userprofileid = %s', (user_id,))
         return self.cur.fetchone()
 
-    def create(self, user_id, discord_id):
-        self.cur.execute('INSERT INTO discordid (userprofileid, discordid) VALUES (%s, %s)', (user_id, discord_id))
+    def create(self, user_id, discord_id, discord_tag):
+        self.cur.execute('INSERT INTO discordid (userprofileid, discordid, discordtag) VALUES (%s, %s, %s)',
+                         (user_id, discord_id, discord_tag))
         self.conn.commit()
         return self.cur.fetchone()
 
-    def update(self, user_id, discord_id):
-        self.cur.execute('UPDATE discordid SET discordid = %s WHERE userprofileid = %s', (discord_id, user_id))
+    def update(self, user_id, discord_id, discord_tag):
+        self.cur.execute('UPDATE discordid SET discordid = %s, discordtag = %s WHERE userprofileid = %s',
+                         (discord_id, discord_tag, user_id))
         self.conn.commit()
         return self.cur.fetchone()
 
