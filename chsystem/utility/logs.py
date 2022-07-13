@@ -1,14 +1,6 @@
-import os
 from logtail import LogtailHandler
 import logging
 import sys
-from dotenv import load_dotenv
-
-load_dotenv()
-if os.getenv('DB_URL') is not None:
-    print('Loaded successfully env variables')
-else:
-    sys.exit('Failed to load env variables')
 
 
 def get_logger(name, token=None, logtail=True, stdout=True, stderr=False):
