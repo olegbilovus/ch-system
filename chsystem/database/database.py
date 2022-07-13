@@ -236,6 +236,10 @@ class DiscordID(Database):
         self.cur.execute('SELECT * FROM discordid WHERE userprofileid = %s', (user_id,))
         return self.cur.fetchone()
 
+    def get_by_discord_id(self, discord_id):
+        self.cur.execute('SELECT * FROM discordid WHERE discordid = %s', (discord_id,))
+        return self.cur.fetchone()
+
     def create(self, user_id, discord_id, discord_tag):
         self.cur.execute('INSERT INTO discordid (userprofileid, discordid, discordtag) VALUES (%s, %s, %s)',
                          (user_id, discord_id, discord_tag))
