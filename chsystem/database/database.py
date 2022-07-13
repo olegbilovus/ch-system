@@ -4,6 +4,8 @@ import psycopg2
 
 import logs
 
+from datetime import datetime, timezone
+
 logger = logs.get_logger('Database', token=os.getenv('LOGTAIL_DATABASE'))
 
 
@@ -172,9 +174,10 @@ class NotifyWebhook(Database):
 class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
+        current_time = datetime.now(timezone.utc)
         self.cur.execute(
-            'SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer.timer >= 0 AND timer.timer <= 10',
-            (clan_id,))
+            'SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer.timer - %s >= 0 AND timer.timer - %s <= 10',
+            (clan_id, current_time, current_time))
         return self.cur.fetchall()
 
     def get_by_clan_id(self, clan_id):

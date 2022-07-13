@@ -60,7 +60,7 @@ CREATE TABLE timer
     ID       BIGSERIAL PRIMARY KEY,
     bossName VARCHAR(50),
     type     VARCHAR(20),
-    timer    BIGINT,
+    timer    TIMESTAMPTZ,
     clanID   SERIAL,
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
