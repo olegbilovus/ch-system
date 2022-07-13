@@ -1,6 +1,7 @@
 import requests
 import os
 
+import setup
 import logs
 import database
 

@@ -173,7 +173,7 @@ class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
         self.cur.execute(
-            "SELECT id, timer_minutes_remaining(timer.timer) AS timer, bossname FROM timer WHERE clanid = %s AND timer_minutes_remaining(timer.timer) >= 0 AND timer_minutes_remaining(timer.timer) <= 10",
+            "SELECT id, EXTRACT(MINUTE FROM timer_minutes_remaining(timer.timer)) AS timer, bossname FROM timer WHERE clanid = %s AND timer_minutes_remaining(timer.timer) >= INTERVAL '0 MINUTES' AND timer_minutes_remaining(timer.timer) <= INTERVAL '10 MINUTES'",
             (clan_id,))
         return self.cur.fetchall()
 

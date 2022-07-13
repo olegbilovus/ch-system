@@ -87,10 +87,10 @@ CREATE TRIGGER timer_default
 EXECUTE PROCEDURE timer_default();
 
 DROP FUNCTION IF EXISTS timer_minutes_remaining(timer TIMESTAMP WITHOUT TIME ZONE);
-CREATE FUNCTION timer_minutes_remaining(timer TIMESTAMP WITHOUT TIME ZONE) RETURNS INTEGER AS
+CREATE FUNCTION timer_minutes_remaining(timer TIMESTAMP WITHOUT TIME ZONE) RETURNS INTERVAL AS
 $timer_minutes_remaining$
 BEGIN
-    RETURN EXTRACT(MINUTE FROM (timer - NOW() AT TIME ZONE ('UTC')));
+    RETURN timer - NOW() AT TIME ZONE ('UTC');
 END;
 $timer_minutes_remaining$ LANGUAGE plpgsql;
 
