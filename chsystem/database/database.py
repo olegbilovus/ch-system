@@ -4,15 +4,14 @@ import psycopg2
 
 import logs
 
-logger = logs.get_logger('Database', token=os.getenv('LOGTAIL_DATABASE'))
-
 
 class Database:
     _shared_state = {
         'conn': None,
         'cur': None,
         'db_uri': os.getenv('DB_URI'),
-        'db_url': os.getenv('DB_URL')
+        'db_url': os.getenv('DB_URL'),
+        'logger': logs.get_logger('Database', token=os.getenv('LOGTAIL_DATABASE'))
     }
 
     def __new__(cls, *args, **kwargs):
@@ -30,9 +29,9 @@ class Database:
             if res.status_code == 200:
                 os.putenv('DB_URI', res.text)
                 self.db_uri = res.text
-                logger.info('Got DB_URL')
+                self.logger.info('Got DB_URL')
             else:
-                logger.error('ERROR DB_URL')
+                self.logger.error('ERROR DB_URL')
                 self.db_uri = None
                 self.conn = None
                 self.cur = None
@@ -44,7 +43,7 @@ class Database:
             self.conn = psycopg2.connect(self.db_uri)
             self.cur = self.conn.cursor()
             self.cur.execute('SELECT version()')
-            logger.info(self.cur.fetchone())
+            self.logger.info(self.cur.fetchone())
 
     def close(self):
         if self.conn is not None:
