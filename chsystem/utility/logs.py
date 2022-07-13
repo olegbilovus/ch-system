@@ -3,20 +3,47 @@ import logging
 import sys
 
 
-def get_logger(name, token=None, logtail=True, stdout=True, stderr=False):
+class STDtoLogger:
+    def __init__(self, logfct):
+        self.logfct = logfct
+        self.buf = []
+
+    def write(self, msg):
+        if msg.endswith('\n'):
+            self.buf.append(msg.removesuffix('\n'))
+            self.logfct(''.join(self.buf))
+            self.buf = []
+        else:
+            self.buf.append(msg)
+
+    def flush(self):
+        """Required for compatibility"""
+        pass
+
+
+def get_logger(name, token=None, logtail=True, stdout=True, stdout_r=False, stderr=False, stderr_r=False,
+               other_loggers=None):
     logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
     logger.handlers = []
 
     if logtail:
         handler = LogtailHandler(source_token=token)
         logger.addHandler(handler)
+        if other_loggers is not None:
+            for other_logger in other_loggers:
+                other = logging.getLogger(other_logger)
+                other.addHandler(handler)
+                logger.info(f'Other logger {other_logger} added')
     if stdout:
         handler = logging.StreamHandler(sys.stdout)
         logger.addHandler(handler)
+    if stdout_r:
+        sys.stdout = STDtoLogger(logger.debug)
     if stderr:
         handler = logging.StreamHandler(sys.stderr)
         logger.addHandler(handler)
-
-    logger.setLevel(logging.INFO)
+    if stderr_r:
+        sys.stderr = STDtoLogger(logger.error)
 
     return logger
