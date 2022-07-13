@@ -1,5 +1,4 @@
 import os
-import requests
 from flask import Flask
 from waitress import serve
 from paste.translogger import TransLogger
