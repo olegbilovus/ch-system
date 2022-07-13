@@ -1,17 +1,18 @@
 from logtail import LogtailHandler
 import logging
 import sys
+import time
 
 
 class STDtoLogger:
-    def __init__(self, logfct):
-        self.logfct = logfct
+    def __init__(self, level):
+        self.level = level
         self.buf = []
 
     def write(self, msg):
         if msg.endswith('\n'):
             self.buf.append(msg.removesuffix('\n'))
-            self.logfct(''.join(self.buf))
+            self.level(''.join(self.buf))
             self.buf = []
         else:
             self.buf.append(msg)
@@ -45,5 +46,10 @@ def get_logger(name, token=None, logtail=True, stdout=True, stdout_r=False, stde
         logger.addHandler(handler)
     if stderr_r:
         sys.stderr = STDtoLogger(logger.error)
+
+    formatter = logging.Formatter('%(levelname)s %(asctime)s - %(message)s')
+    for handler in logger.handlers:
+        handler.setFormatter(formatter)
+    logging.Formatter.converter = time.gmtime
 
     return logger
