@@ -57,15 +57,42 @@ CREATE TABLE notifyWebhook
 DROP TABLE IF EXISTS timer CASCADE;
 CREATE TABLE timer
 (
-    ID       BIGSERIAL PRIMARY KEY,
-    bossName VARCHAR(50),
-    type     VARCHAR(20),
-    timer    TIMESTAMPTZ,
-    clanID   SERIAL,
+    ID                 BIGSERIAL PRIMARY KEY,
+    bossName           VARCHAR(50),
+    type               VARCHAR(20),
+    respawnTimeMinutes BIGINT NOT NULL,
+    timer              TIMESTAMP WITHOUT TIME ZONE,
+    clanID             SERIAL,
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+DROP FUNCTION IF EXISTS timer_default();
+CREATE FUNCTION timer_default() RETURNS trigger AS
+$timer_default$
+BEGIN
+    IF NEW.timer IS NULL THEN
+        NEW.timer = NOW() AT TIME ZONE ('UTC') + INTERVAL '1 MINUTE' * NEW.respawnTimeMinutes;
+    END IF;
+    RETURN NEW;
+END;
+$timer_default$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS timer_default ON timer;
+CREATE TRIGGER timer_default
+    BEFORE INSERT OR UPDATE
+    ON timer
+    FOR EACH ROW
+EXECUTE PROCEDURE timer_default();
+
+DROP FUNCTION IF EXISTS timer_minutes_remaining();
+CREATE FUNCTION timer_minutes_remaining(timer TIMESTAMP WITHOUT TIME ZONE) RETURNS INTEGER AS
+$timer_minutes_remaining$
+BEGIN
+    RETURN EXTRACT(MINUTE FROM NOW() AT TIME ZONE ('UTC') - timer);
+END;
+$timer_minutes_remaining$ LANGUAGE plpgsql;
 
 DROP TABLE IF EXISTS discordID CASCADE;
 CREATE TABLE discordID

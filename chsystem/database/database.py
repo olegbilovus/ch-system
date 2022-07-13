@@ -4,8 +4,6 @@ import psycopg2
 
 import logs
 
-from datetime import datetime, timezone
-
 logger = logs.get_logger('Database', token=os.getenv('LOGTAIL_DATABASE'))
 
 
@@ -174,10 +172,9 @@ class NotifyWebhook(Database):
 class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
-        current_time = datetime.now(timezone.utc)
         self.cur.execute(
-            'SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer.timer - %s >= 0 AND timer.timer - %s <= 10',
-            (clan_id, current_time, current_time))
+            "SELECT id, timer_minutes_remaining(timer.timer) AS timer, bossname FROM timer WHERE clanid = %s AND timer_minutes_remaining(timer.timer) >= 0 AND timer_minutes_remaining(timer.timer) <= 10",
+            (clan_id,))
         return self.cur.fetchall()
 
     def get_by_clan_id(self, clan_id):
@@ -192,15 +189,23 @@ class Timer(Database):
         self.cur.execute('SELECT * FROM timer WHERE clanid = %s AND id = %s', (clan_id, timer_id))
         return self.cur.fetchone()
 
-    def create(self, boss_name, boss_type, timer, clan_id):
-        self.cur.execute('INSERT INTO timer (bossName, type, timer, clanid) VALUES (%s, %s, %s, %s)',
-                         (boss_name, boss_type, timer, clan_id))
+    def create(self, boss_name, boss_type, respawn_time_minutes, clan_id):
+        self.cur.execute('INSERT INTO timer (bossName, type, respawntimeminutes, clanid) VALUES (%s, %s, %s, %s)',
+                         (boss_name, boss_type, respawn_time_minutes, clan_id))
         self.conn.commit()
         return self.cur.fetchone()
 
-    def update(self, clan_id, boss_name, timer):
-        self.cur.execute('UPDATE timer SET timer = %s WHERE clanid = %s AND bossName = %s',
-                         (timer, clan_id, boss_name))
+    def update(self, clan_id, boss_name, time_offset_minutes):
+        self.cur.execute(
+            "UPDATE timer SET timer = NOW() AT TIME ZONE ('UTC') + INTERVAL '1 MINUTE' * %s WHERE clanid = %s AND bossName = %s",
+            (clan_id, boss_name, time_offset_minutes))
+        self.conn.commit()
+        return self.cur.fetchone()
+
+    def reset(self, clan_id, boss_name):
+        self.cur.execute(
+            "UPDATE timer SET timer = NOW() AT TIME ZONE ('UTC') + INTERVAL '1 MINUTE' * respawntimeminutes WHERE clanid = %s AND bossName = %s",
+            (clan_id, boss_name))
         self.conn.commit()
         return self.cur.fetchone()
 
