@@ -1,4 +1,4 @@
-import datetime
+import time
 from functools import wraps
 
 import database
@@ -19,18 +19,38 @@ class Message:
         self.guild_id = author.guild.id
 
 
-def days_hours_minutes(td):
-    str_data = ''
-    if td.days > 0:
-        str_data += f'{td.days} days '
-    hours = td.seconds // 3600
-    if hours > 0:
-        str_data += f'{hours} hours '
-    minutes = (td.seconds % 3600) // 60
-    if minutes > 0:
-        str_data += f'{minutes} minutes'
+def seconds_to_dhm(seconds):
+    if seconds < 0:
+        negative = True
+        seconds *= -1
+    else:
+        negative = False
+    days = seconds // (24 * 3600)
+    seconds %= 24 * 3600
+    hours = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
 
-    return str_data
+    msg = f'{str(days) + "d " if days > 0 else ""}{str(hours) + "h " if hours > 0 else ""}{minutes}m'
+    if not negative:
+        return msg
+    return '-' + msg
+
+
+def days_hours_minutes_to_seconds(array_values):
+    days = 0
+    hours = 0
+    minutes = 0
+    for value in array_values:
+        if len(value) > 1:
+            if value[-1] == 'd':
+                days = int(value[:-1])
+            elif value[-1] == 'h':
+                hours = int(value[:-1])
+            elif value[-1] == 'm':
+                minutes = int(value[:-1])
+
+    return ((days * 24 * 60) + (hours * 60) + minutes) * 60
 
 
 def start_chain(f):
@@ -67,7 +87,7 @@ def soon(successor=None):
                     if _type != prev_type:
                         msg += f'{_type.upper()}\n'
                         prev_type = _type
-                    msg += f'{boss_name}: {days_hours_minutes(timer)}\n'
+                    msg += f'{boss_name}: {seconds_to_dhm(timer)}\n'
 
                 msg_to_send['msg'] = msg
         elif successor is not None:
@@ -88,18 +108,8 @@ def set_timer(successor=None):
                 if timer_data is None:
                     msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
                 else:
-                    timer_set = datetime.datetime.utcnow()
                     try:
-                        for i in range(1, len(msg.args)):
-                            if msg.args[i][-1] == 'd':
-                                timer_set += datetime.timedelta(days=int(msg.args[i][:-1]))
-                            elif msg.args[i][-1] == 'h':
-                                timer_set += datetime.timedelta(hours=int(msg.args[i][:-1]))
-                            elif msg.args[i][-1] == 'm':
-                                timer_set += datetime.timedelta(minutes=int(msg.args[i][:-1]))
-                            else:
-                                raise ValueError
-
+                        timer_set = time.time() + days_hours_minutes_to_seconds(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
                         msg_to_send['msg'] = f'{boss} will spawn in {" ".join(msg.args[1:])}'
                     except ValueError:

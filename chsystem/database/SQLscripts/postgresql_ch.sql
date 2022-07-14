@@ -62,7 +62,7 @@ CREATE TABLE timer
     bossName           VARCHAR(50),
     type               VARCHAR(20),
     respawnTimeMinutes BIGINT NOT NULL,
-    timer              TIMESTAMP WITHOUT TIME ZONE,
+    timer              BIGINT,
     clanID             SERIAL,
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
@@ -74,7 +74,7 @@ CREATE FUNCTION timer_default() RETURNS trigger AS
 $timer_default$
 BEGIN
     IF NEW.timer IS NULL THEN
-        NEW.timer = NOW() AT TIME ZONE ('UTC') + INTERVAL '1 MINUTE' * NEW.respawnTimeMinutes;
+        NEW.timer = EXTRACT(EPOCH FROM (NOW() + INTERVAL '1 MINUTE' * NEW.respawnTimeMinutes));
     END IF;
     RETURN NEW;
 END;
@@ -87,11 +87,11 @@ CREATE TRIGGER timer_default
     FOR EACH ROW
 EXECUTE PROCEDURE timer_default();
 
-DROP FUNCTION IF EXISTS timer_remaining(timer TIMESTAMP WITHOUT TIME ZONE);
-CREATE FUNCTION timer_remaining(timer TIMESTAMP WITHOUT TIME ZONE) RETURNS INTERVAL AS
+DROP FUNCTION IF EXISTS timer_remaining(timer BIGINT);
+CREATE FUNCTION timer_remaining(timer BIGINT) RETURNS BIGINT AS
 $timer_remaining$
 BEGIN
-    RETURN timer - NOW() AT TIME ZONE ('UTC');
+    RETURN timer - EXTRACT(EPOCH FROM NOW());
 END;
 $timer_remaining$ LANGUAGE plpgsql;
 

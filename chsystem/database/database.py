@@ -176,13 +176,13 @@ class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
         self.cur.execute(
-            "SELECT id, EXTRACT(MINUTE FROM timer_remaining(timer.timer)) AS timer, bossname FROM timer WHERE clanid = %s AND timer_remaining(timer.timer) >= INTERVAL '0 MINUTES' AND timer_remaining(timer.timer) <= INTERVAL '10 MINUTES'",
+            "SELECT id, timer_remaining(timer.timer) / 60 AS timer, bossname FROM timer WHERE clanid = %s AND timer_remaining(timer.timer) >= 0 AND timer_remaining(timer.timer) <= 600",
             (clan_id,))
         return self.cur.fetchall()
 
     def get_by_clan_id_order_by_type(self, clan_id):
         self.cur.execute(
-            "SELECT bossname, type, timer_remaining(timer.timer) AS timer FROM timer WHERE clanid = %s AND (EXTRACT(epoch FROM (timer.timer)) - EXTRACT(epoch FROM NOW() AT TIME ZONE ('UTC'))) > -3600 ORDER BY type",
+            "SELECT bossname, type, timer_remaining(timer) AS timer FROM timer WHERE clanid = %s AND timer_remaining(timer.timer) >= -3600 ORDER BY type",
             (clan_id,))
         return self.cur.fetchall()
 
@@ -203,12 +203,12 @@ class Timer(Database):
         return self.cur.fetchone()
 
     def update(self, timer_id, time):
-        self.cur.execute("UPDATE timer SET timer = %s AT TIME ZONE 'UTC' WHERE id = %s", (time, timer_id))
+        self.cur.execute("UPDATE timer SET timer = %s WHERE id = %s", (time, timer_id))
         self.conn.commit()
 
     def reset(self, clan_id, boss_name):
         self.cur.execute(
-            "UPDATE timer SET timer = NOW() AT TIME ZONE ('UTC') + INTERVAL '1 MINUTE' * respawntimeminutes WHERE clanid = %s AND bossName = %s",
+            "UPDATE timer SET timer = EXTRACT(EPOCH FROM (NOW() + INTERVAL '1 MINUTE' * respawntimeminutes)) WHERE clanid = %s AND bossName = %s",
             (clan_id, boss_name))
         self.conn.commit()
 
