@@ -4,6 +4,7 @@ import discord
 
 import logs
 import database
+import commands
 
 logger = logs.get_logger('DiscordBot', token=os.getenv('LOGTAIL_DISCORD'), other_loggers=['discord'], stdout_r=True,
                          stderr_r=True)
@@ -17,6 +18,10 @@ user_profile_db = database.UserProfile()
 
 
 class DiscordBot(discord.Client):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cmds = commands.soon(commands.set_timer(commands.reset_timer(commands.default()))).send
+
     async def on_ready(self):
         logger.info(f'Logged on as {self.user}')
         for guild in self.guilds:
@@ -26,6 +31,7 @@ class DiscordBot(discord.Client):
                 await guild.leave()
             else:
                 logger.info(f'Found guild {guild.name}', extra={'discord_guild_id': guild.id})
+        logger.info(f'DiscordBot ready')
 
     async def on_message(self, message):
         if message.author.bot:
@@ -34,8 +40,23 @@ class DiscordBot(discord.Client):
             'discord_id': message.author.id,
             'discord_guild_id': message.guild.id,
             'discord_guild_name': message.guild.name,
+            'discord_channel_id': message.channel.id,
+            'discord_channel_name': message.channel.name,
         }
         logger.info(f'Message from {message.author}: {message.content}', extra=extra_log)
+
+        msg_received = commands.Message(message.content, message.author)
+        msg_to_send = self.cmds(msg_received)
+
+        if msg_to_send['msg'] is not None:
+            if msg_to_send['private']:
+                await message.author.send(msg_to_send['msg'])
+                logger.info(f'Sent private message to {message.author}')
+            else:
+                await message.channel.send(msg_to_send['msg'])
+                logger.info(f'Sent message to channel: {message.channel}, content: {msg_to_send["msg"]}')
+        else:
+            logger.warning(f'No command found for {message.content}')
 
     async def on_disconnect(self):
         logger.error(f'Disconnected')
