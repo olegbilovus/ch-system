@@ -21,6 +21,7 @@ for clan_id, webhook, discord_guild_id in webhooks:
     for timer_id, timer, boss_name in timers:
         subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(timer_id)
         msg = f'{boss_name} due in {timer}m '
+
         for discord_id, in subscribers:
             msg += f'<@{discord_id}>'
 
