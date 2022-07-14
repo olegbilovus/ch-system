@@ -23,9 +23,9 @@ def time_remaining(_timer):
 
 
 for clan_id, webhook, discord_guild_id in webhooks:
-    timers = timer_db.get_notify_data_by_clan_id(clan_id)
+    timers_data = timer_db.get_notify_data_by_clan_id(clan_id)
     timers_data = filter(lambda x: time_remaining(x[2]) > -15, timers_data)
-    for timer_id, timer, boss_name in timers:
+    for timer_id, timer, boss_name in timers_data:
         subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(timer_id)
         msg = f'{boss_name} due in {timer}m '
 
