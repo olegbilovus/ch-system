@@ -172,13 +172,13 @@ class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
         self.cur.execute(
-            "SELECT id, timer_remaining(timer.timer) AS timer, bossname FROM timer WHERE clanid = %s AND timer_remaining(timer.timer) >= 0 AND timer_remaining(timer.timer) <= 10",
+            "SELECT id, timer AS timer, bossname FROM timer WHERE clanid = %s",
             (clan_id,))
         return self.cur.fetchall()
 
     def get_by_clan_id_order_by_type(self, clan_id):
         self.cur.execute(
-            "SELECT bossname, type, timer_remaining(timer) AS timer FROM timer WHERE clanid = %s AND timer_remaining(timer.timer) >= -15 ORDER BY type, bossname",
+            "SELECT bossname, type, timer AS time FROM timer WHERE clanid = %s ORDER BY type, bossname",
             (clan_id,))
         return self.cur.fetchall()
 

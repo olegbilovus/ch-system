@@ -1,5 +1,6 @@
 import requests
 import os
+import time
 
 import setup
 import logs
@@ -16,8 +17,14 @@ USERNAME = 'Notifier'
 logger.info('Check')
 webhooks = clan_discord_db.get_all_notify_webhooks()
 
+
+def time_remaining(_timer):
+    return _timer - (round(time.time()) // 60)
+
+
 for clan_id, webhook, discord_guild_id in webhooks:
     timers = timer_db.get_notify_data_by_clan_id(clan_id)
+    timers_data = filter(lambda x: time_remaining(x[2]) > -15, timers_data)
     for timer_id, timer, boss_name in timers:
         subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(timer_id)
         msg = f'{boss_name} due in {timer}m '

@@ -69,14 +69,6 @@ CREATE TABLE timer
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-DROP FUNCTION IF EXISTS timer_remaining(timer BIGINT);
-CREATE FUNCTION timer_remaining(timer BIGINT) RETURNS BIGINT AS
-$timer_remaining$
-BEGIN
-    RETURN timer - (EXTRACT(EPOCH FROM NOW())) / 60;
-END;
-$timer_remaining$ LANGUAGE plpgsql;
-
 DROP TABLE IF EXISTS discordID CASCADE;
 CREATE TABLE discordID
 (

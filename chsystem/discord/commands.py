@@ -47,9 +47,13 @@ def days_hours_mins_to_mins(array_values):
             elif value[-1] == 'm':
                 minutes = int(value[:-1])
 
-    to_return = days * 1440 + hours * 60 + minutes
+    to_return = days * 1440 + hours * 60 + minutes - 2
 
     return to_return
+
+
+def time_remaining(timer):
+    return timer - (round(time.time()) // 60)
 
 
 def start_chain(f):
@@ -80,13 +84,14 @@ def soon(successor=None):
             if len(timers_data) == 0:
                 msg_to_send['msg'] = f'Your clan has no timers set'
             else:
+                timers_data = filter(lambda x: time_remaining(x[2]) > -15, timers_data)
                 msg = ''
                 prev_type = ''
                 for boss_name, _type, timer in timers_data:
                     if _type != prev_type:
                         msg += f'{_type.upper()}\n'
                         prev_type = _type
-                    msg += f'{boss_name}: {minutes_to_dhm(timer)}\n'
+                    msg += f'{boss_name}: {minutes_to_dhm(time_remaining(timer))}\n'
 
                 msg_to_send['msg'] = msg
         elif successor is not None:
@@ -132,7 +137,7 @@ def reset_timer(successor=None):
                 msg_to_send['msg'] = f'{msg.author_mention} {msg.cmd} is not a valid boss to reset'
             else:
                 current_time_in_minutes = round(time.time()) // 60
-                timer_set = current_time_in_minutes + timer_data[1]
+                timer_set = current_time_in_minutes + timer_data[1] - 2
                 timer_db.update(timer_data[0], timer_set)
                 msg_to_send['msg'] = f'{msg.cmd} has been reset'
 
