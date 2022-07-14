@@ -77,7 +77,6 @@ class Clan(Database):
     def update(self, clan_id, clan_name, server_id):
         self.cur.execute('UPDATE clan SET name = %s, serverid = %s WHERE id = %s', (clan_name, server_id, clan_id))
         self.conn.commit()
-        return self.cur.fetchone()
 
     def delete(self, clan_id):
         self.cur.execute('DELETE FROM clan WHERE id = %s', (clan_id,))
@@ -111,7 +110,6 @@ class UserProfile(Database):
             'UPDATE userprofile SET name = %s, serverid = %s, clanid = %s, role = %s, hash_pw = %s, change_pw = %s WHERE id = %s',
             (user_name, server_id, clan_id, role, hash_pw, change_pw, user_id))
         self.conn.commit()
-        return self.cur.fetchone()
 
     def delete(self, user_id):
         self.cur.execute('DELETE FROM userprofile WHERE id = %s', (user_id,))
@@ -133,7 +131,6 @@ class ApiKey(Database):
     def update(self, user_id, key):
         self.cur.execute('UPDATE apikey SET key = %s WHERE userprofileid = %s', (key, user_id))
         self.conn.commit()
-        return self.cur.fetchone()
 
     def delete(self, user_id):
         self.cur.execute('DELETE FROM apikey WHERE userprofileid = %s', (user_id,))
@@ -164,7 +161,6 @@ class ClanDiscord(Database):
         self.cur.execute('UPDATE clandiscord SET notifywebhook = %s, discordguildid = %s WHERE clanid = %s',
                          (notify_webhook, discord_guild_id, clan_id))
         self.conn.commit()
-        return self.cur.fetchone()
 
     def delete(self, clan_id):
         self.cur.execute('DELETE FROM clandiscord WHERE clanid = %s', (clan_id,))
@@ -206,16 +202,10 @@ class Timer(Database):
         self.cur.execute("UPDATE timer SET timer = %s WHERE id = %s", (time, timer_id))
         self.conn.commit()
 
-    def reset(self, time, clan_id, boss_name):
-        self.cur.execute(
-            "UPDATE timer SET timer = %s WHERE clanid = %s AND bossName = %s",
-            (time, clan_id, boss_name))
-        self.conn.commit()
-
-    def update_bulk(self, clan_id, data: dict):
-        for boss_name, timer in data.items():
-            self.cur.execute('UPDATE timer SET timer = %s WHERE clanid = %s AND bossName = %s',
-                             (timer, clan_id, boss_name))
+    def update_bulk(self, data: dict):
+        for timer, timer_id in data.items():
+            self.cur.execute('UPDATE timer SET timer = %s WHERE timer = %s',
+                             (timer, timer_id))
         self.conn.commit()
 
     def delete(self, clan_id, boss_name):
@@ -248,7 +238,6 @@ class DiscordID(Database):
         self.cur.execute('UPDATE discordid SET discordid = %s, discordtag = %s WHERE userprofileid = %s',
                          (discord_id, discord_tag, user_id))
         self.conn.commit()
-        return self.cur.fetchone()
 
     def delete(self, user_id):
         self.cur.execute('DELETE FROM discordid WHERE userprofileid = %s', (user_id,))

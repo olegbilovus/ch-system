@@ -133,7 +133,7 @@ def reset_timer(successor=None):
             else:
                 current_time_in_minutes = round(time.time()) // 60
                 timer_set = current_time_in_minutes + timer_data[1]
-                timer_db.reset(timer_set, timer_data[0], msg.cmd)
+                timer_db.update(timer_data[0], timer_set)
                 msg_to_send['msg'] = f'{msg.cmd} has been reset'
 
         elif successor is not None:
