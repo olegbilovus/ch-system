@@ -19,25 +19,22 @@ class Message:
         self.guild_id = author.guild.id
 
 
-def seconds_to_dhm(seconds):
-    if seconds < 0:
+def minutes_to_dhm(minutes):
+    negative = False
+    if int(minutes) < 0:
+        minutes *= -1
         negative = True
-        seconds *= -1
-    else:
-        negative = False
-    days = seconds // (24 * 3600)
-    seconds %= 24 * 3600
-    hours = seconds // 3600
-    seconds %= 3600
-    minutes = seconds // 60
-
+    days = minutes // 1440
+    minutes %= 1440
+    hours = minutes // 60
+    minutes %= 60
     msg = f'{str(days) + "d " if days > 0 else ""}{str(hours) + "h " if hours > 0 else ""}{minutes}m'
     if not negative:
         return msg
     return '-' + msg
 
 
-def days_hours_minutes_to_seconds(array_values):
+def days_hours_mins_to_mins(array_values):
     days = 0
     hours = 0
     minutes = 0
@@ -50,7 +47,9 @@ def days_hours_minutes_to_seconds(array_values):
             elif value[-1] == 'm':
                 minutes = int(value[:-1])
 
-    return ((days * 24 * 60) + (hours * 60) + minutes) * 60
+    to_return = days * 1440 + hours * 60 + minutes
+
+    return to_return
 
 
 def start_chain(f):
@@ -87,7 +86,7 @@ def soon(successor=None):
                     if _type != prev_type:
                         msg += f'{_type.upper()}\n'
                         prev_type = _type
-                    msg += f'{boss_name}: {seconds_to_dhm(timer)}\n'
+                    msg += f'{boss_name}: {minutes_to_dhm(timer)}\n'
 
                 msg_to_send['msg'] = msg
         elif successor is not None:
@@ -109,7 +108,8 @@ def set_timer(successor=None):
                     msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
                 else:
                     try:
-                        timer_set = time.time() + days_hours_minutes_to_seconds(msg.args[1:])
+                        current_time_in_minutes = round(time.time()) // 60
+                        timer_set = current_time_in_minutes + days_hours_mins_to_mins(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
                         msg_to_send['msg'] = f'{boss} will spawn in {" ".join(msg.args[1:])}'
                     except ValueError:
@@ -131,7 +131,9 @@ def reset_timer(successor=None):
             if timer_data is None:
                 msg_to_send['msg'] = f'{msg.author_mention} {msg.cmd} is not a valid boss to reset'
             else:
-                timer_db.reset(timer_data[0], msg.cmd)
+                current_time_in_minutes = round(time.time()) // 60
+                timer_set = current_time_in_minutes + timer_data[1]
+                timer_db.reset(timer_set, timer_data[0], msg.cmd)
                 msg_to_send['msg'] = f'{msg.cmd} has been reset'
 
         elif successor is not None:

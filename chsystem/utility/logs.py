@@ -22,7 +22,7 @@ class STDtoLogger:
         pass
 
 
-def get_logger(name, token=None, logtail=True, stdout=True, stdout_r=False, stderr=False, stderr_r=False,
+def get_logger(name, token=None, logtail=True, file=False, stdout=True, stdout_r=False, stderr=False, stderr_r=False,
                other_loggers=None):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
@@ -46,6 +46,9 @@ def get_logger(name, token=None, logtail=True, stdout=True, stdout_r=False, stde
         logger.addHandler(handler)
     if stderr_r:
         sys.stderr = STDtoLogger(logger.error)
+    if file:
+        handler = logging.FileHandler(f'{name}.log')
+        logger.addHandler(handler)
 
     formatter = logging.Formatter('%(levelname)s %(asctime)s - %(message)s')
     for handler in logger.handlers:

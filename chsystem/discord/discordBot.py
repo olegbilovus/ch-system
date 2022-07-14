@@ -7,7 +7,7 @@ import database
 import commands
 
 logger = logs.get_logger('DiscordBot', token=os.getenv('LOGTAIL_DISCORD'), other_loggers=['discord'], stdout_r=True,
-                         stderr_r=True)
+                         stderr_r=True, file=True)
 
 logger.info(f'Starting DiscordBot {discord.version_info}')
 

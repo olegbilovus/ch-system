@@ -9,7 +9,7 @@ timer_db = database.Timer()
 subscriber_db = database.Subscriber()
 clan_discord_db = database.ClanDiscord()
 
-logger = logs.get_logger('Notify', token=os.getenv('LOGTAIL_NOTIFY'))
+logger = logs.get_logger('Notify', token=os.getenv('LOGTAIL_NOTIFY'), stdout_r=True, stderr_r=True, file=True)
 
 USERNAME = 'Notifier'
 

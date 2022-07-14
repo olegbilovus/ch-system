@@ -69,29 +69,11 @@ CREATE TABLE timer
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
-DROP FUNCTION IF EXISTS timer_default();
-CREATE FUNCTION timer_default() RETURNS trigger AS
-$timer_default$
-BEGIN
-    IF NEW.timer IS NULL THEN
-        NEW.timer = EXTRACT(EPOCH FROM (NOW() + INTERVAL '1 MINUTE' * NEW.respawnTimeMinutes));
-    END IF;
-    RETURN NEW;
-END;
-$timer_default$ LANGUAGE plpgsql;
-
-DROP TRIGGER IF EXISTS timer_default ON timer;
-CREATE TRIGGER timer_default
-    BEFORE INSERT OR UPDATE
-    ON timer
-    FOR EACH ROW
-EXECUTE PROCEDURE timer_default();
-
 DROP FUNCTION IF EXISTS timer_remaining(timer BIGINT);
 CREATE FUNCTION timer_remaining(timer BIGINT) RETURNS BIGINT AS
 $timer_remaining$
 BEGIN
-    RETURN timer - EXTRACT(EPOCH FROM NOW());
+    RETURN timer - (EXTRACT(EPOCH FROM NOW())) / 60;
 END;
 $timer_remaining$ LANGUAGE plpgsql;
 
