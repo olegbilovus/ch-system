@@ -47,9 +47,9 @@ CREATE TABLE apiKey
 DROP TABLE IF EXISTS clanDiscord CASCADE;
 CREATE TABLE clanDiscord
 (
-    clanID        SERIAL PRIMARY KEY,
-    notifyWebhook VARCHAR(1000),
-    discordGuildID VARCHAR(100),
+    clanID         SERIAL PRIMARY KEY,
+    notifyWebhook  VARCHAR(1000),
+    discordGuildID BIGINT UNIQUE,
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -99,7 +99,7 @@ DROP TABLE IF EXISTS discordID CASCADE;
 CREATE TABLE discordID
 (
     userProfileID BIGSERIAL PRIMARY KEY,
-    discordID     VARCHAR(50),
+    discordID     BIGINT UNIQUE,
     discordTag    VARCHAR(50),
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)

@@ -19,23 +19,35 @@ user_profile_db = database.UserProfile()
 class DiscordBot(discord.Client):
     async def on_ready(self):
         logger.info(f'Logged on as {self.user}')
+        for guild in self.guilds:
+            if clan_discord_db.get_by_discord_guild_id(guild.id) is None:
+                logger.critical(f'Guild {guild.name} joined but not in database, leaving.',
+                                extra={'discord_guild_id': guild.id})
+                await guild.leave()
+            else:
+                logger.info(f'Found guild {guild.name}', extra={'discord_guild_id': guild.id})
 
     async def on_message(self, message):
         if message.author.bot:
             return
-        logger.info(f'Message from {message.author}: {message.content}')
+        extra_log = {
+            'discord_id': message.author.id,
+            'discord_guild_id': message.guild.id,
+            'discord_guild_name': message.guild.name,
+        }
+        logger.info(f'Message from {message.author}: {message.content}', extra=extra_log)
 
     async def on_disconnect(self):
         logger.error(f'Disconnected')
 
     async def on_guild_join(self, guild):
-        logger.warning(f'Joined guild {guild.name}')
+        logger.warning(f'Joined guild {guild.name}', extra={'discord_guild_id': guild.id})
         if clan_discord_db.get_by_discord_guild_id(guild.id) is None:
             logger.critical(f'Guild {guild.name} joined but not in database, leaving.')
             await guild.leave()
 
     async def on_guild_remove(self, guild):
-        logger.warning(f'Left guild {guild.name}, {guild.id}')
+        logger.warning(f'Left GuildID: {guild.id}, Guild name: {guild.name}')
         clan_discord = clan_discord_db.get_by_discord_guild_id(guild.id)
         if clan_discord is not None:
             clan = clan_db.delete(clan_discord[0])
@@ -48,14 +60,16 @@ class DiscordBot(discord.Client):
             logger.warning(f'GuildID:{before.id}, {before.name} renamed to {after.name}')
 
     async def on_member_remove(self, member):
-        logger.warning(f'Member {member.name} left from GuildID: {member.guild.id}, Guild name: {member.guild.name}')
+        if member.bot:
+            return
+        logger.warning(f'Member {member.name} left from GuildID: {member.guild.id}, Guild name: {member.guild.name}',
+                       extra={'discord_tag': str(member), 'discord_id': member.id})
         discord_id = discord_id_db.get_by_discord_id(member.id)
         if discord_id is not None:
             user_profile = user_profile_db.delete(discord_id[0])
             logger.warning(f'Deleted user_id: {user_profile[0]}, discord_id:{user_profile[1]}')
-
-    async def on_error(self, event_method, *args, **kwargs):
-        logger.error(f'Error in {event_method}:\n{args}\n{kwargs}')
+        else:
+            logger.warning(f'Member {member.name} left but not in database')
 
 
 client = DiscordBot(intents=discord.Intents.all(), status=discord.Status.online,
