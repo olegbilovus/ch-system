@@ -20,6 +20,7 @@ psycopg2-binary>=2.9.3
 python-dotenv>=0.20.0
 requests>=2.28.1
 six>=1.16.0
+tabulate>=0.8.10
 typing_extensions>=4.3.0
 urllib3>=1.26.10
 waitress>=2.1.2

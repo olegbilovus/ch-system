@@ -20,7 +20,8 @@ user_profile_db = database.UserProfile()
 class DiscordBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cmds = commands.soon(commands.set_timer(commands.reset_timer(commands.default()))).send
+        self.cmds = commands.soon(commands.set_timer(
+            commands.sub(commands.unsub(commands.sublist(commands.reset_timer(commands.default())))))).send
 
     async def on_ready(self):
         logger.info(f'Logged on as {self.user}')
@@ -45,7 +46,7 @@ class DiscordBot(discord.Client):
         }
         logger.info(f'Message from {message.author}: {message.content}', extra=extra_log)
 
-        msg_received = commands.Message(message.content, message.author)
+        msg_received = commands.Message(message.content, message.author, logger)
         msg_to_send = self.cmds(msg_received)
 
         if msg_to_send['msg'] is not None:

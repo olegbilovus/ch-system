@@ -5,7 +5,7 @@ def time_remaining(_timer):
     return _timer - (round(time.time()) // 60)
 
 
-def days_hours_mins_to_mins(array_values):
+def dhm_to_minutes(array_values):
     days = 0
     hours = 0
     minutes = 0

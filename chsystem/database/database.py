@@ -61,16 +61,20 @@ class Server(Database):
 
 class Clan(Database):
 
-    def get_by_id(self, clan_id):
+    def get_by_clan_id(self, clan_id):
         self.cur.execute('SELECT * FROM clan WHERE id = %s', (clan_id,))
         return self.cur.fetchone()
+
+    def get_server_id_by_clan_id(self, clan_id):
+        self.cur.execute('SELECT serverid FROM clan WHERE id = %s', (clan_id,))
+        return self.cur.fetchone()[0]
 
     def get_by_name_and_server(self, clan_name, server_id):
         self.cur.execute('SELECT * FROM clan WHERE name = %s AND serverid = %s', (clan_name, server_id))
         return self.cur.fetchone()
 
-    def create(self, clan_name, server_id):
-        self.cur.execute('INSERT INTO clan (name, serverid) VALUES (%s, %s)', (clan_name, server_id))
+    def insert(self, clan_name, server_id):
+        self.cur.execute('INSERT INTO clan (name, serverid) VALUES (%s, %s) RETURNING *', (clan_name, server_id))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -79,7 +83,7 @@ class Clan(Database):
         self.conn.commit()
 
     def delete(self, clan_id):
-        self.cur.execute('DELETE FROM clan WHERE id = %s', (clan_id,))
+        self.cur.execute('DELETE FROM clan WHERE id = %s RETURNING *', (clan_id,))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -94,14 +98,14 @@ class UserProfile(Database):
         self.cur.execute('SELECT * FROM userprofile WHERE id = %s', (user_id,))
         return self.cur.fetchone()
 
-    def get_by_name_and_server(self, user_name, server_id):
-        self.cur.execute('SELECT * FROM userprofile WHERE name = %s AND serverid = %s', (user_name, server_id))
+    def get_by_name_and_clan_id(self, user_name, clan_id):
+        self.cur.execute('SELECT * FROM userprofile WHERE name = %s AND clanid = %s', (user_name, clan_id))
         return self.cur.fetchone()
 
-    def create(self, user_name, server_id, clan_id, role, hash_pw):
+    def insert(self, user_name, server_id, clan_id, role, hash_pw):
         self.cur.execute(
-            'INSERT INTO userprofile (name, serverid, clanid, role, hash_pw, change_pw) VALUES (%s, %s, %s, %s, %s)',
-            (user_name, server_id, clan_id, role, hash_pw, True))
+            'INSERT INTO userprofile (name, serverid, clanid, role, hash_pw, change_pw) VALUES (%s, %s, %s, %s, %s, True) RETURNING *',
+            (user_name, server_id, clan_id, role, hash_pw))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -112,7 +116,7 @@ class UserProfile(Database):
         self.conn.commit()
 
     def delete(self, user_id):
-        self.cur.execute('DELETE FROM userprofile WHERE id = %s', (user_id,))
+        self.cur.execute('DELETE FROM userprofile WHERE id = %s RETURNING *', (user_id,))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -123,8 +127,8 @@ class ApiKey(Database):
         self.cur.execute('SELECT * FROM apikey WHERE userprofileid = %s', (user_id,))
         return self.cur.fetchone()
 
-    def create(self, user_id, key):
-        self.cur.execute('INSERT INTO apikey (userprofileid, key) VALUES (%s, %s)', (user_id, key))
+    def insert(self, user_id, key):
+        self.cur.execute('INSERT INTO apikey (userprofileid, key) VALUES (%s, %s) RETURNING *', (user_id, key))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -133,7 +137,7 @@ class ApiKey(Database):
         self.conn.commit()
 
     def delete(self, user_id):
-        self.cur.execute('DELETE FROM apikey WHERE userprofileid = %s', (user_id,))
+        self.cur.execute('DELETE FROM apikey WHERE userprofileid = %s RETURNING *', (user_id,))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -151,9 +155,10 @@ class ClanDiscord(Database):
         self.cur.execute('SELECT * FROM clandiscord WHERE discordguildid = %s', (discord_guild_id,))
         return self.cur.fetchone()
 
-    def create(self, clan_id, notify_webhook, discord_guild_id):
-        self.cur.execute('INSERT INTO clandiscord (clanid, notifywebhook, discordguildid) VALUES (%s, %s, %s)',
-                         (clan_id, notify_webhook, discord_guild_id))
+    def insert(self, clan_id, notify_webhook, discord_guild_id):
+        self.cur.execute(
+            'INSERT INTO clandiscord (clanid, notifywebhook, discordguildid) VALUES (%s, %s, %s) RETURNING *',
+            (clan_id, notify_webhook, discord_guild_id))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -163,7 +168,7 @@ class ClanDiscord(Database):
         self.conn.commit()
 
     def delete(self, clan_id):
-        self.cur.execute('DELETE FROM clandiscord WHERE clanid = %s', (clan_id,))
+        self.cur.execute('DELETE FROM clandiscord WHERE clanid = %s RETURNING *', (clan_id,))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -184,7 +189,7 @@ class Timer(Database):
 
     def get_by_guild_id_and_boss_name(self, guild_id, boss_name):
         self.cur.execute(
-            "SELECT timer.id, respawnTimeMinutes FROM timer, clandiscord WHERE discordguildid = %s AND bossname = %s AND timer.clanid = clandiscord.clanid",
+            "SELECT timer.id, respawnTimeMinutes, timer.clanid FROM timer, clandiscord WHERE discordguildid = %s AND bossname = %s AND timer.clanid = clandiscord.clanid",
             (guild_id, boss_name))
         return self.cur.fetchone()
 
@@ -192,9 +197,10 @@ class Timer(Database):
         self.cur.execute('SELECT * FROM timer WHERE clanid = %s AND id = %s', (clan_id, timer_id))
         return self.cur.fetchone()
 
-    def create(self, boss_name, boss_type, respawn_time_minutes, clan_id):
-        self.cur.execute('INSERT INTO timer (bossName, type, respawntimeminutes, clanid) VALUES (%s, %s, %s, %s)',
-                         (boss_name, boss_type, respawn_time_minutes, clan_id))
+    def insert(self, boss_name, boss_type, respawn_time_minutes, clan_id):
+        self.cur.execute(
+            'INSERT INTO timer (bossName, type, respawntimeminutes, clanid) VALUES (%s, %s, %s, %s) RETURNING *',
+            (boss_name, boss_type, respawn_time_minutes, clan_id))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -209,14 +215,14 @@ class Timer(Database):
         self.conn.commit()
 
     def delete(self, clan_id, boss_name):
-        self.cur.execute('DELETE FROM timer WHERE clanid = %s AND bossName = %s', (clan_id, boss_name))
+        self.cur.execute('DELETE FROM timer WHERE clanid = %s AND bossName = %s RETURNING *', (clan_id, boss_name))
         self.conn.commit()
         return self.cur.fetchone()
 
     def delete_by_clan_id(self, clan_id):
-        self.cur.execute('DELETE FROM timer WHERE clanid = %s', (clan_id,))
+        self.cur.execute('DELETE FROM timer WHERE clanid = %s RETURNING *', (clan_id,))
         self.conn.commit()
-        return self.cur.fetchone()
+        return self.cur.fetchall()
 
 
 class DiscordID(Database):
@@ -228,8 +234,8 @@ class DiscordID(Database):
         self.cur.execute('SELECT * FROM discordid WHERE discordid = %s', (discord_id,))
         return self.cur.fetchone()
 
-    def create(self, user_id, discord_id, discord_tag):
-        self.cur.execute('INSERT INTO discordid (userprofileid, discordid, discordtag) VALUES (%s, %s, %s)',
+    def insert(self, user_id, discord_id, discord_tag):
+        self.cur.execute('INSERT INTO discordid (userprofileid, discordid, discordtag) VALUES (%s, %s, %s) RETURNING *',
                          (user_id, discord_id, discord_tag))
         self.conn.commit()
         return self.cur.fetchone()
@@ -240,7 +246,7 @@ class DiscordID(Database):
         self.conn.commit()
 
     def delete(self, user_id):
-        self.cur.execute('DELETE FROM discordid WHERE userprofileid = %s', (user_id,))
+        self.cur.execute('DELETE FROM discordid WHERE userprofileid = %s RETURNING *', (user_id,))
         self.conn.commit()
         return self.cur.fetchone()
 
@@ -248,7 +254,7 @@ class DiscordID(Database):
 class Subscriber(Database):
     def get_by_user_id(self, user_id):
         self.cur.execute('SELECT * FROM subscriber WHERE userprofileid = %s', (user_id,))
-        return self.cur.fetchone()
+        return self.cur.fetchall()
 
     def get_discord_ids_by_timer_id_clan_id(self, timer_id):
         self.cur.execute(
@@ -256,18 +262,24 @@ class Subscriber(Database):
             (timer_id,))
         return self.cur.fetchall()
 
-    def create(self, user_id, timer_id, discord_id, clan_id):
-        self.cur.execute('INSERT INTO subscriber (userprofileid, timerid, clanid) VALUES (%s, %s, %s)',
-                         (user_id, timer_id, discord_id, clan_id))
+    def get_bosses_subscribed_by_user_id(self, user_id):
+        self.cur.execute(
+            'SELECT bossname FROM subscriber, timer WHERE subscriber.userprofileid = %s AND subscriber.timerid = timer.id',
+            (user_id,))
+        return self.cur.fetchall()
+
+    def insert(self, user_id, timer_id):
+        self.cur.execute('INSERT INTO subscriber (userprofileid, timerid) VALUES (%s, %s)',
+                         (user_id, timer_id))
         self.conn.commit()
-        return self.cur.fetchone()
 
     def delete(self, user_id, timer_id):
-        self.cur.execute('DELETE FROM subscriber WHERE userprofileid = %s AND timerid = %s', (user_id, timer_id))
+        self.cur.execute('DELETE FROM subscriber WHERE userprofileid = %s AND timerid = %s RETURNING *',
+                         (user_id, timer_id))
         self.conn.commit()
         return self.cur.fetchone()
 
     def delete_by_user_id(self, user_id):
-        self.cur.execute('DELETE FROM subscriber WHERE userprofileid = %s', (user_id,))
+        self.cur.execute('DELETE FROM subscriber WHERE userprofileid = %s RETURNING *', (user_id,))
         self.conn.commit()
-        return self.cur.fetchone()
+        return self.cur.fetchall()
