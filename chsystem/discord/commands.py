@@ -4,7 +4,7 @@ import psycopg2
 from tabulate import tabulate
 
 import database
-from utils import time_remaining, dhm_to_minutes, minutes_to_dhm
+from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data
 
 discord_id_db = database.DiscordID()
 clan_discord_db = database.ClanDiscord()
@@ -219,6 +219,34 @@ def sublist(successor=None):
                     bosses_str = '\n'.join(boss for boss, in subscribers)
                     msg_to_send[
                         'msg'] = f'{msg.author_mention} You are subscribed to the following bosses:\n{bosses_str}'
+
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
+def init_timers(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'init':
+            discord_id = discord_id_db.get_by_discord_id(msg.author_id)
+            if discord_id is None:
+                msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
+            else:
+                user_profile = user_profile_db.get_by_id(discord_id[0])
+                if user_profile[4] < 4:
+                    msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
+                else:
+                    clan_id = user_profile[3]
+                    _type = msg.args[0].upper() if len(msg.args) == 1 else None
+                    default_timers = get_default_timers_data(_type)
+                    if len(default_timers) == 0:
+                        msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
+                    else:
+                        timer_db.init_timers(default_timers, clan_id)
+                        msg_to_send[
+                            'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)

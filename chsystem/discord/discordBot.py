@@ -21,7 +21,8 @@ class DiscordBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.cmds = commands.soon(commands.set_timer(
-            commands.sub(commands.unsub(commands.sublist(commands.reset_timer(commands.default())))))).send
+            commands.sub(
+                commands.unsub(commands.sublist(commands.init_timers(commands.reset_timer(commands.default()))))))).send
 
     async def on_ready(self):
         logger.info(f'Logged on as {self.user}')

@@ -1,6 +1,7 @@
 import os
 import requests
 import psycopg2
+import time
 
 import logs
 
@@ -212,6 +213,17 @@ class Timer(Database):
         for timer, timer_id in data.items():
             self.cur.execute('UPDATE timer SET timer = %s WHERE timer = %s',
                              (timer, timer_id))
+        self.conn.commit()
+
+    def init_timers(self, default_timers, clan_id):
+        timer = round(time.time()) // 60
+        sql = 'INSERT INTO timer (bossName, type, respawntimeminutes, timer, clanid) VALUES '
+
+        for boss_name, timer_data in default_timers.items():
+            sql += f"('{boss_name}', '{timer_data[0]}', {timer_data[1]}, {timer}, {clan_id}), "
+        sql = sql[:-2]
+
+        self.cur.execute(sql)
         self.conn.commit()
 
     def delete(self, clan_id, boss_name):

@@ -36,3 +36,52 @@ def minutes_to_dhm(minutes):
     if not negative:
         return msg
     return '-' + msg
+
+
+def get_default_timers_data(_type=None):
+    bosses = {
+        'eye': ('FROZEN', 30),
+        'swampie': ('FROZEN', 35),
+        'woody': ('FROZEN', 40),
+        'chained': ('FROZEN', 45),
+        'grom': ('FROZEN', 50),
+        'pyrus': ('FROZEN', 55),
+        '155': ('DL', 60),
+        '160': ('DL', 65),
+        '165': ('DL', 70),
+        '170': ('DL', 80),
+        '180': ('DL', 90),
+        '185': ('EDL', 75),
+        '190': ('EDL', 85),
+        '195': ('EDL', 95),
+        '200': ('EDL', 105),
+        '205': ('EDL', 115),
+        '210': ('EDL', 125),
+        '215': ('EDL', 135),
+        'aggy': ('MIDS', 1894),
+        'mord': ('MIDS', 2160),
+        'hrung': ('MIDS', 2160),
+        'necro': ('MIDS', 2160),
+        'prot': ('EGS', 1190),
+        'gele': ('EGS', 2880),
+        'bt': ('EGS', 4320),
+        'dino': ('EGS', 4320),
+        'east': ('RINGS', 255),
+        'north': ('RINGS', 255),
+        'south': ('RINGS', 255),
+        'center': ('RINGS', 255)
+    }
+
+    if _type is not None:
+        flag = False
+        data = {}
+        for boss, b_data in bosses.items():
+            if b_data[0] == _type:
+                data[boss] = b_data
+                flag = True
+            elif flag:
+                break
+
+        return data
+
+    return bosses
