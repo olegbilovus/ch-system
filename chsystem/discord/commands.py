@@ -62,10 +62,10 @@ def soon(successor=None):
         if msg.cmd == 'soon':
             clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
             timers_data = timer_db.get_by_clan_id_order_by_type(clan_id)
+            timers_data = [timer for timer in timers_data if time_remaining(timer[2]) > -15]
             if len(timers_data) == 0:
                 msg_to_send['msg'] = f'Your clan has no timers set'
             else:
-                timers_data = filter(lambda x: time_remaining(x[2]) > -15, timers_data)
                 data = []
                 prev_type = ''
                 for boss_name, _type, timer in timers_data:
