@@ -11,3 +11,7 @@ dist/*
 .breakpoints
 security/*.png
 **/.env
+/.idea/dataSources.xml
+/.idea/sonarlint/*
+setup_env.sh
+**/*.log
