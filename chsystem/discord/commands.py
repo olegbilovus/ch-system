@@ -24,6 +24,11 @@ class Message:
         self.author_id = author.id
         self.author_tag = str(author)
         self.guild_id = author.guild.id
+        self.account_discord_guild_id = None
+        self.user_clan_id = None
+        self.user_role = None
+        self.discord_id_in_db = None
+        self.user_profile_id = None
         self.logger = logger
 
 
@@ -42,7 +47,6 @@ def default():
     msg_to_send = {'private': False, 'msg': None}
     while True:
         yield msg_to_send
-        msg_to_send['msg'] = None
 
 
 def soon_tabulate(data, tablefmt=None):
@@ -60,7 +64,10 @@ def soon(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'soon':
-            clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
+            if msg.user_clan_id is None:
+                clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
+            else:
+                clan_id = msg.user_clan_id
             timers_data = timer_db.get_by_clan_id_order_by_type(clan_id)
             timers_data = [timer for timer in timers_data if time_remaining(timer[2]) > -15]
             if len(timers_data) == 0:
@@ -143,6 +150,75 @@ def reset_timer(successor=None):
 
 
 @start_chain
+def copy(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'copy':
+            content = ' '.join(msg.args)
+            content = content.split('\n')
+
+            data = {}
+            bosses_copied = []
+            for t in content:
+                if ' in ' in t:
+                    s = t.split(' in ')
+                    data[s[0].lower()] = s[1][:-1].replace('minutes', 'm').replace('days', 'd').replace('hours',
+                                                                                                        'h').replace(
+                        ',', '').replace('.', '')
+
+            current_time = round(time.time()) // 60
+            data_send = []
+            for boss, t in data.items():
+                timer_id = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss)
+                if timer_id is not None:
+                    array_tmp = t.split(' ')
+                    array_values = []
+                    for i in range(0, len(array_tmp), 2):
+                        array_values.append(array_tmp[i] + array_tmp[i + 1])
+
+                    timer = current_time + dhm_to_minutes(array_values)
+                    data_send.append(timer_id[0])
+                    data_send.append(timer)
+                    bosses_copied.append(boss)
+
+            if len(data_send) > 0:
+                timer_db.update_bulk(data_send)
+                msg_to_send['msg'] = f'{msg.author_mention} Copied the following timers:\n {", ".join(bosses_copied)}'
+            else:
+                msg_to_send['msg'] = f'{msg.author_mention} No timers to copy'
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
+def init_timers(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'init':
+            discord_id = msg.discord_id_in_db
+            if discord_id is None:
+                msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
+            else:
+                if msg.user_role < 4:
+                    msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
+                else:
+                    clan_id = msg.user_clan_id
+                    _type = msg.args[0].upper() if len(msg.args) == 1 else None
+                    default_timers = get_default_timers_data(_type)
+                    if len(default_timers) == 0:
+                        msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
+                    else:
+                        timer_db.init_timers(default_timers, clan_id)
+                        msg_to_send[
+                            'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
+
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
 def sub(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
@@ -153,22 +229,21 @@ def sub(successor=None):
             if timer_data is None:
                 msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
             else:
-                discord_id = discord_id_db.get_by_discord_id(msg.author_id)
+                discord_id = msg.discord_id_in_db
                 if discord_id is None:
                     clan_id = timer_data[2]
                     user_name = msg.author_tag.split('#')[0]
-                    user_profile = user_profile_db.get_by_name_and_clan_id(user_name, clan_id)
-                    if user_profile is None:
+                    if msg.user_profile_id is None:
                         server_id = clan_db.get_server_id_by_clan_id(timer_data[2])
-                        user_profile = user_profile_db.insert(user_name, server_id, clan_id, 0, None)
+                        msg.user_profile_id = user_profile_db.insert(user_name, server_id, clan_id, 0, None)[0]
                         msg.logger.info(f'Created user profile for {msg.author_tag}',
-                                        extra={'user_profile_id': user_profile[0]})
+                                        extra={'user_profile_id': msg.user_profile_id})
 
-                    discord_id = discord_id_db.insert(user_profile[0], msg.author_id, msg.author_tag)
+                    discord_id_db.insert(msg.user_profile_id, msg.author_id, msg.author_tag)
                     msg.logger.info(f'Created discordID for {msg.author_tag}')
 
                 try:
-                    subscriber_db.insert(discord_id[0], timer_data[0])
+                    subscriber_db.insert(msg.user_profile_id, timer_data[0])
                     msg_to_send['msg'] = f'{msg.author_mention} You are now subscribed to {boss}'
                 except psycopg2.IntegrityError:
                     msg_to_send['msg'] = f'{msg.author_mention} You are already subscribed to {boss}'
@@ -188,11 +263,11 @@ def unsub(successor=None):
             if timer_data is None:
                 msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
             else:
-                discord_id = discord_id_db.get_by_discord_id(msg.author_id)
+                discord_id = msg.discord_id_in_db
                 if discord_id is None:
                     msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
                 else:
-                    res = subscriber_db.delete(discord_id[0], timer_data[0])
+                    res = subscriber_db.delete(msg.user_profile_id, timer_data[0])
                     if res is None:
                         msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
                     else:
@@ -208,11 +283,11 @@ def sublist(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'sublist':
-            discord_id = discord_id_db.get_by_discord_id(msg.author_id)
+            discord_id = msg.discord_id_in_db
             if discord_id is None:
                 msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to any bosses'
             else:
-                subscribers = subscriber_db.get_bosses_subscribed_by_user_id(discord_id[0])
+                subscribers = subscriber_db.get_bosses_subscribed_by_user_id(msg.user_profile_id)
                 if len(subscribers) == 0:
                     msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to any bosses'
                 else:
@@ -225,28 +300,20 @@ def sublist(successor=None):
 
 
 @start_chain
-def init_timers(successor=None):
+def security_check(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
         msg = yield msg_to_send
-        if msg.cmd == 'init':
-            discord_id = discord_id_db.get_by_discord_id(msg.author_id)
-            if discord_id is None:
-                msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
-            else:
-                user_profile = user_profile_db.get_by_id(discord_id[0])
-                if user_profile[4] < 4:
-                    msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
-                else:
-                    clan_id = user_profile[3]
-                    _type = msg.args[0].upper() if len(msg.args) == 1 else None
-                    default_timers = get_default_timers_data(_type)
-                    if len(default_timers) == 0:
-                        msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
-                    else:
-                        timer_db.init_timers(default_timers, clan_id)
-                        msg_to_send[
-                            'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
-
+        msg_to_send = {'private': False, 'msg': None}
+        user_data = clan_discord_db.get_by_discord_id(msg.author_id)
+        if user_data is not None and user_data[0] != msg.guild_id:
+            msg_to_send[
+                'msg'] = f'{msg.author_mention} You are already registered to a different clan, please leave that server before trying to post in another server'
         elif successor is not None:
+            if user_data is not None:
+                msg.account_discord_guild_id = user_data[0]
+                msg.user_clan_id = user_data[1]
+                msg.user_role = user_data[2]
+                msg.discord_id_in_db = msg.author_id
+                msg.user_profile_id = user_data[3]
             msg_to_send = successor.send(msg)

@@ -156,6 +156,12 @@ class ClanDiscord(Database):
         self.cur.execute('SELECT * FROM clandiscord WHERE discordguildid = %s', (discord_guild_id,))
         return self.cur.fetchone()
 
+    def get_by_discord_id(self, discord_id):
+        self.cur.execute(
+            'SELECT clandiscord.discordguildid, userprofile.clanid, userprofile.role, userprofile.id FROM discordid, userprofile, clandiscord WHERE discordid = %s AND discordid.userprofileid = userprofile.id AND clandiscord.clanid = userprofile.clanid',
+            (discord_id,))
+        return self.cur.fetchone()
+
     def insert(self, clan_id, notify_webhook, discord_guild_id):
         self.cur.execute(
             'INSERT INTO clandiscord (clanid, notifywebhook, discordguildid) VALUES (%s, %s, %s) RETURNING *',
@@ -209,10 +215,13 @@ class Timer(Database):
         self.cur.execute("UPDATE timer SET timer = %s WHERE id = %s", (time, timer_id))
         self.conn.commit()
 
-    def update_bulk(self, data: dict):
-        for timer, timer_id in data.items():
-            self.cur.execute('UPDATE timer SET timer = %s WHERE timer = %s',
-                             (timer, timer_id))
+    def update_bulk(self, data):
+        sql = 'UPDATE timer SET timer = d.timer FROM (VALUES '
+        sql += '(%s, %s), ' * (len(data) // 2)
+        sql = sql[:-2]
+        sql += ') AS d(id, timer) WHERE timer.id = d.id'
+
+        self.cur.execute(sql, data)
         self.conn.commit()
 
     def init_timers(self, default_timers, clan_id):

@@ -17,12 +17,16 @@ clan_db = database.Clan()
 user_profile_db = database.UserProfile()
 
 
+def get_chain_commands():
+    return commands.security_check(commands.soon(commands.set_timer(commands.sub(
+        commands.unsub(
+            commands.sublist(commands.init_timers(commands.copy(commands.reset_timer(commands.default())))))))))
+
+
 class DiscordBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.cmds = commands.soon(commands.set_timer(
-            commands.sub(
-                commands.unsub(commands.sublist(commands.init_timers(commands.reset_timer(commands.default()))))))).send
+        self.cmds = get_chain_commands().send
 
     async def on_ready(self):
         logger.info(f'Logged on as {self.user}')
@@ -48,7 +52,12 @@ class DiscordBot(discord.Client):
         logger.info(f'Message from {message.author}: {message.content}', extra=extra_log)
 
         msg_received = commands.Message(message.content, message.author, logger)
-        msg_to_send = self.cmds(msg_received)
+        try:
+            msg_to_send = self.cmds(msg_received)
+        except StopIteration:
+            logger.critical(f'StopIteration', extra=extra_log)
+            self.cmds = get_chain_commands().send
+            return
 
         if msg_to_send['msg'] is not None:
             if msg_to_send['private']:
