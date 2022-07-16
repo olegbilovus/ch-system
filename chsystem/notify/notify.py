@@ -1,11 +1,10 @@
 import requests
 import os
-import time
 
 import setup
 import logs
 import database
-from utils import time_remaining, dhm_to_minutes, minutes_to_dhm
+from utils import time_remaining, minutes_to_dhm
 
 timer_db = database.Timer()
 subscriber_db = database.Subscriber()

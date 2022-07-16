@@ -228,9 +228,9 @@ class Timer(Database):
         self.conn.commit()
         return self.cur.fetchone()
 
-    def update(self, timer_id, time):
+    def update(self, timer_id, timer):
         self.cur.execute(
-            "UPDATE timer SET timer = %s WHERE id = %s", (time, timer_id))
+            "UPDATE timer SET timer = %s WHERE id = %s", (timer, timer_id))
         self.conn.commit()
 
     def update_bulk(self, data):

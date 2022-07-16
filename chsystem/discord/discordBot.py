@@ -38,7 +38,7 @@ class DiscordBot(discord.Client):
             else:
                 logger.info(f'Found guild {guild.name}', extra={
                             'discord_guild_id': guild.id})
-        logger.info(f'DiscordBot ready')
+        logger.info('DiscordBot ready')
 
     async def on_message(self, message):
         if message.author.bot:
