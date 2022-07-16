@@ -58,7 +58,7 @@ class DiscordBot(discord.Client):
         try:
             msg_to_send = self.cmds(msg_received)
         except StopIteration:
-            logger.critical(f'StopIteration', extra=extra_log)
+            logger.critical('StopIteration', extra=extra_log)
             self.cmds = get_chain_commands().send
             return
 
@@ -74,7 +74,7 @@ class DiscordBot(discord.Client):
             logger.warning(f'No command found for {message.content}')
 
     async def on_disconnect(self):
-        logger.error(f'Disconnected')
+        logger.error('Disconnected')
 
     async def on_guild_join(self, guild):
         logger.warning(f'Joined guild {guild.name}', extra={
