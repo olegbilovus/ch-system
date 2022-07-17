@@ -95,7 +95,7 @@ def soon(successor=None):
                         for _type, timers in coll.items():
                             for timer in timers:
                                 if _type != prev_type:
-                                    tmp += f'{_type}\n'
+                                    tmp += f'__**`{_type}`**__\n'
                                     prev_type = _type
                                 tmp += f'{timer[0]}: {timer[1]}\n'
 
