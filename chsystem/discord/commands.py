@@ -64,16 +64,20 @@ def soon(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'soon':
+
             if msg.user_clan_id is None:
-                clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[
-                    0]
+                clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
             else:
                 clan_id = msg.user_clan_id
-            timers_data = timer_db.get_by_clan_id_order_by_type(clan_id)
-            timers_data = [
-                timer for timer in timers_data if time_remaining(timer[2]) > -15]
+
+            preferred_timer_type = msg.args[0] if len(msg.args) == 0 else None
+            timers_data = timer_db.get_by_clan_id(clan_id, preferred_timer_type)
+            timers_data = [timer for timer in timers_data if time_remaining(timer[2]) > -15]
+
             if len(timers_data) == 0:
-                msg_to_send['msg'] = 'Your clan has no timers set'
+                msg_to_send['msg'] = f'Your clan has no timers set'
+                if preferred_timer_type is not None:
+                    msg_to_send['msg'] += f' for {preferred_timer_type} bosses'
             else:
                 data = []
                 prev_type = ''
@@ -82,7 +86,7 @@ def soon(successor=None):
                         data.append({_type: []})
                         prev_type = _type
                     data[-1][_type].append([boss_name,
-                                           minutes_to_dhm(time_remaining(timer))])
+                                            minutes_to_dhm(time_remaining(timer))])
 
                 if len(msg.args) == 1 and msg.args[0] == '-t':
                     msg_to_send['msg'] = soon_tabulate(data)
@@ -123,7 +127,7 @@ def set_timer(successor=None):
                     try:
                         current_time_in_minutes = round(time.time()) // 60
                         timer_set = current_time_in_minutes + \
-                            dhm_to_minutes(msg.args[1:])
+                                    dhm_to_minutes(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
                         msg_to_send['msg'] = f'{boss} set to {" ".join(msg.args[1:])}'
                     except ValueError:
