@@ -70,7 +70,7 @@ def soon(successor=None):
             else:
                 clan_id = msg.user_clan_id
 
-            preferred_timer_type = msg.args[0].upper() if len(msg.args) == 1 else None
+            preferred_timer_type = msg.args[0].upper() if len(msg.args) == 1 and msg.args[0] != '-t' else None
             timers_data = timer_db.get_by_clan_id_order_by_type(clan_id, preferred_timer_type)
             timers_data = [timer for timer in timers_data if time_remaining(timer[2]) > -15]
 
