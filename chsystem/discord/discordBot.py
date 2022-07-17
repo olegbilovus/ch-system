@@ -1,5 +1,3 @@
-import asyncio
-
 import setup
 import os
 import discord
@@ -81,15 +79,8 @@ class DiscordBot(discord.Client):
         logger.info('Connected')
 
     async def on_disconnect(self):
-        logger.error('Disconnected')
         self._connected = False
-        while not self._connected:
-            await asyncio.sleep(5)
-            try:
-                await self.connect()
-            except Exception as e:
-                logger.error(f'Error reconnecting: {e}')
-        logger.info('Reconnected')
+        logger.info('Disconnected')
 
     async def on_guild_join(self, guild):
         logger.warning(f'Joined guild {guild.name}', extra={
