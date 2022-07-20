@@ -343,7 +343,7 @@ def help_commands(successor=None):
                 f'\te.g: **soon frozen**\n' \
                 f'**<boss>** - Reset a boss.\n' \
                 f'**set <boss> <days>d <hours>h <minutes>m** - Set a boss to a specific timer.\n' \
-                f'\te.g.: **215 1h 13m**\n' \
+                f'\te.g.: **set 215 1h 13m**\n' \
                 f'**sub <boss>** - Subscribe to a boss to get notified when that boss is due.\n' \
                 f'**unsub <boss>** - Unsubscribe from a boss.\n' \
                 f'**sublist** - Show all the bosses you are subscribed to.\n' \
