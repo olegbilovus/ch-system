@@ -32,7 +32,7 @@ if args.notify:
         for timer_id, timer, boss_name in timers_data:
             subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(
                 timer_id)
-            msg = f'{boss_name} due in {minutes_to_dhm(time_remaining(timer))}'
+            msg = f'{boss_name} due in {minutes_to_dhm(time_remaining(timer))} '
 
             for discord_id, in subscribers:
                 msg += f'<@{discord_id}>'
