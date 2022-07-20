@@ -130,8 +130,7 @@ def set_timer(successor=None):
                 else:
                     try:
                         current_time_in_minutes = round(time.time()) // 60
-                        timer_set = current_time_in_minutes + \
-                                    dhm_to_minutes(msg.args[1:])
+                        timer_set = current_time_in_minutes + dhm_to_minutes(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
                         msg_to_send['msg'] = f'{boss} set to {" ".join(msg.args[1:])}'
                     except ValueError:
