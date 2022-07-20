@@ -71,7 +71,7 @@ class DiscordBot(discord.Client):
             else:
                 await message.channel.send(msg_to_send['msg'])
                 logger.info(
-                    f'Sent message to channel: {message.channel}, content: {msg_to_send["msg"]}')
+                    f'Sent message to channel: {message.channel}')
         else:
             logger.warning(f'No command found for {message.content}')
 

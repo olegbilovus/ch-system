@@ -268,6 +268,7 @@ def sub(successor=None):
                             msg.user_profile_id, timer_data[0])
                         msg_to_send['msg'] = f'{msg.author_mention} You are now subscribed to {boss}'
                     except psycopg2.IntegrityError:
+                        subscriber_db.conn.rollback()
                         msg_to_send['msg'] = f'{msg.author_mention} You are already subscribed to {boss}'
 
         elif successor is not None:
