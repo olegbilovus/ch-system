@@ -64,16 +64,24 @@ def soon(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'soon':
+
             if msg.user_clan_id is None:
                 clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[
                     0]
             else:
                 clan_id = msg.user_clan_id
-            timers_data = timer_db.get_by_clan_id_order_by_type(clan_id)
+
+            preferred_timer_type = msg.args[0].upper() if len(
+                msg.args) == 1 and msg.args[0] != '-t' else None
+            timers_data = timer_db.get_by_clan_id_order_by_type(
+                clan_id, preferred_timer_type)
             timers_data = [
                 timer for timer in timers_data if time_remaining(timer[2]) > -15]
+
             if len(timers_data) == 0:
                 msg_to_send['msg'] = 'Your clan has no timers set'
+                if preferred_timer_type is not None:
+                    msg_to_send['msg'] += f' for {preferred_timer_type} bosses'
             else:
                 data = []
                 prev_type = ''
@@ -82,7 +90,7 @@ def soon(successor=None):
                         data.append({_type: []})
                         prev_type = _type
                     data[-1][_type].append([boss_name,
-                                           minutes_to_dhm(time_remaining(timer))])
+                                            minutes_to_dhm(time_remaining(timer))])
 
                 if len(msg.args) == 1 and msg.args[0] == '-t':
                     msg_to_send['msg'] = soon_tabulate(data)
@@ -95,7 +103,7 @@ def soon(successor=None):
                         for _type, timers in coll.items():
                             for timer in timers:
                                 if _type != prev_type:
-                                    tmp += f'{_type}\n'
+                                    tmp += f'__**`{_type}`**__\n'
                                     prev_type = _type
                                 tmp += f'{timer[0]}: {timer[1]}\n'
 
@@ -230,33 +238,38 @@ def sub(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'sub':
-            boss = msg.args[0]
-            timer_data = timer_db.get_by_guild_id_and_boss_name(
-                msg.guild_id, boss)
-            if timer_data is None:
-                msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
+            if len(msg.args) == 0:
+                msg_to_send['msg'] = f'{msg.author_mention} Usage: sub <boss>'
             else:
-                discord_id = msg.discord_id_in_db
-                if discord_id is None:
-                    clan_id = timer_data[2]
-                    user_name = msg.author_tag.split('#')[0]
-                    if msg.user_profile_id is None:
-                        server_id = clan_db.get_server_id_by_clan_id(
-                            timer_data[2])
-                        msg.user_profile_id = user_profile_db.insert(
-                            user_name, server_id, clan_id, 0, None)[0]
-                        msg.logger.info(f'Created user profile for {msg.author_tag}',
-                                        extra={'user_profile_id': msg.user_profile_id})
+                boss = msg.args[0]
+                timer_data = timer_db.get_by_guild_id_and_boss_name(
+                    msg.guild_id, boss)
+                if timer_data is None:
+                    msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
+                else:
+                    discord_id = msg.discord_id_in_db
+                    if discord_id is None:
+                        clan_id = timer_data[2]
+                        user_name = msg.author_tag.split('#')[0]
+                        if msg.user_profile_id is None:
+                            server_id = clan_db.get_server_id_by_clan_id(
+                                timer_data[2])
+                            msg.user_profile_id = user_profile_db.insert(
+                                user_name, server_id, clan_id, 0, None)[0]
+                            msg.logger.info(f'Created user profile for {msg.author_tag}',
+                                            extra={'user_profile_id': msg.user_profile_id})
 
-                    discord_id_db.insert(
-                        msg.user_profile_id, msg.author_id, msg.author_tag)
-                    msg.logger.info(f'Created discordID for {msg.author_tag}')
+                        discord_id_db.insert(
+                            msg.user_profile_id, msg.author_id, msg.author_tag)
+                        msg.logger.info(
+                            f'Created discordID for {msg.author_tag}')
 
-                try:
-                    subscriber_db.insert(msg.user_profile_id, timer_data[0])
-                    msg_to_send['msg'] = f'{msg.author_mention} You are now subscribed to {boss}'
-                except psycopg2.IntegrityError:
-                    msg_to_send['msg'] = f'{msg.author_mention} You are already subscribed to {boss}'
+                    try:
+                        subscriber_db.insert(
+                            msg.user_profile_id, timer_data[0])
+                        msg_to_send['msg'] = f'{msg.author_mention} You are now subscribed to {boss}'
+                    except psycopg2.IntegrityError:
+                        msg_to_send['msg'] = f'{msg.author_mention} You are already subscribed to {boss}'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
@@ -268,22 +281,25 @@ def unsub(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'unsub':
-            boss = msg.args[0]
-            timer_data = timer_db.get_by_guild_id_and_boss_name(
-                msg.guild_id, boss)
-            if timer_data is None:
-                msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
+            if len(msg.args) == 0:
+                msg_to_send['msg'] = f'{msg.author_mention} Usage: unsub <boss>'
             else:
-                discord_id = msg.discord_id_in_db
-                if discord_id is None:
-                    msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
+                boss = msg.args[0]
+                timer_data = timer_db.get_by_guild_id_and_boss_name(
+                    msg.guild_id, boss)
+                if timer_data is None:
+                    msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
                 else:
-                    res = subscriber_db.delete(
-                        msg.user_profile_id, timer_data[0])
-                    if res is None:
+                    discord_id = msg.discord_id_in_db
+                    if discord_id is None:
                         msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
                     else:
-                        msg_to_send['msg'] = f'{msg.author_mention} You are no longer subscribed to {boss}'
+                        res = subscriber_db.delete(
+                            msg.user_profile_id, timer_data[0])
+                        if res is None:
+                            msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
+                        else:
+                            msg_to_send['msg'] = f'{msg.author_mention} You are no longer subscribed to {boss}'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)

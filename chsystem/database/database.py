@@ -200,14 +200,17 @@ class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
         self.cur.execute(
-            "SELECT id, timer AS timer, bossname FROM timer WHERE clanid = %s",
+            "SELECT id, timer , bossname FROM timer WHERE clanid = %s",
             (clan_id,))
         return self.cur.fetchall()
 
-    def get_by_clan_id_order_by_type(self, clan_id):
-        self.cur.execute(
-            "SELECT bossname, type, timer AS time FROM timer WHERE clanid = %s ORDER BY type, bossname",
-            (clan_id,))
+    def get_by_clan_id_order_by_type(self, clan_id, preferred_type=None):
+        if preferred_type is None:
+            self.cur.execute(
+                "SELECT bossname, type, timer FROM timer WHERE clanid = %s ORDER BY type", (clan_id,))
+        else:
+            self.cur.execute(
+                "SELECT bossname, type, timer FROM timer WHERE clanid = %s AND type = %s ORDER BY type", (clan_id, preferred_type))
         return self.cur.fetchall()
 
     def get_by_guild_id_and_boss_name(self, guild_id, boss_name):
