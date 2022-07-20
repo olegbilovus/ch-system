@@ -75,7 +75,7 @@ def soon(successor=None):
             timers_data = [timer for timer in timers_data if time_remaining(timer[2]) > -15]
 
             if len(timers_data) == 0:
-                msg_to_send['msg'] = f'Your clan has no timers set'
+                msg_to_send['msg'] = 'Your clan has no timers set'
                 if preferred_timer_type is not None:
                     msg_to_send['msg'] += f' for {preferred_timer_type} bosses'
             else:
