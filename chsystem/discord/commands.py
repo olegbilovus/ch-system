@@ -4,7 +4,7 @@ import psycopg2
 from tabulate import tabulate
 
 import database
-from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data
+from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data, PREFIX
 
 discord_id_db = database.DiscordID()
 clan_discord_db = database.ClanDiscord()
@@ -335,20 +335,20 @@ def help_commands(successor=None):
         msg = yield msg_to_send
         if msg.cmd == 'help':
             msg_to_send['msg'] = \
-                f'{msg.author_mention} Here are the commands I understand:\n' \
-                f'**soon** - Show all the bosses that are timed and their timer is >= -15m.\n' \
-                f'**soon -t** - Same as **soon** but results are showed in a tabular format.\n' \
-                f'**soon -t <format>** - Same as **soon -t** but you can decide the format.\n ' \
+                f'{msg.author_mention} Here are the commands I understand, use the prefix **{PREFIX}** before each command:\n' \
+                f'{PREFIX}**soon** - Show all the bosses that are timed and their timer is >= -15m.\n' \
+                f'{PREFIX}**soon -t** - Same as **soon** but results are showed in a tabular format.\n' \
+                f'{PREFIX}**soon -t <format>** - Same as **soon -t** but you can decide the format.\n ' \
                 f'\tAvailable formats can be found here in "Table format" section <https://pypi.org/project/tabulate/>.\n' \
-                f'**soon <boss type>** - Show all available timers of a specific boss\' type.\n' \
-                f'\te.g: **soon frozen**\n' \
-                f'**<boss>** - Reset a boss.\n' \
-                f'**set <boss> <days>d <hours>h <minutes>m** - Set a boss to a specific timer.\n' \
-                f'\te.g.: **set 215 1h 13m**\n' \
-                f'**sub <boss>** - Subscribe to a boss to get notified when that boss is due.\n' \
-                f'**unsub <boss>** - Unsubscribe from a boss.\n' \
-                f'**sublist** - Show all the bosses you are subscribed to.\n' \
-                f'**help** - Show this message.'
+                f'{PREFIX}**soon <boss type>** - Show all available timers of a specific boss\' type.\n' \
+                f'\te.g: **{PREFIX}soon frozen**\n' \
+                f'{PREFIX}**<boss>** - Reset a boss.\n' \
+                f'{PREFIX}**set <boss> <days>d <hours>h <minutes>m** - Set a boss to a specific timer.\n' \
+                f'\te.g.: **{PREFIX}set 215 1h 13m**\n' \
+                f'{PREFIX}**sub <boss>** - Subscribe to a boss to get notified when that boss is due.\n' \
+                f'{PREFIX}**unsub <boss>** - Unsubscribe from a boss.\n' \
+                f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
+                f'{PREFIX}**help** - Show this message.'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)

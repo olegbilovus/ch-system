@@ -1,5 +1,7 @@
 import time
 
+PREFIX = '.'
+
 
 def time_remaining(_timer):
     return _timer - (round(time.time()) // 60)
