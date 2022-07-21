@@ -71,12 +71,10 @@ def soon(successor=None):
             else:
                 clan_id = msg.user_clan_id
 
-            preferred_timer_type = msg.args[0].upper() if len(
-                msg.args) == 1 and msg.args[0] != '-t' else None
+            preferred_timer_type = msg.args[0].upper() if len(msg.args) == 1 and msg.args[0] != '-t' else None
             timers_data = timer_db.get_by_clan_id_order_by_type(
                 clan_id, preferred_timer_type)
-            timers_data = [
-                timer for timer in timers_data if time_remaining(timer[2]) > -15]
+            timers_data = [timer for timer in timers_data if time_remaining(timer[2]) > -15]
 
             if len(timers_data) == 0:
                 msg_to_send['msg'] = 'Your clan has no timers set'
@@ -89,8 +87,7 @@ def soon(successor=None):
                     if _type != prev_type:
                         data.append({_type: []})
                         prev_type = _type
-                    data[-1][_type].append([boss_name,
-                                            minutes_to_dhm(time_remaining(timer))])
+                    data[-1][_type].append([boss_name, minutes_to_dhm(time_remaining(timer))])
 
                 if len(msg.args) == 1 and msg.args[0] == '-t':
                     msg_to_send['msg'] = soon_tabulate(data)
@@ -251,12 +248,9 @@ def sub(successor=None):
                         clan_id = timer_data[2]
                         user_name = msg.author_tag.split('#')[0]
                         if msg.user_profile_id is None:
-                            server_id = clan_db.get_server_id_by_clan_id(
-                                timer_data[2])
-                            msg.user_profile_id = user_profile_db.insert(
-                                user_name, server_id, clan_id, 0, None)[0]
-                            msg.logger.info(f'Created user profile for {msg.author_tag}',
-                                            extra={'user_profile_id': msg.user_profile_id})
+                            server_id = clan_db.get_server_id_by_clan_id(timer_data[2])
+                            msg.user_profile_id = user_profile_db.insert(user_name, server_id, clan_id, 0, None)[0]
+                            msg.logger.info(f'Created user profile for {msg.author_tag}',extra={'user_profile_id': msg.user_profile_id})
 
                         discord_id_db.insert(
                             msg.user_profile_id, msg.author_id, msg.author_tag)
