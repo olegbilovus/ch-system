@@ -250,7 +250,8 @@ def sub(successor=None):
                         if msg.user_profile_id is None:
                             server_id = clan_db.get_server_id_by_clan_id(timer_data[2])
                             msg.user_profile_id = user_profile_db.insert(user_name, server_id, clan_id, 0, None)[0]
-                            msg.logger.info(f'Created user profile for {msg.author_tag}',extra={'user_profile_id': msg.user_profile_id})
+                            msg.logger.info(f'Created user profile for {msg.author_tag}',
+                                            extra={'user_profile_id': msg.user_profile_id})
 
                         discord_id_db.insert(
                             msg.user_profile_id, msg.author_id, msg.author_tag)
