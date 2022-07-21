@@ -44,7 +44,7 @@ class DiscordBot(discord.Client):
         logger.info('DiscordBot ready')
 
     async def on_message(self, message):
-        if message.author.bot or not message.content.startswith(PREFIX):
+        if message.author.bot or not message.content.startswith(PREFIX) or message.guild is None:
             return
         extra_log = {
             'discord_id': message.author.id,
