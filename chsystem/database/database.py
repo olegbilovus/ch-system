@@ -27,7 +27,7 @@ class Database:
     def update_url(self, uri=None, url=None, force=False):
         if uri is None and self.db_uri is None:
             res = requests.get(self.db_url if url is None else url, data={
-                               'update': '1' if force else '0'})
+                'update': '1' if force else '0'})
             if res.status_code == 200:
                 os.putenv('DB_URI', res.text)
                 self.db_uri = res.text
@@ -207,10 +207,11 @@ class Timer(Database):
     def get_by_clan_id_order_by_type(self, clan_id, preferred_type=None):
         if preferred_type is None:
             self.cur.execute(
-                "SELECT bossname, type, timer FROM timer WHERE clanid = %s ORDER BY type", (clan_id,))
+                "SELECT bossname, type, timer FROM timer WHERE clanid = %s ORDER BY type, bossname", (clan_id,))
         else:
             self.cur.execute(
-                "SELECT bossname, type, timer FROM timer WHERE clanid = %s AND type = %s ORDER BY type", (clan_id, preferred_type))
+                "SELECT bossname, type, timer FROM timer WHERE clanid = %s AND type = %s ORDER BY type",
+                (clan_id, preferred_type))
         return self.cur.fetchall()
 
     def get_by_guild_id_and_boss_name(self, guild_id, boss_name):

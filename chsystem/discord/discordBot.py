@@ -5,6 +5,7 @@ import discord
 import logs
 import database
 import commands
+from utils import PREFIX
 
 logger = logs.get_logger('DiscordBot', token=os.getenv('LOGTAIL_DISCORD'), other_loggers=['discord'], stdout_r=True,
                          stderr_r=True, file=True)
@@ -43,7 +44,7 @@ class DiscordBot(discord.Client):
         logger.info('DiscordBot ready')
 
     async def on_message(self, message):
-        if message.author.bot:
+        if message.author.bot or not message.content.startswith(PREFIX):
             return
         extra_log = {
             'discord_id': message.author.id,
@@ -56,7 +57,7 @@ class DiscordBot(discord.Client):
             f'Message from {message.author}: {message.content}', extra=extra_log)
 
         msg_received = commands.Message(
-            message.content, message.author, logger)
+            message.content[1:], message.author, logger)
         try:
             msg_to_send = self.cmds(msg_received)
         except StopIteration:
