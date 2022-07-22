@@ -248,10 +248,10 @@ class Timer(Database):
 
     def init_timers(self, default_timers, clan_id):
         timer = round(time.time()) // 60
-        sql = 'INSERT INTO timer (bossName, type, respawntimeminutes, timer, clanid) VALUES '
+        sql = 'INSERT INTO timer (bossName, type, respawntimeminutes, windowminutes, timer, clanid) VALUES '
 
-        for boss_name, timer_data in default_timers.items():
-            sql += f"('{boss_name}', '{timer_data[0]}', {timer_data[1]}, {timer}, {clan_id}), "
+        for boss_name, timer_data, window_time in default_timers.items():
+            sql += f"('{boss_name}', '{timer_data[0]}', {timer_data[1]}, {timer_data[2]}, {timer}, {clan_id}), "
         sql = sql[:-2]
 
         self.cur.execute(sql)

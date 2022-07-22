@@ -220,9 +220,13 @@ def init_timers(successor=None):
                     if len(default_timers) == 0:
                         msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
                     else:
-                        timer_db.init_timers(default_timers, clan_id)
-                        msg_to_send[
-                            'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
+                        try:
+                            timer_db.init_timers(default_timers, clan_id)
+                            msg_to_send[
+                                'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
+                        except psycopg2.IntegrityError:
+                            timer_db.conn.rollback()
+                            msg_to_send['msg'] = f'{msg.author_mention} Timers already initialized'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)

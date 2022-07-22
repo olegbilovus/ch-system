@@ -62,6 +62,7 @@ CREATE TABLE timer
     bossName           VARCHAR(50),
     type               VARCHAR(20),
     respawnTimeMinutes BIGINT NOT NULL,
+    windowMinutes      BIGINT DEFAULT 0,
     timer              BIGINT,
     clanID             SERIAL,
     FOREIGN KEY (clanID)
