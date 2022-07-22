@@ -205,13 +205,15 @@ class Timer(Database):
         return self.cur.fetchall()
 
     def get_by_clan_id_order_by_type(self, clan_id, preferred_type=None):
+        timer = (round(time.time()) // 60) - 15
         if preferred_type is None:
             self.cur.execute(
-                "SELECT bossname, type, timer FROM timer WHERE clanid = %s ORDER BY type, bossname", (clan_id,))
+                "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s ORDER BY type, bossname",
+                (clan_id, timer))
         else:
             self.cur.execute(
-                "SELECT bossname, type, timer FROM timer WHERE clanid = %s AND type = %s ORDER BY type",
-                (clan_id, preferred_type))
+                "SELECT bossname, type, timer FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type = %s ORDER BY type, bossname",
+                (clan_id, timer, preferred_type))
         return self.cur.fetchall()
 
     def get_by_guild_id_and_boss_name(self, guild_id, boss_name):
@@ -250,7 +252,7 @@ class Timer(Database):
         timer = round(time.time()) // 60
         sql = 'INSERT INTO timer (bossName, type, respawntimeminutes, windowminutes, timer, clanid) VALUES '
 
-        for boss_name, timer_data, window_time in default_timers.items():
+        for boss_name, timer_data in default_timers.items():
             sql += f"('{boss_name}', '{timer_data[0]}', {timer_data[1]}, {timer_data[2]}, {timer}, {clan_id}), "
         sql = sql[:-2]
 
