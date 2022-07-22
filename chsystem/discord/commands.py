@@ -72,9 +72,7 @@ def soon(successor=None):
                 clan_id = msg.user_clan_id
 
             preferred_timer_type = msg.args[0].upper() if len(msg.args) == 1 and msg.args[0] != '-t' else None
-            timers_data = timer_db.get_by_clan_id_order_by_type(
-                clan_id, preferred_timer_type)
-            timers_data = [timer for timer in timers_data if time_remaining(timer[2]) > -15]
+            timers_data = timer_db.get_by_clan_id_order_by_type(clan_id, preferred_timer_type)
 
             if len(timers_data) == 0:
                 msg_to_send['msg'] = 'Your clan has no timers set'
@@ -83,11 +81,16 @@ def soon(successor=None):
             else:
                 data = []
                 prev_type = ''
-                for boss_name, _type, timer in timers_data:
+                for boss_name, _type, timer, window in timers_data:
                     if _type != prev_type:
                         data.append({_type: []})
                         prev_type = _type
-                    data[-1][_type].append([boss_name, minutes_to_dhm(time_remaining(timer))])
+                    minutes_timer = time_remaining(timer)
+                    if minutes_timer <= -15:
+                        minutes_timer += window
+                        data[-1][_type].append([boss_name, f'window closes in {minutes_to_dhm(minutes_timer)}'])
+                    else:
+                        data[-1][_type].append([boss_name, minutes_to_dhm(minutes_timer)])
 
                 if len(msg.args) == 1 and msg.args[0] == '-t':
                     msg_to_send['msg'] = soon_tabulate(data)
@@ -220,9 +223,13 @@ def init_timers(successor=None):
                     if len(default_timers) == 0:
                         msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
                     else:
-                        timer_db.init_timers(default_timers, clan_id)
-                        msg_to_send[
-                            'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
+                        try:
+                            timer_db.init_timers(default_timers, clan_id)
+                            msg_to_send[
+                                'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
+                        except psycopg2.IntegrityError:
+                            timer_db.conn.rollback()
+                            msg_to_send['msg'] = f'{msg.author_mention} Timers already initialized'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
