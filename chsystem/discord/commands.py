@@ -1,4 +1,3 @@
-import time
 from functools import wraps
 import psycopg2
 from tabulate import tabulate
