@@ -80,7 +80,7 @@ def soon(successor=None):
             else:
                 data = []
                 prev_type = ''
-                flag_tabulate = msg.args[0] == '-t'
+                flag_tabulate = False if len(msg.args) == 0 else msg.args[0] == '-t'
                 for boss_name, _type, timer, window in timers_data:
                     if _type != prev_type:
                         data.append({_type: []})
