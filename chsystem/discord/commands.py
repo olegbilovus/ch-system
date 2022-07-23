@@ -80,12 +80,14 @@ def soon(successor=None):
             else:
                 data = []
                 prev_type = ''
+                flag_tabulate = msg.args[0] == '-t'
                 for boss_name, _type, timer, window in timers_data:
                     if _type != prev_type:
                         data.append({_type: []})
                         prev_type = _type
                     minutes_timer = time_remaining(timer)
-                    if minutes_timer <= 10:
+                    # to refactor the check for tabulate
+                    if minutes_timer <= 10 and not flag_tabulate:
                         boss_name = f'__**{boss_name}**__'
                     if minutes_timer <= -15:
                         minutes_timer += window
@@ -93,9 +95,9 @@ def soon(successor=None):
                     else:
                         data[-1][_type].append([boss_name, minutes_to_dhm(minutes_timer)])
 
-                if len(msg.args) == 1 and msg.args[0] == '-t':
+                if len(msg.args) == 1 and flag_tabulate:
                     msg_to_send['msg'] = soon_tabulate(data)
-                elif len(msg.args) == 2 and msg.args[0] == '-t':
+                elif len(msg.args) == 2 and flag_tabulate:
                     msg_to_send['msg'] = soon_tabulate(data, msg.args[1])
                 else:
                     tmp = ''
