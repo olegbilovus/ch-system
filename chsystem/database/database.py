@@ -156,6 +156,11 @@ class ApiKey(Database):
 
 
 class ClanDiscord(Database):
+
+    def get_all_guild_ids(self):
+        self.cur.execute('SELECT discordguildid FROM clandiscord')
+        return self.cur.fetchall()
+
     def get_all_notify_webhooks(self):
         self.cur.execute(
             'SELECT * FROM clandiscord WHERE notifywebhook IS NOT NULL')
@@ -250,6 +255,7 @@ class Timer(Database):
 
     def init_timers(self, default_timers, clan_id):
         timer = round(time.time()) // 60
+        # not using prepared statements because the input is safe from SQL injection
         sql = 'INSERT INTO timer (bossName, type, respawntimeminutes, windowminutes, timer, clanid) VALUES '
 
         for boss_name, timer_data in default_timers.items():

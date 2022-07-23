@@ -4,7 +4,8 @@ import psycopg2
 from tabulate import tabulate
 
 import database
-from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data, PREFIX
+from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data, PREFIX, \
+    get_current_time_minutes
 
 discord_id_db = database.DiscordID()
 clan_discord_db = database.ClanDiscord()
@@ -66,8 +67,7 @@ def soon(successor=None):
         if msg.cmd == 'soon':
 
             if msg.user_clan_id is None:
-                clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[
-                    0]
+                clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
             else:
                 clan_id = msg.user_clan_id
 
@@ -86,7 +86,7 @@ def soon(successor=None):
                         data.append({_type: []})
                         prev_type = _type
                     minutes_timer = time_remaining(timer)
-                    if minutes_timer <= 5:
+                    if minutes_timer <= 10:
                         boss_name = f'__**{boss_name}**__'
                     if minutes_timer <= -15:
                         minutes_timer += window
@@ -122,16 +122,15 @@ def set_timer(successor=None):
         msg = yield msg_to_send
         if msg.cmd == 'set':
             if not 1 < len(msg.args) < 5:
-                msg_to_send['msg'] = f'{msg.author_mention} Usage: set <boss> <days>d <hours>h <minutes>m'
+                msg_to_send['msg'] = f'{msg.author_mention} Usage: {PREFIX}set <boss> <days>d <hours>h <minutes>m'
             else:
                 boss = msg.args[0]
-                timer_data = timer_db.get_by_guild_id_and_boss_name(
-                    msg.guild_id, boss)
+                timer_data = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss)
                 if timer_data is None:
                     msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
                 else:
                     try:
-                        current_time_in_minutes = round(time.time()) // 60
+                        current_time_in_minutes = get_current_time_minutes()
                         timer_set = current_time_in_minutes + dhm_to_minutes(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
                         msg_to_send['msg'] = f'{boss} set to {" ".join(msg.args[1:])}'
@@ -148,12 +147,11 @@ def reset_timer(successor=None):
     while True:
         msg = yield msg_to_send
         if len(msg.args) == 0:
-            timer_data = timer_db.get_by_guild_id_and_boss_name(
-                msg.guild_id, msg.cmd)
+            timer_data = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, msg.cmd)
             if timer_data is None:
                 msg_to_send['msg'] = f'{msg.author_mention} {msg.cmd} is not a valid boss to reset'
             else:
-                current_time_in_minutes = round(time.time()) // 60
+                current_time_in_minutes = get_current_time_minutes()
                 timer_set = current_time_in_minutes + timer_data[1]
                 timer_db.update(timer_data[0], timer_set)
                 msg_to_send['msg'] = f'{msg.cmd} has been reset'
@@ -180,11 +178,10 @@ def copy(successor=None):
                                                                                                         'h').replace(
                         ',', '').replace('.', '')
 
-            current_time = round(time.time()) // 60
+            current_time = get_current_time_minutes()
             data_send = []
             for boss, t in data.items():
-                timer_id = timer_db.get_by_guild_id_and_boss_name(
-                    msg.guild_id, boss)
+                timer_id = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss)
                 if timer_id is not None:
                     array_tmp = t.split(' ')
                     array_values = []
@@ -213,25 +210,21 @@ def init_timers(successor=None):
         msg = yield msg_to_send
         if msg.cmd == 'init':
             discord_id = msg.discord_id_in_db
-            if discord_id is None:
+            if discord_id is None or msg.user_role < 4:
                 msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
             else:
-                if msg.user_role < 4:
-                    msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
+                clan_id = msg.user_clan_id
+                _type = msg.args[0].upper() if len(msg.args) == 1 else None
+                default_timers = get_default_timers_data(_type)
+                if len(default_timers) == 0:
+                    msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
                 else:
-                    clan_id = msg.user_clan_id
-                    _type = msg.args[0].upper() if len(msg.args) == 1 else None
-                    default_timers = get_default_timers_data(_type)
-                    if len(default_timers) == 0:
-                        msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
-                    else:
-                        try:
-                            timer_db.init_timers(default_timers, clan_id)
-                            msg_to_send[
-                                'msg'] = f'{msg.author_mention} Timers have been initialized to 0m, type "soon" to see them'
-                        except psycopg2.IntegrityError:
-                            timer_db.conn.rollback()
-                            msg_to_send['msg'] = f'{msg.author_mention} Timers already initialized'
+                    try:
+                        timer_db.init_timers(default_timers, clan_id)
+                        msg_to_send['msg'] = f'{msg.author_mention} Timers have been initialized to 0m'
+                    except psycopg2.IntegrityError:
+                        timer_db.conn.rollback()
+                        msg_to_send['msg'] = f'{msg.author_mention} An error occurred while initializing timers'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
@@ -244,7 +237,7 @@ def sub(successor=None):
         msg = yield msg_to_send
         if msg.cmd == 'sub':
             if len(msg.args) == 0:
-                msg_to_send['msg'] = f'{msg.author_mention} Usage: sub <boss>'
+                msg_to_send['msg'] = f'{msg.author_mention} Usage: {PREFIX}sub <boss>'
             else:
                 boss = msg.args[0]
                 timer_data = timer_db.get_by_guild_id_and_boss_name(
@@ -262,14 +255,11 @@ def sub(successor=None):
                             msg.logger.info(f'Created user profile for {msg.author_tag}',
                                             extra={'user_profile_id': msg.user_profile_id})
 
-                        discord_id_db.insert(
-                            msg.user_profile_id, msg.author_id, msg.author_tag)
-                        msg.logger.info(
-                            f'Created discordID for {msg.author_tag}')
+                        discord_id_db.insert(msg.user_profile_id, msg.author_id, msg.author_tag)
+                        msg.logger.info(f'Created discordID for {msg.author_tag}')
 
                     try:
-                        subscriber_db.insert(
-                            msg.user_profile_id, timer_data[0])
+                        subscriber_db.insert(msg.user_profile_id, timer_data[0])
                         msg_to_send['msg'] = f'{msg.author_mention} You are now subscribed to {boss}'
                     except psycopg2.IntegrityError:
                         subscriber_db.conn.rollback()
@@ -286,7 +276,7 @@ def unsub(successor=None):
         msg = yield msg_to_send
         if msg.cmd == 'unsub':
             if len(msg.args) == 0:
-                msg_to_send['msg'] = f'{msg.author_mention} Usage: unsub <boss>'
+                msg_to_send['msg'] = f'{msg.author_mention} Usage: {PREFIX}unsub <boss>'
             else:
                 boss = msg.args[0]
                 timer_data = timer_db.get_by_guild_id_and_boss_name(
@@ -298,8 +288,7 @@ def unsub(successor=None):
                     if discord_id is None:
                         msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
                     else:
-                        res = subscriber_db.delete(
-                            msg.user_profile_id, timer_data[0])
+                        res = subscriber_db.delete(msg.user_profile_id, timer_data[0])
                         if res is None:
                             msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
                         else:
@@ -319,8 +308,7 @@ def sublist(successor=None):
             if discord_id is None:
                 msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to any bosses'
             else:
-                subscribers = subscriber_db.get_bosses_subscribed_by_user_id(
-                    msg.user_profile_id)
+                subscribers = subscriber_db.get_bosses_subscribed_by_user_id(msg.user_profile_id)
                 if len(subscribers) == 0:
                     msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to any bosses'
                 else:
