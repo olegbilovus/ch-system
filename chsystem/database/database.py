@@ -217,7 +217,7 @@ class Timer(Database):
                 (clan_id, timer))
         else:
             self.cur.execute(
-                "SELECT bossname, type, timer FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type = %s ORDER BY type, bossname",
+                "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type = %s ORDER BY type, bossname",
                 (clan_id, timer, preferred_type))
         return self.cur.fetchall()
 
