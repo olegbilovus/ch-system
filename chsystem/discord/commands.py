@@ -89,7 +89,7 @@ def soon(successor=None):
                     # to refactor the check for tabulate
                     if minutes_timer <= 10 and not flag_tabulate:
                         boss_name = f'__**{boss_name}**__'
-                    if minutes_timer <= -15:
+                    if minutes_timer <= 0 and window > 0:
                         minutes_timer += window
                         data[-1][_type].append([boss_name, f'window closes in {minutes_to_dhm(minutes_timer)}'])
                     else:
