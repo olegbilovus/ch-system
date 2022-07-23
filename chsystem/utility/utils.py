@@ -3,8 +3,12 @@ import time
 PREFIX = '.'
 
 
+def get_current_time_minutes():
+    return round(time.time()) // 60
+
+
 def time_remaining(_timer):
-    return _timer - (round(time.time()) // 60)
+    return _timer - get_current_time_minutes()
 
 
 def dhm_to_minutes(array_values):
