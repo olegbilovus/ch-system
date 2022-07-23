@@ -86,6 +86,8 @@ def soon(successor=None):
                         data.append({_type: []})
                         prev_type = _type
                     minutes_timer = time_remaining(timer)
+                    if minutes_timer <= 5:
+                        boss_name = f'__**{boss_name}**__'
                     if minutes_timer <= -15:
                         minutes_timer += window
                         data[-1][_type].append([boss_name, f'window closes in {minutes_to_dhm(minutes_timer)}'])
