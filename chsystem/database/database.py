@@ -1,9 +1,10 @@
 import os
 import requests
 import psycopg2
-import time
 
 import logs
+
+from utils import get_current_time_minutes
 
 
 class Database:
@@ -204,13 +205,15 @@ class ClanDiscord(Database):
 class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
+        current_time = get_current_time_minutes()
+        timer = current_time + 10
         self.cur.execute(
-            "SELECT id, timer , bossname FROM timer WHERE clanid = %s",
-            (clan_id,))
+            "SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer >= %s AND timer <= %s",
+            (clan_id, current_time, timer))
         return self.cur.fetchall()
 
     def get_by_clan_id_order_by_type(self, clan_id, preferred_type=None):
-        timer = (round(time.time()) // 60) - 15
+        timer = get_current_time_minutes() - 15
         if preferred_type is None:
             self.cur.execute(
                 "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s ORDER BY type, bossname",
@@ -254,7 +257,7 @@ class Timer(Database):
         self.conn.commit()
 
     def init_timers(self, default_timers, clan_id):
-        timer = round(time.time()) // 60
+        timer = get_current_time_minutes()
         # not using prepared statements because the input is safe from SQL injection
         sql = 'INSERT INTO timer (bossName, type, respawntimeminutes, windowminutes, timer, clanid) VALUES '
 

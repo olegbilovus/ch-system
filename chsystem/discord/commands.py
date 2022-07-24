@@ -188,11 +188,13 @@ def copy(successor=None):
                     array_values = []
                     for i in range(0, len(array_tmp), 2):
                         array_values.append(array_tmp[i] + array_tmp[i + 1])
-
-                    timer = current_time + dhm_to_minutes(array_values)
-                    data_send.append(timer_id[0])
-                    data_send.append(timer)
-                    bosses_copied.append(boss)
+                    try:
+                        timer = current_time + dhm_to_minutes(array_values)
+                        data_send.append(timer_id[0])
+                        data_send.append(timer)
+                        bosses_copied.append(boss)
+                    except ValueError:
+                        pass
 
             if len(data_send) > 0:
                 timer_db.update_bulk(data_send)

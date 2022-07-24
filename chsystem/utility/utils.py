@@ -23,6 +23,8 @@ def dhm_to_minutes(array_values):
                 hours = int(value[:-1])
             elif value[-1] == 'm':
                 minutes = int(value[:-1])
+            else:
+                raise ValueError
 
     to_return = days * 1440 + hours * 60 + minutes - 2
 
