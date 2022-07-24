@@ -205,10 +205,11 @@ class ClanDiscord(Database):
 class Timer(Database):
 
     def get_notify_data_by_clan_id(self, clan_id):
-        timer = get_current_time_minutes() - 15
+        current_time = get_current_time_minutes()
+        timer = current_time + 10
         self.cur.execute(
-            "SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer >= %s",
-            (clan_id, timer))
+            "SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer >= %s AND timer <= %s",
+            (clan_id, current_time, timer))
         return self.cur.fetchall()
 
     def get_by_clan_id_order_by_type(self, clan_id, preferred_type=None):
