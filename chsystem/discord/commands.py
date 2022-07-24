@@ -44,8 +44,8 @@ def start_chain(f):
 
 @start_chain
 def default():
-    msg_to_send = {'private': False, 'msg': None}
     while True:
+        msg_to_send = {'private': False, 'msg': None}
         yield msg_to_send
 
 
@@ -354,7 +354,6 @@ def security_check(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
         msg = yield msg_to_send
-        msg_to_send = {'private': False, 'msg': None}
         user_data = clan_discord_db.get_by_discord_id(msg.author_id)
         if user_data is not None and user_data[0] != msg.guild_id:
             msg_to_send[
