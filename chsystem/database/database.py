@@ -207,7 +207,7 @@ class Timer(Database):
     def get_notify_data_by_clan_id(self, clan_id):
         timer = get_current_time_minutes() - 15
         self.cur.execute(
-            "SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer + windowminutes >= %s",
+            "SELECT id, timer, bossname FROM timer WHERE clanid = %s AND timer >= %s",
             (clan_id, timer))
         return self.cur.fetchall()
 
