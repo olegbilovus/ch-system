@@ -1,1 +1,1 @@
-web: bash init.sh "chsystem/database/DBurl.py"
+web: bash init.sh "chsystem/database/DBurl.py" & python "chsystem/discord/discordBot.py"
