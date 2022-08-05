@@ -62,6 +62,7 @@ class DiscordBot(discord.Client):
         except StopIteration:
             logger.error('StopIteration', extra=extra_log)
             self.cmds = get_chain_commands().send
+            clan_discord_db.update_url(force=True)
             return
 
         if msg_to_send['msg'] is not None:
