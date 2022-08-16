@@ -6,7 +6,7 @@ from paste.translogger import TransLogger
 import logs
 import requests
 
-logger = logs.get_logger('DBurl', token=os.getenv('LOGTAIL_DBURL'), stdout_r=True, stderr_r=True, file=True)
+logger = logs.get_logger(logtail=False, name='DBurl')
 
 app = Flask('')
 
