@@ -1,15 +1,8 @@
 from flask import Flask
 from waitress import serve
 from paste.translogger import TransLogger
-from replit import db
-
 
 app = Flask('')
-
-
-@app.route('/')
-def home():
-    return db['status']
 
 
 @app.route('/ping')

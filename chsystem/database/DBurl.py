@@ -1,9 +1,10 @@
 import os
-from flask import Flask
+from flask import Flask, request
 from waitress import serve
 from paste.translogger import TransLogger
 
 import logs
+import requests
 
 logger = logs.get_logger(logtail=False, name='DBurl')
 
@@ -16,8 +17,11 @@ def get_url():
     return os.getenv('DATABASE_URL')
 
 
-@app.route('/ping')
+@app.post('/ping')
 def ping():
+    logger.info(f'Requested ping from {request.remote_addr}')
+    res = requests.get(request.json['url'])
+    logger.info(f'Ping response: {res.content}')
     return 'pong'
 
 
