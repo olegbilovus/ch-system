@@ -153,7 +153,7 @@ def reset_timer(successor=None):
                 msg_to_send['msg'] = f'{msg.author_mention} {msg.cmd} is not a valid boss to reset'
             else:
                 current_time_in_minutes = get_current_time_minutes()
-                timer_set = current_time_in_minutes + timer_data[1]
+                timer_set = current_time_in_minutes + timer_data[1] - 2
                 timer_db.update(timer_data[0], timer_set)
                 msg_to_send['msg'] = f'{msg.cmd} has been reset'
 
