@@ -1,7 +1,7 @@
 import time
 
 PREFIX = '.'
-
+TIMER_OFFSET = 0
 
 def get_current_time_minutes():
     return round(time.time()) // 60
@@ -28,7 +28,7 @@ def dhm_to_minutes(array_values):
         else:
             raise ValueError
 
-    to_return = days * 1440 + hours * 60 + minutes - 2
+    to_return = days * 1440 + hours * 60 + minutes - TIMER_OFFSET
 
     return to_return
 
