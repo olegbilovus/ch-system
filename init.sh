@@ -16,4 +16,4 @@ else
   echo "Module $DATABASE already present in $PYTHONPATH"
 fi
 
-python3 "$1"
+python3 "$1" || python "$1"
