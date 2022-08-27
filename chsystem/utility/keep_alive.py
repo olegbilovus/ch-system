@@ -1,6 +1,5 @@
 from flask import Flask
 from waitress import serve
-from paste.translogger import TransLogger
 
 app = Flask('')
 
@@ -11,8 +10,7 @@ def ping():
 
 
 def run():
-    format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
-    serve(TransLogger(app, format=format_logger),
+    serve(app,
           host='0.0.0.0',
           port=8080,
           url_scheme='https',
