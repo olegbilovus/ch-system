@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 def setup():
     load_dotenv()
-    if os.getenv('DB_URL') is not None:
+    if os.getenv('DB_URI') is not None:
         print('Loaded successfully env variables')
     else:
         sys.exit('Failed to load env variables')
