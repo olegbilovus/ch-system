@@ -17,3 +17,7 @@ def run():
           port=8080,
           url_scheme='https',
           ident=None)
+
+
+if __name__ == '__main__':
+    run()
