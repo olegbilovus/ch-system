@@ -1,11 +1,13 @@
-import setup
 import os
-import discord
+import threading
 
-import logs
 import database
-import commands
+import discord
+import keep_alive
+import logs
 from utils import PREFIX
+
+import commands
 
 logger = logs.get_logger('DiscordBot', token=os.getenv('LOGTAIL_DISCORD'), other_loggers=['discord'], stdout_r=True,
                          stderr_r=True, file=True)
@@ -115,6 +117,9 @@ class DiscordBot(discord.Client):
         else:
             logger.warning(f'Member {member.name} left but not in database')
 
+
+if os.getenv('KEEP_ALIVE') == '1':
+    threading.Thread(target=keep_alive.run, daemon=True).start()
 
 client = DiscordBot(intents=discord.Intents.all(), status=discord.Status.online,
                     activity=discord.Activity(type=discord.ActivityType.playing, name='Celtic Heroes'))
