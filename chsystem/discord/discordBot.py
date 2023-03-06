@@ -1,13 +1,13 @@
+import setup
 import os
-import threading
-
-import database
 import discord
-import keep_alive
-import logs
-from utils import PREFIX
 
+import logs
+import database
 import commands
+from utils import PREFIX
+import threading
+import keep_alive
 
 logger = logs.get_logger('DiscordBot', token=os.getenv('LOGTAIL_DISCORD'), other_loggers=['discord'], stdout_r=True,
                          stderr_r=True, file=True)
@@ -119,7 +119,7 @@ class DiscordBot(discord.Client):
 
 
 if os.getenv('KEEP_ALIVE') == '1':
-    threading.Thread(target=keep_alive.run, daemon=True).start()
+    threading.Thread(target=keep_alive.run, daemon=True)
 
 client = DiscordBot(intents=discord.Intents.all(), status=discord.Status.online,
                     activity=discord.Activity(type=discord.ActivityType.playing, name='Celtic Heroes'))
