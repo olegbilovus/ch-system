@@ -17,7 +17,6 @@ logger = logs.get_logger('Notify', token=os.getenv('LOGTAIL_NOTIFY'), stdout_r=T
 
 parser = argparse.ArgumentParser()
 group = parser.add_mutually_exclusive_group()
-group.add_argument('--notify', action='store_true', help='Notify subscribers')
 group.add_argument('--broadcast', help='Broadcast message', type=str)
 args = parser.parse_args()
 
@@ -52,7 +51,7 @@ def do_work(jobs_queue, log):
     logger.info('Work done')
 
 
-if args.notify:
+if not args.broadcast:
     username = 'Notifier'
 
     logger.info('Check')
