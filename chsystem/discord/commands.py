@@ -49,6 +49,27 @@ def default():
         yield msg_to_send
 
 
+@start_chain
+def bosslist(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'bosslist':
+            if msg.user_clan_id is None:
+                clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
+            else:
+                clan_id = msg.user_clan_id
+
+            boss_names = timer_db.get_names_by_clan_id(clan_id)
+            if len(boss_names) == 0:
+                msg_to_send['msg'] = 'Your clan has no timers'
+            else:
+                msg_to_send['msg'] = '\n'.join(boss_names)
+
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
 def soon_tabulate(data, tablefmt=None):
     msg = ''
     for coll in data:
