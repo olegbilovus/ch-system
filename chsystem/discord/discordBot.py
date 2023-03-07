@@ -25,7 +25,7 @@ def get_chain_commands():
         commands.unsub(
             commands.sublist(commands.init_timers(
                 commands.copy(
-                    commands.help_commands(commands.reset_timer(commands.bosslist(commands.default())))))))))))
+                    commands.help_commands(commands.bosslist(commands.reset_timer(commands.default())))))))))))
 
 
 class DiscordBot(discord.Client):
