@@ -365,7 +365,7 @@ def help_commands(successor=None):
                 f'{PREFIX}**soon <boss type>** - Show all available timers of a specific boss\' type.\n' \
                 f'\te.g: **{PREFIX}soon frozen**\n' \
                 f'{PREFIX}**<boss>** - Reset a boss.\n' \
-                f'{PREFIX}**set <boss> <days>d <hours>h <minutes>m** - Set a boss to a specific timer.\n' \
+                f'{PREFIX}**set <boss> <days>d <hours>h <minutes>m [ago]** - Set a boss to a specific timer. Use **ago** at the end to set it to a relative time.\n' \
                 f'\te.g.: **{PREFIX}set 215 1h 13m**\n' \
                 f'{PREFIX}**sub <boss>** - Subscribe to a boss to get notified when that boss is due.\n' \
                 f'{PREFIX}**unsub <boss>** - Unsubscribe from a boss.\n' \
