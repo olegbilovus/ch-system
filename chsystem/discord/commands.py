@@ -49,6 +49,30 @@ def default():
         yield msg_to_send
 
 
+@start_chain
+def bosslist(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'bosslist':
+            if msg.user_clan_id is None:
+                clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
+            else:
+                clan_id = msg.user_clan_id
+
+            boss_names = timer_db.get_names_by_clan_id(clan_id)
+            if len(boss_names) == 0:
+                msg_to_send['msg'] = 'Your clan has no timers'
+            else:
+                tmp = ''
+                for boss_name, in boss_names:
+                    tmp += f'{boss_name}\n'
+                msg_to_send['msg'] = tmp
+
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
 def soon_tabulate(data, tablefmt=None):
     msg = ''
     for coll in data:
@@ -343,6 +367,7 @@ def help_commands(successor=None):
                 f'{PREFIX}**sub <boss>** - Subscribe to a boss to get notified when that boss is due.\n' \
                 f'{PREFIX}**unsub <boss>** - Unsubscribe from a boss.\n' \
                 f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
+                f'{PREFIX}**bosslist** - Get the names of the bosses available in your clan.' \
                 f'{PREFIX}**help** - Show this message.'
 
         elif successor is not None:
