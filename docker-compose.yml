@@ -1,0 +1,28 @@
+version: "3.7"
+
+services:
+  chsystem-discord:
+    container_name: chsystem-discord
+    image: chsystem:latest
+    networks:
+      - postgres
+    environment:
+      DB_URI: # DB_URI
+      DISCORD_TOKEN: # DISCORD_TOKEN
+      LOGTAIL_DISCORD: # LOGTAIL_DISCORD TOKEN
+    restart: always
+  chsystem-notify:
+    container_name: chsystem-notify
+    image: chsystem:latest
+    networks:
+      - postgres
+    environment:
+      DB_URI: # DB_URI
+      LOGTAIL_NOTIFY: # LOGTAIL_NOTIFY TOKEN
+    restart: "no"
+    command: bash init.sh chsystem/notify/notify.py
+
+networks:
+  postgres:
+    name: postgres
+    external: true

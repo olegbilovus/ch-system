@@ -16,4 +16,6 @@ else
   echo "Module $DATABASE already present in $PYTHONPATH"
 fi
 
+echo "sleeping 15 secs..." && sleep 15
+
 python3 "$1"
