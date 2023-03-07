@@ -65,7 +65,7 @@ def bosslist(successor=None):
                 msg_to_send['msg'] = 'Your clan has no timers'
             else:
                 tmp = ''
-                for boss_name in boss_names:
+                for boss_name, in boss_names:
                     tmp += f'{boss_name}\n'
                 msg_to_send['msg'] = tmp
 
