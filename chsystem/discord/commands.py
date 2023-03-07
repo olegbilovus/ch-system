@@ -157,7 +157,7 @@ def set_timer(successor=None):
                     try:
                         current_time_in_minutes = get_current_time_minutes()
                         if msg.args[-1] == 'ago':
-                            timer_set = current_time_in_minutes + timer_data[1] - dhm_to_minutes(msg.args[1:])
+                            timer_set = current_time_in_minutes + timer_data[1] - dhm_to_minutes(msg.args[1:-1])
                         else:
                             timer_set = current_time_in_minutes + dhm_to_minutes(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
