@@ -370,7 +370,7 @@ def help_commands(successor=None):
                 f'{PREFIX}**sub <boss>** - Subscribe to a boss to get notified when that boss is due.\n' \
                 f'{PREFIX}**unsub <boss>** - Unsubscribe from a boss.\n' \
                 f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
-                f'{PREFIX}**bosslist** - Get the names of the bosses available in your clan.' \
+                f'{PREFIX}**bosslist** - Get the names of the bosses available in your clan.\n' \
                 f'{PREFIX}**help** - Show this message.'
 
         elif successor is not None:
