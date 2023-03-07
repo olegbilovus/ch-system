@@ -19,7 +19,7 @@ services:
     environment:
       DB_URI: # DB_URI
       LOGTAIL_NOTIFY: # LOGTAIL_NOTIFY TOKEN
-    restart: "no"
+    restart: always
     command: bash init.sh chsystem/notify/notify.py
 
 networks:
