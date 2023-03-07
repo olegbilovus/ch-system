@@ -7,9 +7,9 @@ services:
     networks:
       - postgres
     environment:
-      DB_URI: postgresql://postgres:lPr5LSUQbgegvgw7@postgres:5432/chsystem
-      DISCORD_TOKEN: MTA4MjM5MTU0ODYwOTY5MTY1OA.G3-TP9.IZt1cFdp1Jr1GZOvOBFt6Bvod20FHk5yLVxewg
-      LOGTAIL_DISCORD: mVVGVu9RHR1KmLX3AHu9t4ah
+      DB_URI: # DB_URI
+      DISCORD_TOKEN: # DISCORD_TOKEN
+      LOGTAIL_DISCORD: # LOGTAIL_DISCORD TOKEN
     restart: always
   chsystem-notify:
     container_name: chsystem-notify
@@ -17,9 +17,9 @@ services:
     networks:
       - postgres
     environment:
-      DB_URI: postgresql://postgres:lPr5LSUQbgegvgw7@postgres:5432/chsystem
-      LOGTAIL_NOTIFY: 9NukbhBTmNcieJtHPhiBgM7k
-    restart: always
+      DB_URI: # DB_URI
+      LOGTAIL_NOTIFY: # LOGTAIL_NOTIFY TOKEN
+    restart: "no"
     command: bash init.sh chsystem/notify/notify.py
 
 networks:
