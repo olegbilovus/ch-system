@@ -8,6 +8,7 @@ import database
 from utils import time_remaining, minutes_to_dhm
 from queue import Queue
 from threading import Thread
+import time
 
 timer_db = database.Timer()
 subscriber_db = database.Subscriber()
@@ -54,22 +55,25 @@ def do_work(jobs_queue, log):
 if not args.broadcast:
     username = 'Notifier'
 
-    logger.info('Check')
-    webhooks = clan_discord_db.get_all_notify_webhooks()
+    while True:
+        logger.info('Check')
+        webhooks = clan_discord_db.get_all_notify_webhooks()
 
-    for clan_id, webhook, discord_guild_id in webhooks:
-        timers_data = timer_db.get_notify_data_by_clan_id(clan_id)
-        for timer_id, timer, boss_name in timers_data:
-            subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(timer_id)
-            msg = f'{boss_name} due in {minutes_to_dhm(time_remaining(timer))} '
+        for clan_id, webhook, discord_guild_id in webhooks:
+            timers_data = timer_db.get_notify_data_by_clan_id(clan_id)
+            for timer_id, timer, boss_name in timers_data:
+                subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(timer_id)
+                msg = f'{boss_name} due in {minutes_to_dhm(time_remaining(timer))} '
 
-            for discord_id, in subscribers:
-                msg += f'<@{discord_id}>'
+                for discord_id, in subscribers:
+                    msg += f'<@{discord_id}>'
 
-            jobs.put((webhook, msg, username, clan_id))
+                jobs.put((webhook, msg, username, clan_id))
 
-    do_work(jobs, logger)
-    logger.info('Finish check')
+        do_work(jobs, logger)
+        logger.info('Finish check')
+
+        time.sleep(300)
 
 elif args.broadcast:
     username = 'Broadcaster'
