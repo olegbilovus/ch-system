@@ -146,8 +146,8 @@ def set_timer(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'set':
-            if not 1 < len(msg.args) < 5:
-                msg_to_send['msg'] = f'{msg.author_mention} Usage: {PREFIX}set <boss> <days>d <hours>h <minutes>m'
+            if not 1 < len(msg.args) < 6:
+                msg_to_send['msg'] = f'{msg.author_mention} Usage: {PREFIX}set <boss> <days>d <hours>h <minutes>m [ago]'
             else:
                 boss = msg.args[0]
                 timer_data = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss)
@@ -156,7 +156,10 @@ def set_timer(successor=None):
                 else:
                     try:
                         current_time_in_minutes = get_current_time_minutes()
-                        timer_set = current_time_in_minutes + dhm_to_minutes(msg.args[1:])
+                        if msg.args[-1] == 'ago':
+                            timer_set = current_time_in_minutes + timer_data[1] - dhm_to_minutes(msg.args[1:])
+                        else:
+                            timer_set = current_time_in_minutes + dhm_to_minutes(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
                         msg_to_send['msg'] = f'{boss} set to {" ".join(msg.args[1:])}'
                     except ValueError:
