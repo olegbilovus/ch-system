@@ -10,6 +10,7 @@ services:
       DB_URI: # DB_URI
       DISCORD_TOKEN: # DISCORD_TOKEN
       LOGTAIL_DISCORD: # LOGTAIL_DISCORD TOKEN
+      LOGTAIL_DATABASE: # LOGTAIL_DATABASE TOKEN
     restart: always
   chsystem-notify:
     container_name: chsystem-notify
@@ -19,6 +20,7 @@ services:
     environment:
       DB_URI: # DB_URI
       LOGTAIL_NOTIFY: # LOGTAIL_NOTIFY TOKEN
+      LOGTAIL_DATABASE: # LOGTAIL_DATABASE TOKEN
     restart: always
     command: bash init.sh chsystem/notify/notify.py
 
