@@ -367,7 +367,7 @@ def help_commands(successor=None):
                 f'{PREFIX}**soon -t** - Same as **soon** but results are showed in a tabular format.\n' \
                 f'{PREFIX}**soon -t <format>** - Same as **soon -t** but you can decide the format.\n ' \
                 f'\tAvailable formats can be found here in "Table format" section <https://pypi.org/project/tabulate/>.\n' \
-                f'{PREFIX}**soon <boss type>** - Show all available timers of a specific boss\' type.\n' \
+                f'{PREFIX}**soon <boss type> <boss type> ...** - Show all available timers for specific boss\' types.\n' \
                 f'\te.g: **{PREFIX}soon frozen**\n' \
                 f'{PREFIX}**<boss>** - Reset a boss.\n' \
                 f'{PREFIX}**set <boss> <days>d <hours>h <minutes>m [ago]** - Set a boss to a specific timer. Use **ago** at the end to set it to a relative time.\n' \
