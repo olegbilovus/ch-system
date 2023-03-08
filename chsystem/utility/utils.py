@@ -1,7 +1,9 @@
+import json
 import time
 
 PREFIX = '.'
 TIMER_OFFSET = 0
+
 
 def get_current_time_minutes():
     return round(time.time()) // 60
@@ -48,50 +50,212 @@ def minutes_to_dhm(minutes):
     return '-' + msg
 
 
-def get_default_timers_data(_type=None):
-    bosses = {
-        'eye': ('FROZEN', 30, 0),
-        'swampie': ('FROZEN', 35, 0),
-        'woody': ('FROZEN', 40, 0),
-        'chained': ('FROZEN', 45, 0),
-        'grom': ('FROZEN', 50, 0),
-        'pyrus': ('FROZEN', 55, 0),
-        '155': ('DL', 60, 0),
-        '160': ('DL', 65, 0),
-        '165': ('DL', 70, 0),
-        '170': ('DL', 80, 0),
-        '180': ('DL', 90, 0),
-        '185': ('EDL', 75, 0),
-        '190': ('EDL', 85, 0),
-        '195': ('EDL', 95, 0),
-        '200': ('EDL', 105, 0),
-        '205': ('EDL', 115, 0),
-        '210': ('EDL', 125, 0),
-        '215': ('EDL', 135, 0),
-        'aggy': ('MIDS', 1894, 1894),
-        'mord': ('MIDS', 2160, 2160),
-        'hrung': ('MIDS', 2160, 2160),
-        'necro': ('MIDS', 2160, 2160),
-        'prot': ('EGS', 1190, 0),
-        'gele': ('EGS', 2880, 2880),
-        'bt': ('EGS', 2880, 2880),
-        'dino': ('EGS', 2880, 2880),
-        'east': ('RINGS', 255, 0),
-        'north': ('RINGS', 255, 0),
-        'south': ('RINGS', 255, 0),
-        'center': ('RINGS', 255, 0)
+def get_default_timers_data():
+    data = []
+    for boss in _BOSSES_DATA:
+        data.append((boss['name'], boss['type'], boss['respawn'], boss['window']))
+
+    return data
+
+
+# Need to find an alternative solution. Loading as a JSON file from other modules have some issues with finding the file
+_BOSSES_DATA = [
+    {
+        "name": "170",
+        "type": "DL",
+        "respawn": 78,
+        "window": 3
+    },
+    {
+        "name": "mord",
+        "type": "MIDS",
+        "respawn": 1440,
+        "window": 1440
+    },
+    {
+        "name": "bt",
+        "type": "EGS",
+        "respawn": 2160,
+        "window": 2160
+    },
+    {
+        "name": "dino",
+        "type": "EGS",
+        "respawn": 2160,
+        "window": 2160
+    },
+    {
+        "name": "prot",
+        "type": "EGS",
+        "respawn": 1080,
+        "window": 120
+    },
+    {
+        "name": "hrung",
+        "type": "MIDS",
+        "respawn": 1440,
+        "window": 1440
+    },
+    {
+        "name": "aggy",
+        "type": "MIDS",
+        "respawn": 1440,
+        "window": 1440
+    },
+    {
+        "name": "necro",
+        "type": "MIDS",
+        "respawn": 1440,
+        "window": 1440
+    },
+    {
+        "name": "gele",
+        "type": "EGS",
+        "respawn": 2160,
+        "window": 2160
+    },
+    {
+        "name": "north",
+        "type": "RINGS",
+        "respawn": 215,
+        "window": 50
+    },
+    {
+        "name": "lir",
+        "type": "VORTEX",
+        "respawn": 110,
+        "window": 20
+    },
+    {
+        "name": "center",
+        "type": "RINGS",
+        "respawn": 215,
+        "window": 50
+    },
+    {
+        "name": "155",
+        "type": "DL",
+        "respawn": 63,
+        "window": 3
+    },
+    {
+        "name": "190",
+        "type": "EDL",
+        "respawn": 81,
+        "window": 3
+    },
+    {
+        "name": "195",
+        "type": "EDL",
+        "respawn": 89,
+        "window": 4
+    },
+    {
+        "name": "165",
+        "type": "DL",
+        "respawn": 73,
+        "window": 3
+    },
+    {
+        "name": "205",
+        "type": "EDL",
+        "respawn": 117,
+        "window": 4
+    },
+    {
+        "name": "grom",
+        "type": "FROZEN",
+        "respawn": 48,
+        "window": 3
+    },
+    {
+        "name": "chained",
+        "type": "FROZEN",
+        "respawn": 43,
+        "window": 3
+    },
+    {
+        "name": "eye",
+        "type": "FROZEN",
+        "respawn": 28,
+        "window": 3
+    },
+    {
+        "name": "swampie",
+        "type": "FROZEN",
+        "respawn": 33,
+        "window": 3
+    },
+    {
+        "name": "200",
+        "type": "EDL",
+        "respawn": 108,
+        "window": 5
+    },
+    {
+        "name": "woody",
+        "type": "FROZEN",
+        "respawn": 38,
+        "window": 3
+    },
+    {
+        "name": "185",
+        "type": "EDL",
+        "respawn": 72,
+        "window": 3
+    },
+    {
+        "name": "pyrus",
+        "type": "FROZEN",
+        "respawn": 58,
+        "window": 3
+    },
+    {
+        "name": "south",
+        "type": "RINGS",
+        "respawn": 215,
+        "window": 50
+    },
+    {
+        "name": "east",
+        "type": "RINGS",
+        "respawn": 215,
+        "window": 50
+    },
+    {
+        "name": "fingals",
+        "type": "VORTEX",
+        "respawn": 110,
+        "window": 20
+    },
+    {
+        "name": "carrow",
+        "type": "VORTEX",
+        "respawn": 110,
+        "window": 20
+    },
+    {
+        "name": "180",
+        "type": "DL",
+        "respawn": 88,
+        "window": 3
+    },
+    {
+        "name": "215",
+        "type": "EDL",
+        "respawn": 134,
+        "window": 5
+    },
+    {
+        "name": "210",
+        "type": "EDL",
+        "respawn": 125,
+        "window": 5
+    },
+    {
+        "name": "160",
+        "type": "DL",
+        "respawn": 68,
+        "window": 3
     }
-
-    if _type is not None:
-        flag = False
-        data = {}
-        for boss, b_data in bosses.items():
-            if b_data[0] == _type:
-                data[boss] = b_data
-                flag = True
-            elif flag:
-                break
-
-        return data
-
-    return bosses
+]

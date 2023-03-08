@@ -297,8 +297,8 @@ class Timer(Database):
         # not using prepared statements because the input is safe from SQL injection
         sql = 'INSERT INTO timer (bossName, type, respawntimeminutes, windowminutes, timer, clanid) VALUES '
 
-        for boss_name, timer_data in default_timers.items():
-            sql += f"('{boss_name}', '{timer_data[0]}', {timer_data[1]}, {timer_data[2]}, {timer}, {clan_id}), "
+        for boss in default_timers:
+            sql += f"('{boss[0]}', '{boss[1]}', {boss[2]}, {boss[3]}, {timer}, {clan_id}), "
         sql = sql[:-2]
 
         cur.execute(sql)
