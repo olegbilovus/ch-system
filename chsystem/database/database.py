@@ -235,17 +235,17 @@ class Timer(Database):
             (clan_id, current_time, timer))
         return cur.fetchall()
 
-    def get_by_clan_id_order_by_type(self, clan_id, preferred_type=None):
+    def get_by_clan_id_order_by_type(self, clan_id, preferred_types=None):
         cur = self.conn.cursor()
         timer = get_current_time_minutes() - 15
-        if preferred_type is None:
+        if preferred_types is None:
             cur.execute(
                 "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s ORDER BY type, bossname",
                 (clan_id, timer))
         else:
-            cur.execute(
-                "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type = %s ORDER BY type, bossname",
-                (clan_id, timer, preferred_type))
+            sql_query = 'SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type IN ({}) ORDER BY type, bossname'.format(
+                ', '.join(['%s'] * len(preferred_types)))
+            cur.execute(sql_query, (clan_id, timer, *tuple(preferred_types)))
         return cur.fetchall()
 
     def get_names_by_clan_id(self, clan_id):
