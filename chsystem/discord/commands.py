@@ -94,13 +94,14 @@ def soon(successor=None):
             else:
                 clan_id = msg.user_clan_id
 
-            preferred_timer_types = [t.upper() for t in msg.args] if len(msg.args) >= 1 and msg.args[0] != '-t' else None
+            preferred_timer_types = [t.upper() for t in msg.args] if len(msg.args) >= 1 and msg.args[
+                0] != '-t' else None
             timers_data = timer_db.get_by_clan_id_order_by_type(clan_id, preferred_timer_types)
 
             if len(timers_data) == 0:
                 msg_to_send['msg'] = 'Your clan has no timers set'
                 if preferred_timer_types is not None:
-                    msg_to_send['msg'] += f' for {preferred_timer_types} bosses'
+                    msg_to_send['msg'] += ' for ' + ', '.join(preferred_timer_types) + ' bosses'
             else:
                 data = []
                 prev_type = ''
