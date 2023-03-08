@@ -249,17 +249,13 @@ def init_timers(successor=None):
                 msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
             else:
                 clan_id = msg.user_clan_id
-                _type = msg.args[0].upper() if len(msg.args) == 1 else None
-                default_timers = get_default_timers_data(_type)
-                if len(default_timers) == 0:
-                    msg_to_send['msg'] = f'{msg.author_mention} No timers found for {_type}'
-                else:
-                    try:
-                        timer_db.init_timers(default_timers, clan_id)
-                        msg_to_send['msg'] = f'{msg.author_mention} Timers have been initialized to 0m'
-                    except psycopg2.IntegrityError:
-                        timer_db.conn.rollback()
-                        msg_to_send['msg'] = f'{msg.author_mention} An error occurred while initializing timers'
+                default_timers = get_default_timers_data()
+                try:
+                    timer_db.init_timers(default_timers, clan_id)
+                    msg_to_send['msg'] = f'{msg.author_mention} Timers have been added'
+                except psycopg2.IntegrityError:
+                    timer_db.conn.rollback()
+                    msg_to_send['msg'] = f'{msg.author_mention} An error occurred while initializing timers'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
