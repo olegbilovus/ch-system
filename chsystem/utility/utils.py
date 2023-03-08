@@ -1,4 +1,3 @@
-import json
 import time
 
 PREFIX = '.'
@@ -58,7 +57,8 @@ def get_default_timers_data():
     return data
 
 
-# Need to find an alternative solution. Loading as a JSON file from other modules have some issues with finding the file
+# Need to find an alternative solution. Loading as a JSON file from other
+# modules have some issues with finding the file
 _BOSSES_DATA = [
     {
         "name": "170",
