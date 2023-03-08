@@ -60,12 +60,16 @@ def bosslist(successor=None):
             else:
                 clan_id = msg.user_clan_id
 
-            boss_names = timer_db.get_names_by_clan_id(clan_id)
+            boss_names = timer_db.get_names_types_by_clan_id(clan_id)
             if len(boss_names) == 0:
                 msg_to_send['msg'] = 'Your clan has no timers'
             else:
                 tmp = ''
-                for boss_name, in boss_names:
+                prev_type = ''
+                for boss_name, _type in boss_names:
+                    if _type != prev_type:
+                        tmp += f'__**`{_type}`**__\n'
+                        prev_type = _type
                     tmp += f'{boss_name}\n'
                 msg_to_send['msg'] = tmp
 
