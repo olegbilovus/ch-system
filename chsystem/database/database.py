@@ -243,9 +243,13 @@ class Timer(Database):
                 "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s ORDER BY type, bossname",
                 (clan_id, timer))
         else:
+            str_types = ''
+            for t in preferred_types:
+                str_types += f"'{t}',"
+            str_types = str_types[:-1]
             cur.execute(
-                "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type in (%s) ORDER BY type, bossname",
-                (clan_id, timer, ', '.join(preferred_types)))
+                "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type IN (%s) ORDER BY type, bossname",
+                (clan_id, timer, str_types))
         return cur.fetchall()
 
     def get_names_by_clan_id(self, clan_id):
