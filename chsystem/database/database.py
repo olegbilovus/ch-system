@@ -254,11 +254,16 @@ class Timer(Database):
             "SELECT bossname, type FROM timer WHERE clanid = %s ORDER BY type, bossname", (clan_id,))
         return cur.fetchall()
 
-    def get_by_guild_id_and_boss_name(self, guild_id, boss_name):
+    def get_by_guild_id_and_boss_name(self, guild_id, boss_name, timer=False):
         cur = self.conn.cursor()
-        cur.execute(
-            "SELECT timer.id, respawnTimeMinutes, timer.clanid FROM timer, clandiscord WHERE discordguildid = %s AND bossname = %s AND timer.clanid = clandiscord.clanid",
-            (guild_id, boss_name))
+        if not timer:
+            cur.execute(
+                "SELECT timer.id, respawnTimeMinutes, timer.clanid FROM timer, clandiscord WHERE discordguildid = %s AND bossname = %s AND timer.clanid = clandiscord.clanid",
+                (guild_id, boss_name))
+        else:
+            cur.execute(
+                "SELECT timer.id, respawnTimeMinutes, timer.clanid, timer.timer FROM timer, clandiscord WHERE discordguildid = %s AND bossname = %s AND timer.clanid = clandiscord.clanid",
+                (guild_id, boss_name))
         return cur.fetchone()
 
     def get_by_clan_id_and_timer_id(self, clan_id, timer_id):

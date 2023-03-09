@@ -194,11 +194,11 @@ def reset_timer(successor=None):
 
 
 @start_chain
-def copy(successor=None):
+def copy_copyforce(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
         msg = yield msg_to_send
-        if msg.cmd == 'copy':
+        if msg.cmd == 'copy' or msg.cmd == 'copyforce':
             content = ' '.join(msg.args)
             content = content.split('\n')
 
@@ -213,14 +213,18 @@ def copy(successor=None):
 
             current_time = get_current_time_minutes()
             data_send = []
+            copyforce = msg.cmd == 'copyforce'
             for boss, t in data.items():
-                timer_id = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss)
+                timer_id = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss, timer=not copyforce)
                 if timer_id is not None:
                     array_tmp = t.split(' ')
                     array_values = []
                     for i in range(0, len(array_tmp), 2):
                         array_values.append(array_tmp[i] + array_tmp[i + 1])
                     try:
+                        if msg.cmd == 'copy' and timer_id[3] >= current_time - 1:
+                            continue
+
                         timer = current_time + dhm_to_minutes(array_values)
                         data_send.append(timer_id[0])
                         data_send.append(timer)
