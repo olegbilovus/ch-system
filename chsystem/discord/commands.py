@@ -398,7 +398,7 @@ def timer(successor=None):
                                 'msg'] = f'{msg.author_mention} {msg.args[0]} edited to type: {boss_type}, respawn: {minutes_to_dhm(respawn)}, window: {minutes_to_dhm(window)}'
                     except (ValueError, IndexError):
                         msg_to_send[
-                            'msg'] = f'{msg.author_mention} Usage: {PREFIX}{"timeradd" if flag_add else "timeredit"} <boss type> <respawn mins> <window mins>'
+                            'msg'] = f'{msg.author_mention} Usage: {PREFIX}{"timeradd" if flag_add else "timeredit"} <name> <type> <respawn mins> <window mins>'
                 else:
                     if timer_data is None:
                         msg_to_send['msg'] = f'{msg.author_mention} {msg.args[0]} does not exists'
