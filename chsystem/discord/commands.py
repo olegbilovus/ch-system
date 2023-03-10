@@ -13,6 +13,8 @@ timer_db = database.Timer()
 user_profile_db = database.UserProfile()
 subscriber_db = database.Subscriber()
 
+MAX_NUM_TIMERS = 50
+
 
 class Message:
     def __init__(self, content, author, logger):
@@ -361,6 +363,55 @@ def role(successor=None):
 
 
 @start_chain
+def timer(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd in ['timeradd', 'timeredit', 'timerdel']:
+            if msg.user_role < 3:
+                msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
+            elif 1 <= len(msg.args) <= 4:
+                flag_add = msg.cmd == 'timeradd'
+                flag_edit = msg.cmd == 'timeredit'
+                timer_data = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, msg.args[0])
+                if flag_add or flag_edit:
+                    try:
+                        boss_type = msg.args[1].upper()
+                        respawn = int(msg.args[2])
+                        window = int(msg.args[3])
+                        if timer_data is not None and flag_add:
+                            msg_to_send['msg'] = f'{msg.author_mention} {msg.args[0]} already exists'
+                        elif timer_data is None and flag_add:
+                            num_timers = timer_db.get_num_timers_by_clan_id(msg.user_clan_id)[0]
+                            if num_timers < MAX_NUM_TIMERS:
+                                timer_db.insert(msg.args[0], boss_type, respawn, window, msg.user_clan_id)
+                                msg_to_send[
+                                    'msg'] = f'{msg.author_mention} Added name: {msg.args[0]}, type: {boss_type}, respawn: {minutes_to_dhm(respawn)}, window: {minutes_to_dhm(window)}'
+                            else:
+                                msg_to_send[
+                                    'msg'] = f'{msg.author_mention} your clan has already {MAX_NUM_TIMERS} timers, delete some to add more'
+                        elif timer_data is None and flag_edit:
+                            msg_to_send['msg'] = f'{msg.author_mention} {msg.args[0]} does not exists'
+                        else:
+                            timer_db.update_full(msg.args[0], boss_type, respawn, window, msg.user_clan_id)
+                            msg_to_send[
+                                'msg'] = f'{msg.author_mention} {msg.args[0]} edited to type: {boss_type}, respawn: {minutes_to_dhm(respawn)}, window: {minutes_to_dhm(window)}'
+                    except (ValueError, IndexError):
+                        msg_to_send[
+                            'msg'] = f'{msg.author_mention} Usage: {PREFIX}{"timeradd" if flag_add else "timeredit"} <boss type> <respawn mins> <window mins>'
+                else:
+                    if timer_data is None:
+                        msg_to_send['msg'] = f'{msg.author_mention} {msg.args[0]} does not exists'
+                    else:
+                        timer_db.delete(msg.user_clan_id, msg.args[0])
+                        msg_to_send['msg'] = f'{msg.author_mention} {msg.args[0]} deleted'
+            else:
+                msg_to_send['msg'] = f'{msg.author_mention} Use {PREFIX}help to see the usage'
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
 def help_commands(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
@@ -381,8 +432,13 @@ def help_commands(successor=None):
                 f'{PREFIX}**unsub <boss>** - Unsubscribe from a boss.\n' \
                 f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
                 f'{PREFIX}**bosslist** - Get the names of the bosses available in your clan.\n' \
-                f'{PREFIX}**help** - Show this message.'
-
+                f'{PREFIX}**help** - Show this message.\n' \
+                f'*-- Commands which require role > 3 --*\n' \
+                f'{PREFIX}**role** <@user> <role> - Change a user role, @user means to tag/mention the user. role has to be a number between 0 and 4\n' \
+                f'*-- Commands which require role > 2 --*\n' \
+                f'{PREFIX}**timeradd** <name> <type> <respawm mins> <window mins> - Add a timer. Name has to be one single word, respawm and window has to be in minutes. Each clan has a maximum of {MAX_NUM_TIMERS} timers.\n' \
+                f'{PREFIX}**timeredit** <name> <type> <respawm mins> <window mins> - Edit a timer. Name has to be one single word, respawm and window has to be in minutes.\n' \
+                f'{PREFIX}**timerdel** <name> - Delete a timer'
         elif successor is not None:
             msg_to_send = successor.send(msg)
 
