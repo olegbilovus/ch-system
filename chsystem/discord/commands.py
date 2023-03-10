@@ -240,7 +240,7 @@ def init_timers(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'init':
-            if msg.user_role < 4:
+            if msg.user_role < 5:
                 msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
             else:
                 clan_id = msg.user_clan_id
@@ -321,6 +321,41 @@ def sublist(successor=None):
                 msg_to_send[
                     'msg'] = f'{msg.author_mention} You are subscribed to the following bosses:\n{bosses_str}'
 
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
+def role(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    usage = '{} Usage: {}role <@user> <role>'
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'role':
+            if msg.user_role < 4:
+                msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
+            else:
+                if len(msg.args) != 2:
+                    msg_to_send['msg'] = usage.format(msg.author_mention, PREFIX)
+                else:
+                    other_user_discord_id = msg.args[0][2:-1]
+                    try:
+                        other_user_discord_id = int(other_user_discord_id)
+                        role_change = int(msg.args[1])
+                        if not 0 <= role_change <= 4:
+                            msg_to_send['msg'] = f'{msg.author_mention} Role has to be a number between 0 and 4'
+                        else:
+
+                            other_user_data = clan_discord_db.get_by_discord_id(other_user_discord_id)
+                            if other_user_data is None:
+                                msg_to_send[
+                                    'msg'] = f'{msg.author_mention} the user <@{other_user_discord_id}> has not an account. To get an account he needs to use the bot once.'
+                            else:
+                                user_profile_db.update_role(other_user_data[3], role_change)
+                                msg_to_send[
+                                    'msg'] = f'{msg.author_mention} role updated from {other_user_data[2]} to {role_change}'
+                    except ValueError:
+                        msg_to_send['msg'] = usage.format(msg.author_mention, PREFIX)
         elif successor is not None:
             msg_to_send = successor.send(msg)
 
