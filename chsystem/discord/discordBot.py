@@ -114,7 +114,7 @@ class DiscordBot(discord.Client):
         discord_id = discord_id_db.get_by_discord_id(member.id)
         if discord_id is not None:
             user_profile = user_profile_db.delete(discord_id[0])
-            logger.warning(f'Deleted user_id: {user_profile[0]}, discord_id:{user_profile[1]}')
+            logger.warning(f'Deleted user_id: {user_profile[0]}, discord_id:{member.id}, name: {member.name}')
         else:
             logger.warning(f'Member {member.name} left but not in database')
 

@@ -198,7 +198,7 @@ class ClanDiscord(Database):
     def get_by_discord_id(self, discord_id):
         cur = self.conn.cursor()
         cur.execute(
-            'SELECT clandiscord.discordguildid, userprofile.clanid, userprofile.role, userprofile.id FROM discordid, userprofile, clandiscord WHERE discordid = %s AND discordid.userprofileid = userprofile.id AND clandiscord.clanid = userprofile.clanid',
+            'SELECT clandiscord.discordguildid, userprofile.clanid, userprofile.role, userprofile.id, userprofile.serverid FROM discordid, userprofile, clandiscord WHERE discordid = %s AND discordid.userprofileid = userprofile.id AND clandiscord.clanid = userprofile.clanid',
             (discord_id,))
         return cur.fetchone()
 
