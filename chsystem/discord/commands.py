@@ -79,8 +79,8 @@ def bosslist(successor=None):
 def soon_tabulate(data, tablefmt=None):
     msg = ''
     for coll in data:
-        for _type, timer in coll.items():
-            msg += f'```\n{tabulate(timer, headers=[_type, "Time"], tablefmt=tablefmt)}\n```'
+        for _type, b_timer in coll.items():
+            msg += f'```\n{tabulate(b_timer, headers=[_type, "Time"], tablefmt=tablefmt)}\n```'
 
     return msg
 
@@ -104,11 +104,11 @@ def soon(successor=None):
                 data = []
                 prev_type = ''
                 flag_tabulate = False if len(msg.args) == 0 else msg.args[0] == '-t'
-                for boss_name, _type, timer, window in timers_data:
+                for boss_name, _type, b_timer, window in timers_data:
                     if _type != prev_type:
                         data.append({_type: []})
                         prev_type = _type
-                    minutes_timer = time_remaining(timer)
+                    minutes_timer = time_remaining(b_timer)
                     # to refactor the check for tabulate
                     if minutes_timer <= 10 and not flag_tabulate:
                         boss_name = f'__**{boss_name}**__'
@@ -127,11 +127,11 @@ def soon(successor=None):
                     for coll in data:
                         prev_type = ''
                         for _type, timers in coll.items():
-                            for timer in timers:
+                            for b_timer in timers:
                                 if _type != prev_type:
                                     tmp += f'__**`{_type}`**__\n'
                                     prev_type = _type
-                                tmp += f'{timer[0]}: {timer[1]}\n'
+                                tmp += f'{b_timer[0]}: {b_timer[1]}\n'
 
                     msg_to_send['msg'] = tmp
 
@@ -219,9 +219,9 @@ def copy_copyforce(successor=None):
                         if msg.cmd == 'copy' and timer_id[3] >= current_time - 1:
                             continue
 
-                        timer = current_time + dhm_to_minutes(array_values)
+                        b_timer = current_time + dhm_to_minutes(array_values)
                         data_send.append(timer_id[0])
-                        data_send.append(timer)
+                        data_send.append(b_timer)
                         bosses_copied.append(boss)
                     except ValueError:
                         pass
