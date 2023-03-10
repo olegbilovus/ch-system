@@ -277,13 +277,25 @@ class Timer(Database):
             'SELECT * FROM timer WHERE clanid = %s AND id = %s', (clan_id, timer_id))
         return cur.fetchone()
 
-    def insert(self, boss_name, boss_type, respawn_time_minutes, clan_id):
+    def get_num_timers_by_clan_id(self, clan_id):
+        cur = self.conn.cursor()
+        cur.execute('SELECT count(*) as NUM FROM timer where clanid = %s', (clan_id,))
+        return cur.fetchone()
+
+    def insert(self, boss_name, boss_type, respawn_time_minutes, windowminutes, clan_id):
         cur = self.conn.cursor()
         cur.execute(
-            'INSERT INTO timer (bossName, type, respawntimeminutes, clanid) VALUES (%s, %s, %s, %s) RETURNING *',
-            (boss_name, boss_type, respawn_time_minutes, clan_id))
+            'INSERT INTO timer (bossName, type, respawntimeminutes, windowminutes, clanid) VALUES (%s, %s, %s, %s, %s) RETURNING *',
+            (boss_name, boss_type, respawn_time_minutes, windowminutes, clan_id))
         self.conn.commit()
         return cur.fetchone()
+
+    def update_full(self, boss_name, boss_type, respawn_time_minutes, windowminutes, clan_id):
+        cur = self.conn.cursor()
+        cur.execute(
+            'UPDATE timer SET type = %s, respawntimeminutes = %s, windowminutes = %s WHERE clanid = %s AND bossname = %s',
+            (boss_type, respawn_time_minutes, windowminutes, clan_id, boss_name))
+        self.conn.commit()
 
     def update(self, timer_id, timer):
         cur = self.conn.cursor()
