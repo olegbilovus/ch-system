@@ -133,6 +133,11 @@ class UserProfile(Database):
             (user_name, server_id, clan_id, role, hash_pw, change_pw, user_id))
         self.conn.commit()
 
+    def update_role(self, user_id, role):
+        cur = self.conn.cursor()
+        cur.execute('UPDATE userprofile SET role = %s WHERE id = %s', (role, user_id))
+        self.conn.commit()
+
     def delete(self, user_id):
         cur = self.conn.cursor()
         cur.execute(
