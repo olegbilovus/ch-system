@@ -61,7 +61,7 @@ def bosslist(successor=None):
             clan_id = msg.user_clan_id
             boss_names = timer_db.get_names_types_by_clan_id(clan_id)
             if len(boss_names) == 0:
-                msg_to_send['msg'] = 'Your clan has no timers'
+                msg_to_send['msg'] = f'{msg.author_mention} Your clan has no timers'
             else:
                 tmp = ''
                 prev_type = ''
@@ -70,7 +70,7 @@ def bosslist(successor=None):
                         tmp += f'__**`{_type}`**__\n'
                         prev_type = _type
                     tmp += f'{boss_name}\n'
-                msg_to_send['msg'] = tmp
+                msg_to_send['msg'] = f'{tmp} {msg.author_mention}'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
@@ -97,7 +97,7 @@ def soon(successor=None):
             timers_data = timer_db.get_by_clan_id_order_by_type(clan_id, preferred_timer_types)
 
             if len(timers_data) == 0:
-                msg_to_send['msg'] = 'Your clan has no timers set'
+                msg_to_send['msg'] = f'{msg.author_mention} Your clan has no timers set'
                 if preferred_timer_types is not None:
                     msg_to_send['msg'] += ' for ' + ', '.join(preferred_timer_types) + ' bosses'
             else:
@@ -134,6 +134,7 @@ def soon(successor=None):
                                 tmp += f'{b_timer[0]}: {b_timer[1]}\n'
 
                     msg_to_send['msg'] = tmp
+            msg_to_send['msg'] = f'{msg_to_send["msg"]}\n{msg.author_mention}'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
@@ -160,7 +161,7 @@ def set_timer(successor=None):
                         else:
                             timer_set = current_time_in_minutes + dhm_to_minutes(msg.args[1:])
                         timer_db.update(timer_data[0], timer_set)
-                        msg_to_send['msg'] = f'{boss} set to {" ".join(msg.args[1:])}'
+                        msg_to_send['msg'] = f'{msg.author_mention} {boss} set to {" ".join(msg.args[1:])}'
                     except ValueError:
                         msg_to_send['msg'] = f'{msg.author_mention} Invalid time format'
 
@@ -181,7 +182,7 @@ def reset_timer(successor=None):
                 current_time_in_minutes = get_current_time_minutes()
                 timer_set = current_time_in_minutes + timer_data[1] - TIMER_OFFSET
                 timer_db.update(timer_data[0], timer_set)
-                msg_to_send['msg'] = f'{msg.cmd} has been reset'
+                msg_to_send['msg'] = f'{msg.author_mention} {msg.cmd} has been reset'
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
@@ -338,7 +339,7 @@ def role(successor=None):
                 msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
             else:
                 if len(msg.args) != 2:
-                    msg_to_send['msg'] = usage.format(msg.author_mention, PREFIX)
+                    msg_to_send['msg'] = f'{msg.author_mention} {usage.format(msg.author_mention, PREFIX)}'
                 else:
                     other_user_discord_id = msg.args[0][2:-1]
                     try:
@@ -357,7 +358,7 @@ def role(successor=None):
                                 msg_to_send[
                                     'msg'] = f'{msg.author_mention} role updated from {other_user_data[2]} to {role_change}'
                     except ValueError:
-                        msg_to_send['msg'] = usage.format(msg.author_mention, PREFIX)
+                        msg_to_send['msg'] = f'{msg.author_mention} {usage.format(msg.author_mention, PREFIX)}'
         elif successor is not None:
             msg_to_send = successor.send(msg)
 
