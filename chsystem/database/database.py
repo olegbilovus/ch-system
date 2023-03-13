@@ -253,10 +253,10 @@ class Timer(Database):
             cur.execute(sql_query, (clan_id, timer, *tuple(preferred_types)))
         return cur.fetchall()
 
-    def get_names_types_by_clan_id(self, clan_id):
+    def get_list_info_by_clan_id(self, clan_id):
         cur = self.conn.cursor()
         cur.execute(
-            "SELECT bossname, type FROM timer WHERE clanid = %s ORDER BY type, bossname", (clan_id,))
+            "SELECT bossname, type, respawntimeminutes, windowminutes FROM timer WHERE clanid = %s ORDER BY type, bossname", (clan_id,))
         return cur.fetchall()
 
     def get_by_guild_id_and_boss_name(self, guild_id, boss_name, timer=False):

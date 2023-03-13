@@ -59,17 +59,17 @@ def bosslist(successor=None):
         msg = yield msg_to_send
         if msg.cmd == 'bosslist':
             clan_id = msg.user_clan_id
-            boss_names = timer_db.get_names_types_by_clan_id(clan_id)
+            boss_names = timer_db.get_list_info_by_clan_id(clan_id)
             if len(boss_names) == 0:
                 msg_to_send['msg'] = f'{msg.author_mention} Your clan has no timers'
             else:
                 tmp = ''
                 prev_type = ''
-                for boss_name, _type in boss_names:
+                for boss_name, _type, respawn, window in boss_names:
                     if _type != prev_type:
                         tmp += f'__**`{_type}`**__\n'
                         prev_type = _type
-                    tmp += f'{boss_name}\n'
+                    tmp += f'{boss_name}, r: {minutes_to_dhm(respawn)}, w: {minutes_to_dhm(window)}\n'
                 msg_to_send['msg'] = f'{tmp} {msg.author_mention}'
 
         elif successor is not None:
