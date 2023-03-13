@@ -97,7 +97,7 @@ def soon(successor=None):
             timers_data = timer_db.get_by_clan_id_order_by_type(clan_id, preferred_timer_types)
 
             if len(timers_data) == 0:
-                msg_to_send['msg'] = f'{msg.author_mention} Your clan has no timers set'
+                msg_to_send['msg'] = 'Your clan has no timers set'
                 if preferred_timer_types is not None:
                     msg_to_send['msg'] += ' for ' + ', '.join(preferred_timer_types) + ' bosses'
             else:
@@ -339,7 +339,7 @@ def role(successor=None):
                 msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
             else:
                 if len(msg.args) != 2:
-                    msg_to_send['msg'] = f'{msg.author_mention} {usage.format(msg.author_mention, PREFIX)}'
+                    msg_to_send['msg'] = usage.format(msg.author_mention, PREFIX)
                 else:
                     other_user_discord_id = msg.args[0][2:-1]
                     try:
@@ -358,7 +358,7 @@ def role(successor=None):
                                 msg_to_send[
                                     'msg'] = f'{msg.author_mention} role updated from {other_user_data[2]} to {role_change}'
                     except ValueError:
-                        msg_to_send['msg'] = f'{msg.author_mention} {usage.format(msg.author_mention, PREFIX)}'
+                        msg_to_send['msg'] = usage.format(msg.author_mention, PREFIX)
         elif successor is not None:
             msg_to_send = successor.send(msg)
 
