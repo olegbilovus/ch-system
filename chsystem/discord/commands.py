@@ -265,21 +265,35 @@ def sub(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'sub':
-            if len(msg.args) == 0:
+            if len(msg.args) < 1:
                 msg_to_send['msg'] = f'{msg.author_mention} Usage: {PREFIX}sub <boss>'
             else:
-                boss = msg.args[0]
-                timer_data = timer_db.get_by_guild_id_and_boss_name(
-                    msg.guild_id, boss)
-                if timer_data is None:
-                    msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
-                else:
-                    try:
-                        subscriber_db.insert(msg.user_profile_id, timer_data[0])
-                        msg_to_send['msg'] = f'{msg.author_mention} You are now subscribed to {boss}'
-                    except psycopg2.IntegrityError:
-                        subscriber_db.conn.rollback()
-                        msg_to_send['msg'] = f'{msg.author_mention} You are already subscribed to {boss}'
+                valid_bosses = []
+                not_found_bosses = []
+                already_sub_bosses = []
+                for boss in msg.args:
+                    timer_data = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss)
+                    if timer_data is None:
+                        not_found_bosses.append(boss)
+                    else:
+                        try:
+                            subscriber_db.insert(msg.user_profile_id, timer_data[0])
+                            valid_bosses.append(boss)
+                        except psycopg2.IntegrityError:
+                            subscriber_db.conn.rollback()
+                            already_sub_bosses.append(boss)
+                msg_str = ''
+                if len(valid_bosses) > 0:
+                    valid_bosses = ', '.join(valid_bosses)
+                    msg_str += f'{msg.author_mention} You are now subscribed to: {valid_bosses}\n'
+                if len(not_found_bosses) > 0:
+                    not_found_bosses = ', '.join(not_found_bosses)
+                    msg_str += f'{msg.author_mention} The following bosses are not valid: {not_found_bosses}\n'
+                if len(already_sub_bosses) > 0:
+                    already_sub_bosses = ', '.join(already_sub_bosses)
+                    msg_str += f'{msg.author_mention} You are already subscribed to: {already_sub_bosses}\n'
+
+                msg_to_send['msg'] = msg_str
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
@@ -294,17 +308,31 @@ def unsub(successor=None):
             if len(msg.args) == 0:
                 msg_to_send['msg'] = f'{msg.author_mention} Usage: {PREFIX}unsub <boss>'
             else:
-                boss = msg.args[0]
-                timer_data = timer_db.get_by_guild_id_and_boss_name(
-                    msg.guild_id, boss)
-                if timer_data is None:
-                    msg_to_send['msg'] = f'{msg.author_mention} {boss} is not a valid boss'
-                else:
-                    res = subscriber_db.delete(msg.user_profile_id, timer_data[0])
-                    if res is None:
-                        msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to {boss}'
+                valid_bosses = []
+                not_found_bosses = []
+                not_sub_bosses = []
+                for boss in msg.args:
+                    timer_data = timer_db.get_by_guild_id_and_boss_name(msg.guild_id, boss)
+                    if timer_data is None:
+                        not_found_bosses.append(boss)
                     else:
-                        msg_to_send['msg'] = f'{msg.author_mention} You are no longer subscribed to {boss}'
+                        res = subscriber_db.delete(msg.user_profile_id, timer_data[0])
+                        if res is not None:
+                            valid_bosses.append(boss)
+                        else:
+                            not_sub_bosses.append(boss)
+                msg_str = ''
+                if len(valid_bosses) > 0:
+                    valid_bosses = ', '.join(valid_bosses)
+                    msg_str += f'{msg.author_mention} You are no longer subscribed to: {valid_bosses}\n'
+                if len(not_found_bosses) > 0:
+                    not_found_bosses = ', '.join(not_found_bosses)
+                    msg_str += f'{msg.author_mention} The following bosses are not valid: {not_found_bosses}\n'
+                if len(not_sub_bosses) > 0:
+                    not_sub_bosses = ', '.join(not_sub_bosses)
+                    msg_str += f'{msg.author_mention} You are not subscribed to: {not_sub_bosses}\n'
+
+                msg_to_send['msg'] = msg_str
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
