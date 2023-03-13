@@ -392,7 +392,7 @@ class Subscriber(Database):
     def get_bosses_subscribed_by_user_id(self, user_id):
         cur = self.conn.cursor()
         cur.execute(
-            'SELECT bossname FROM subscriber, timer WHERE subscriber.userprofileid = %s AND subscriber.timerid = timer.id',
+            'SELECT bossname, type FROM subscriber, timer WHERE subscriber.userprofileid = %s AND subscriber.timerid = timer.id ORDER BY type, bossname',
             (user_id,))
         return cur.fetchall()
 

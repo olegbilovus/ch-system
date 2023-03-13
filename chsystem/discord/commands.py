@@ -316,13 +316,18 @@ def sublist(successor=None):
     while True:
         msg = yield msg_to_send
         if msg.cmd == 'sublist':
-            subscribers = subscriber_db.get_bosses_subscribed_by_user_id(msg.user_profile_id)
-            if len(subscribers) == 0:
+            boss_names = subscriber_db.get_bosses_subscribed_by_user_id(msg.user_profile_id)
+            if len(boss_names) == 0:
                 msg_to_send['msg'] = f'{msg.author_mention} You are not subscribed to any bosses'
             else:
-                bosses_str = '\n'.join(boss for boss, in subscribers)
-                msg_to_send[
-                    'msg'] = f'{msg.author_mention} You are subscribed to the following bosses:\n{bosses_str}'
+                tmp = f'{msg.author_mention} You are subscribed to the following bosses:\n'
+                prev_type = ''
+                for boss_name, _type in boss_names:
+                    if _type != prev_type:
+                        tmp += f'__**`{_type}`**__\n'
+                        prev_type = _type
+                    tmp += f'{boss_name}\n'
+                msg_to_send['msg'] = tmp
 
         elif successor is not None:
             msg_to_send = successor.send(msg)
