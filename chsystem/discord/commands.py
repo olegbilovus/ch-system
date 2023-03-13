@@ -285,13 +285,13 @@ def sub(successor=None):
                 msg_str = ''
                 if len(valid_bosses) > 0:
                     valid_bosses = ', '.join(valid_bosses)
-                    msg_str += f'{msg.author_mention} You are no longer subscribed to: {valid_bosses}\n'
+                    msg_str += f'{msg.author_mention} You are now subscribed to: {valid_bosses}\n'
                 if len(not_found_bosses) > 0:
                     not_found_bosses = ', '.join(not_found_bosses)
                     msg_str += f'{msg.author_mention} The following bosses are not valid: {not_found_bosses}\n'
                 if len(already_sub_bosses) > 0:
                     already_sub_bosses = ', '.join(already_sub_bosses)
-                    msg_str += f'{msg.author_mention} You are not subscribed to: {already_sub_bosses}\n'
+                    msg_str += f'{msg.author_mention} You are already subscribed to: {already_sub_bosses}\n'
 
                 msg_to_send['msg'] = msg_str
 
@@ -324,13 +324,13 @@ def unsub(successor=None):
                 msg_str = ''
                 if len(valid_bosses) > 0:
                     valid_bosses = ', '.join(valid_bosses)
-                    msg_str += f'{msg.author_mention} You are now subscribed to: {valid_bosses}\n'
+                    msg_str += f'{msg.author_mention} You are no longer subscribed to: {valid_bosses}\n'
                 if len(not_found_bosses) > 0:
                     not_found_bosses = ', '.join(not_found_bosses)
                     msg_str += f'{msg.author_mention} The following bosses are not valid: {not_found_bosses}\n'
                 if len(not_sub_bosses) > 0:
                     not_sub_bosses = ', '.join(not_sub_bosses)
-                    msg_str += f'{msg.author_mention} You are already subscribed to: {not_sub_bosses}\n'
+                    msg_str += f'{msg.author_mention} You are not subscribed to: {not_sub_bosses}\n'
 
                 msg_to_send['msg'] = msg_str
 
