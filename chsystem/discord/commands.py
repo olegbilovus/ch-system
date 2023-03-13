@@ -462,10 +462,10 @@ def help_commands(successor=None):
                 f'{PREFIX}**<boss>** - Reset a boss.\n' \
                 f'{PREFIX}**set <boss> <days>d <hours>h <minutes>m [ago]** - Set a boss to a specific timer. Use **ago** at the end to set it to a relative time.\n' \
                 f'\te.g.: **{PREFIX}set 215 1h 13m**\n' \
-                f'{PREFIX}**sub <boss>** - Subscribe to a boss to get notified when that boss is due.\n' \
-                f'{PREFIX}**unsub <boss>** - Unsubscribe from a boss.\n' \
+                f'{PREFIX}**sub <boss> <boss> ...** - Subscribe to bosses to get notified when they are due.\n' \
+                f'{PREFIX}**unsub <boss> <boss> ...** - Unsubscribe from bosses.\n' \
                 f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
-                f'{PREFIX}**bosslist** - Get the names of the bosses available in your clan.\n' \
+                f'{PREFIX}**bosslist** - Get the names, respawn and window of the bosses available in your clan.\n' \
                 f'{PREFIX}**help** - Show this message.\n' \
                 f'*-- Commands which require role > 3 --*\n' \
                 f'{PREFIX}**role** <@user> <role> - Change a user role, @user means to tag/mention the user. role has to be a number between 0 and 4\n' \
