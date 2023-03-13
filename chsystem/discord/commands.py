@@ -65,11 +65,11 @@ def bosslist(successor=None):
             else:
                 tmp = ''
                 prev_type = ''
-                for boss_name, _type, respawn, window in boss_names:
+                for boss_name, _type in boss_names:
                     if _type != prev_type:
                         tmp += f'__**`{_type}`**__\n'
                         prev_type = _type
-                    tmp += f'{boss_name}, r: {minutes_to_dhm(respawn)}, w: {minutes_to_dhm(window)}\n'
+                    tmp += f'{boss_name}\n'
                 msg_to_send['msg'] = f'{tmp} {msg.author_mention}'
 
         elif successor is not None:
