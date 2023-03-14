@@ -3,14 +3,13 @@ import os
 import tempfile
 
 import logs
-import requests
 from waitress import serve
 from paste.translogger import TransLogger
 from flask import Flask
 
 import api
 
-logger = logs.get_logger('Web', file=True)
+logger = logs.get_logger('Web', token=os.getenv('LOGTAIL_WEB'), file=True)
 logger.info('Starting Web')
 
 cert_f = tempfile.NamedTemporaryFile(delete=False)
