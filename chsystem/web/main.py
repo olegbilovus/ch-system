@@ -1,22 +1,34 @@
+import setup
 import os
-import api
 import secrets
-import requests
-import utils
-import routine
+import tempfile
+from itertools import islice
 
-from flask import Flask, render_template, session, request, redirect, Response
+import logs
+import requests
 from waitress import serve
 from paste.translogger import TransLogger
-from itertools import islice
-from replit import db
+from flask import Flask, render_template, session, request, redirect, Response
 
-routine.delete_logs()
-WEBHOOK = os.getenv('WEBHOOK')
+import api
 
-app = Flask('', template_folder='chsystem/web/templates',
+logger = logs.get_logger('Web', file=True)
+logger.info('Starting Web')
+
+cert_f = tempfile.NamedTemporaryFile(delete=False)
+cert_f.write(bytes(os.getenv('CERT'), 'utf-8'))
+cert_f.close()
+
+key_f = tempfile.NamedTemporaryFile(delete=False)
+key_f.write(bytes(os.getenv('CERT_KEY'), 'utf-8'))
+key_f.close()
+
+db = api.Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
+             cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
+
+app = Flask(__name__, template_folder='chsystem/web/templates',
             static_folder='chsystem/web/static')
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 
 
 @app.route('/')
@@ -26,9 +38,9 @@ def home():
     return render_template('index.html')
 
 
-@app.route('/ping')
+@app.route('/health')
 def ping():
-    return 'pong'
+    return 'OK' if db.check_valid_conn() else 'BAD'
 
 
 @app.post('/login')
@@ -160,9 +172,9 @@ def change_role():
         user = api.get_user(user_id)
         print(user, req)
         if (
-            user
-            and user['role'] <= 4
-            and api.change_role(user_id, role)
+                user
+                and user['role'] <= 4
+                and api.change_role(user_id, role)
         ):
             return response
         response.status_code = 404
@@ -252,16 +264,13 @@ def key_check():
             requests.post(
                 WEBHOOK, data={'username': 'check_key', 'content': msg})
     return 'checked'
+    w
 
 
-def run():
+if __name__ == '__main__':
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
     serve(TransLogger(app, format=format_logger),
           host='0.0.0.0',
           port=8080,
           url_scheme='https',
           ident=None)
-
-
-utils.logger('WEB: started')
-run()

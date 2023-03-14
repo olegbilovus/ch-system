@@ -7,10 +7,6 @@ from dotenv import load_dotenv
 
 def setup():
     load_dotenv()
-    if os.getenv('DB_URI') is not None:
-        print('Loaded successfully env variables')
-    else:
-        sys.exit('Failed to load env variables')
 
     modules = [Path('../utility'), Path('../database')]
 
