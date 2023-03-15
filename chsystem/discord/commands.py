@@ -492,7 +492,7 @@ def security_check(successor=None):
                 clan_id = clan_discord_db.get_by_discord_guild_id(msg.guild_id)[0]
                 user_name = msg.author_tag.split('#')[0]
                 server_id = clan_db.get_server_id_by_clan_id(clan_id)
-                user_profile_id = user_profile_db.insert(user_name, server_id, clan_id, 0, None)[0]
+                user_profile_id = user_profile_db.insert(user_name, server_id, clan_id, 0)[0]
                 msg.logger.info(f'Created user profile for {msg.author_tag}',
                                 extra={'user_profile_id': user_profile_id})
 

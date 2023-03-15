@@ -118,11 +118,11 @@ class UserProfile(Database):
             'SELECT * FROM userprofile WHERE name = %s AND clanid = %s', (user_name, clan_id))
         return cur.fetchone()
 
-    def insert(self, user_name, server_id, clan_id, role, hash_pw):
+    def insert(self, user_name, server_id, clan_id, role):
         cur = self.conn.cursor()
         cur.execute(
-            'INSERT INTO userprofile (name, serverid, clanid, role, hash_pw, change_pw) VALUES (%s, %s, %s, %s, %s, True) RETURNING *',
-            (user_name, server_id, clan_id, role, hash_pw))
+            'INSERT INTO userprofile (name, serverid, clanid, role) VALUES (%s, %s, %s, %s) RETURNING *',
+            (user_name, server_id, clan_id, role))
         self.conn.commit()
         return cur.fetchone()
 
