@@ -1,10 +1,34 @@
+import bcrypt
 import requests
 
 ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
 ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
 
 
+def check_str_chars(obj):
+    objs = str(obj).split(' ')
+    for o in objs:
+        if len(o) > 0 and not o.isalnum():
+            return True
+
+    return False
+
+
+def postgrest_sanitize(fun):
+    def wrapper_fun(*args, **kwargs):
+        for arg in args[1:]:
+            if check_str_chars(arg):
+                return
+        for k, v in kwargs.items():
+            if check_str_chars(k) or check_str_chars(v):
+                return
+        return fun(*args, **kwargs)
+
+    return wrapper_fun
+
+
 class Api:
+
     def __init__(self, cert_f, key_f, cf_client_id, cf_client_secret, url):
         self.session = requests.Session()
         self.session.cert = (cert_f, key_f)
@@ -14,3 +38,24 @@ class Api:
     def check_valid_conn(self):
         res = self.session.get(self.url)
         return res.status_code < 400
+
+    @postgrest_sanitize
+    def login(self, username, password, serverid, clan):
+        user = self.session.get(f'{self.url}/webprofile?username=eq.{username}').json()[0]
+        if user and bcrypt.checkpw(bytes(password, 'utf-8'), bytes(user['hash_pw'], 'utf-8')):
+            user_data = self.session.get(f'{self.url}/userprofile?id=eq.{user["userprofileid"]}').json()[0]
+            if user_data['serverid'] == serverid:
+                clan_data = self.session.get(f'{self.url}/clan?id=eq.{user_data["clanid"]}').json()[0]
+                if clan_data['name'] == clan:
+                    data = {
+                        'userprofileid': user_data['id'],
+                        'name': user_data['name'],
+                        'role': user_data['role'],
+                        'clanid': user_data['clanid'],
+                        'serverid': user_data['serverid'],
+                        'change_pw': user['change_pw']
+                    }
+                    return data
+
+    def get_servers_names(self):
+        return self.session.get(f'{self.url}/server?select=id,name&order=name').json()

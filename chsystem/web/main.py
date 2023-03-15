@@ -3,9 +3,9 @@ import os
 import tempfile
 
 import logs
-from waitress import serve
+from flask import Flask, session, redirect, render_template, request
 from paste.translogger import TransLogger
-from flask import Flask
+from waitress import serve
 
 import api
 
@@ -28,9 +28,41 @@ app = Flask(__name__, template_folder='chsystem/web/templates',
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 
 
-@app.route('/health')
+@app.get('/health')
 def ping():
     return 'OK' if db.check_valid_conn() else 'BAD'
+
+
+@app.get('/')
+def home():
+    if 'username' in session:
+        return redirect('dashboard')
+    return render_template('index.html', servers=db.get_servers_names())
+
+
+@app.post('/login')
+def login():
+    req = request.form
+    user = db.login(req['username'].lower(), req['password'], int(req['server']), req['clan'])
+    if user:
+        logger.info(f'Login: {user}')
+        session['username'] = req['username']
+        session['userprofileid'] = user['userprofileid']
+        session['name'] = user['name']
+        session['role'] = user['role']
+        session['clanid'] = user['clanid']
+        session['serverid'] = user['serverid']
+        session['change_pw'] = user['change_pw']
+        return redirect('dashboard')
+
+    cache = {
+        'username': req['username'],
+        'server': int(req['server']),
+        'clan': req['clan']
+    }
+
+    return render_template('index.html', error='We could not find you', servers=db.get_servers_names(),
+                           cache=cache), 401
 
 
 if __name__ == '__main__':

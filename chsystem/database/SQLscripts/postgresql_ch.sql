@@ -83,7 +83,7 @@ DROP TABLE IF EXISTS webProfile CASCADE;
 CREATE TABLE webProfile
 (
     userProfileID BIGSERIAL PRIMARY KEY,
-    username      VARCHAR(50),
+    username      VARCHAR(50) UNIQUE,
     hash_pw       VARCHAR(150),
     change_pw     BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (userProfileID)
