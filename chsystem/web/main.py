@@ -23,8 +23,7 @@ key_f.close()
 db = api.Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
              cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
 
-app = Flask(__name__, template_folder='chsystem/web/templates',
-            static_folder='chsystem/web/static')
+app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 
 
