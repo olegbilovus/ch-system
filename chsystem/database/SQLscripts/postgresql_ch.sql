@@ -19,13 +19,11 @@ CREATE TABLE clan
 DROP TABLE IF EXISTS userProfile CASCADE;
 CREATE TABLE userProfile
 (
-    ID        BIGSERIAL PRIMARY KEY,
-    name      VARCHAR(30),
-    serverID  SMALLSERIAL,
-    clanID    SERIAL,
-    role      SMALLINT,
-    hash_pw   VARCHAR(150),
-    change_pw BOOLEAN,
+    ID       BIGSERIAL PRIMARY KEY,
+    name     VARCHAR(30),
+    serverID SMALLSERIAL,
+    clanID   SERIAL,
+    role     SMALLINT,
     FOREIGN KEY (clanID)
         REFERENCES clan (ID)
         ON UPDATE CASCADE ON DELETE CASCADE,
@@ -76,6 +74,18 @@ CREATE TABLE discordID
     userProfileID BIGSERIAL PRIMARY KEY,
     discordID     BIGINT UNIQUE,
     discordTag    VARCHAR(50),
+    FOREIGN KEY (userProfileID)
+        REFERENCES userProfile (ID)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS webProfile CASCADE;
+CREATE TABLE webProfile
+(
+    userProfileID BIGSERIAL PRIMARY KEY,
+    username      VARCHAR(50),
+    hash_pw       VARCHAR(150),
+    change_pw     BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
