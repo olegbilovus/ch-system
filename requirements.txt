@@ -25,5 +25,5 @@ tabulate>=0.8.10
 typing_extensions>=4.3.0
 urllib3>=1.26.10
 waitress>=2.1.2
-Werkzeug>=2.1.2
+Werkzeug>=2.2.3
 yarl>=1.7.2
