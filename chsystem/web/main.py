@@ -1,13 +1,21 @@
-import setup
+from setup import setup
+
+setup()
 import os
 import tempfile
+from datetime import datetime, timedelta
+from secrets import token_hex
 
 import logs
-from flask import Flask, session, redirect, render_template, request
+from flask import Flask, redirect, render_template, request, make_response, jsonify
 from paste.translogger import TransLogger
 from waitress import serve
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import Session
+from sqlalchemy.orm.exc import NoResultFound
 
-import api
+from api import Api
+from models import Base, User
 
 logger = logs.get_logger('Web', token=os.getenv('LOGTAIL_WEB'), file=True)
 logger.info('Starting Web')
@@ -20,39 +28,84 @@ key_f = tempfile.NamedTemporaryFile(delete=False)
 key_f.write(bytes(os.getenv('CERT_KEY'), 'utf-8'))
 key_f.close()
 
-db = api.Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
-             cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
+api = Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
+          cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
+
+engine = create_engine("sqlite:///sessions.db", echo=True, isolation_level='AUTOCOMMIT')
+Base.metadata.create_all(engine)
+session = Session(engine)
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
-app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
+SESSION_NAME = "SessionID"
+
+ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
+ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
+
+
+def get_user(sessionid):
+    stmt = select(User).where(User.sessionid == sessionid)
+    try:
+        return session.scalars(stmt).one()
+    except NoResultFound:
+        return None
+
+
+def check_logged():
+    sessionid = request.cookies.get(SESSION_NAME)
+    if sessionid is not None:
+        return get_user(sessionid)
+    return None
+
+
+def login_req(fun):
+    def wrapper(*args, **kwargs):
+        user = check_logged()
+        if user is not None:
+            user.last_use = datetime.utcnow()
+            return fun(user, *args, **kwargs)
+
+        return redirect('/')
+
+    wrapper.__name__ = fun.__name__
+    return wrapper
 
 
 @app.get('/health')
 def ping():
-    return 'OK' if db.check_valid_conn() else 'BAD'
+    return 'OK' if api.check_valid_conn() else 'BAD'
 
 
 @app.get('/')
 def home():
-    if 'username' in session:
+    if check_logged():
         return redirect('dashboard')
-    return render_template('index.html', servers=db.get_servers_names())
+    return render_template('index.html', servers=api.get_servers_names())
 
 
 @app.post('/login')
 def login():
     req = request.form
-    user = db.login(req['username'].lower(), req['password'], int(req['server']), req['clan'])
+    user = api.login(req['username'].lower(), req['password'], int(req['server']), req['clan'])
     if user:
-        logger.info(f'Login: {user}')
-        session['username'] = req['username']
-        session['userprofileid'] = user['userprofileid']
-        session['name'] = user['name']
-        session['role'] = user['role']
-        session['clanid'] = user['clanid']
-        session['serverid'] = user['serverid']
-        session['change_pw'] = user['change_pw']
-        return redirect('dashboard')
+        sessionid = token_hex(64)
+
+        user = User(
+            sessionid=sessionid,
+            username=req['username'],
+            userprofileid=user['userprofileid'],
+            name=user['name'],
+            role=user['role'],
+            clanid=user['clanid'],
+            serverid=user['serverid'],
+            change_pw=user['change_pw']
+        )
+        session.add(user)
+        logger.info(f'LOGIN:{user}')
+
+        resp = make_response(redirect('dashboard'))
+        resp.set_cookie(SESSION_NAME, sessionid, httponly=True, secure=True, samesite='Lax',
+                        max_age=timedelta(days=3))
+        return resp
 
     cache = {
         'username': req['username'],
@@ -60,8 +113,27 @@ def login():
         'clan': req['clan']
     }
 
-    return render_template('index.html', error='We could not find you', servers=db.get_servers_names(),
+    return render_template('index.html', error='We could not find you', servers=api.get_servers_names(),
                            cache=cache), 401
+
+
+@app.get('/logout')
+@login_req
+def logout(user: User):
+    session.delete(user)
+    resp = make_response(redirect('/'))
+    resp.delete_cookie(SESSION_NAME)
+    return resp
+
+
+@app.get('/sessions/get')
+@login_req
+def get_sessions(user: User):
+    stmt = select(User).where(User.username == user.username)
+    user_sessions = session.scalars(stmt).all()
+    data = [us.get_external_data() for us in user_sessions]
+
+    return jsonify(data)
 
 
 if __name__ == '__main__':

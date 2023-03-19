@@ -1,9 +1,6 @@
 import bcrypt
 import requests
 
-ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
-ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
-
 
 def check_str_chars(obj):
     objs = str(obj).split(' ')
