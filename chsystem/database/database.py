@@ -247,8 +247,8 @@ class Timer(Database):
                     "SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s ORDER BY type, bossname",
                     (clan_id, timer))
             else:
-                sql_query = 'SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type IN ({}) ORDER BY type, bossname'.format(
-                    ', '.join(['%s'] * len(preferred_types)))
+                placeholders = '%s,' * len(preferred_types)
+                sql_query = f'SELECT bossname, type, timer, windowminutes FROM timer WHERE clanid = %s AND timer + windowminutes >= %s AND type IN ({placeholders[:-1]}) ORDER BY type, bossname'
                 cur.execute(sql_query, (clan_id, timer, *tuple(preferred_types)))
             return cur.fetchall()
 
