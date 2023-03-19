@@ -31,7 +31,7 @@ key_f.close()
 api = Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
           cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
 
-engine = create_engine("sqlite:///sessions.db", isolation_level='AUTOCOMMIT')
+engine = create_engine("sqlite:///sessions.db")
 Base.metadata.create_all(engine)
 session = Session(engine)
 
