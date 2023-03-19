@@ -1,4 +1,6 @@
-import setup
+from setup import setup
+
+setup()
 import os
 import discord
 

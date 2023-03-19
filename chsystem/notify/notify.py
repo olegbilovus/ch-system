@@ -1,8 +1,11 @@
+from setup import setup
+
+setup()
+
 import requests
 import os
 import argparse
 
-import setup
 import logs
 import database
 from utils import time_remaining, minutes_to_dhm
