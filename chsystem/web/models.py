@@ -1,4 +1,3 @@
-import uuid
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -20,7 +19,7 @@ class User(Base):
 
     _keys_external_use = ['id', 'username', 'last_use']
 
-    id: Mapped[str] = mapped_column(unique=True, default=str(uuid.uuid4()))
+    id: Mapped[str] = mapped_column(unique=True)
     sessionid: Mapped[str] = mapped_column(primary_key=True)
     username: Mapped[str_nn]
     userprofileid: Mapped[int_nn]
@@ -29,7 +28,7 @@ class User(Base):
     clanid: Mapped[int_nn]
     serverid: Mapped[int_nn]
     change_pw: Mapped[bool] = mapped_column(nullable=False)
-    last_use: Mapped[datetime] = mapped_column(default=datetime.utcnow())
+    last_use: Mapped[datetime]
 
     def __repr__(self):
         return f'[id:{self.id},username:{self.username},userprofileid:{self.userprofileid},' \

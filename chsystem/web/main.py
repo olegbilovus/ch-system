@@ -13,6 +13,7 @@ from waitress import serve
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.exc import NoResultFound
+import uuid
 
 from api import Api
 from models import Base, User
@@ -90,6 +91,7 @@ def login():
         sessionid = token_hex(64)
 
         user = User(
+            id=str(uuid.uuid4()),
             sessionid=sessionid,
             username=req['username'],
             userprofileid=user['userprofileid'],
@@ -97,7 +99,8 @@ def login():
             role=user['role'],
             clanid=user['clanid'],
             serverid=user['serverid'],
-            change_pw=user['change_pw']
+            change_pw=user['change_pw'],
+            last_use=datetime.utcnow()
         )
         session.add(user)
         logger.info(f'LOGIN:{user}')
