@@ -134,7 +134,11 @@ def logout(user: User):
 def get_sessions(user: User):
     stmt = select(User).where(User.username == user.username)
     user_sessions = session.scalars(stmt).all()
-    data = [us.get_external_data() for us in user_sessions]
+    data = {'sessions': [], 'current': -1}
+    for i, us in enumerate(user_sessions):
+        if us.id == user.id:
+            data['current'] = i
+        data['sessions'].append(us.get_external_data())
 
     return jsonify(data)
 
