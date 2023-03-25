@@ -127,7 +127,7 @@ def login():
             last_use=datetime.utcnow()
         )
         session.add(user)
-        logger.info(f'LOGIN:{user}')
+        logger.info(f'{login.__name__}:{user}')
 
         resp = make_response(redirect('dashboard'))
         resp.set_cookie(SESSION_NAME, sessionid, httponly=True, secure=True, samesite='Lax',
