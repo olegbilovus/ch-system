@@ -54,5 +54,20 @@ class Api:
                     }
                     return data
 
+    @postgrest_sanitize
+    def get_by_userprofileid(self, userprofileid):
+        user_data = self.session.get(
+            f'{self.url}/webprofile?userprofileid=eq.{userprofileid}&select=username,change_pw,userprofile(name,role,clanid,serverid)').json()[
+            0]
+        data = {
+            'username': user_data['username'],
+            'name': user_data['userprofile']['name'],
+            'role': user_data['userprofile']['role'],
+            'clanid': user_data['userprofile']['clanid'],
+            'serverid': user_data['userprofile']['serverid'],
+            'change_pw': user_data['change_pw']
+        }
+        return data
+
     def get_servers_names(self):
         return self.session.get(f'{self.url}/server?select=id,name&order=name').json()

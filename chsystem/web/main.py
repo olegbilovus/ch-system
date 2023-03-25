@@ -2,6 +2,7 @@ from setup import setup
 
 setup()
 import os
+from functools import wraps
 import tempfile
 from datetime import datetime, timedelta
 from secrets import token_hex
@@ -32,7 +33,7 @@ key_f.close()
 api = Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
           cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
 
-engine = create_engine("sqlite:///sessions.db")
+engine = create_engine("sqlite:///sessions.db", isolation_level='AUTOCOMMIT')
 Base.metadata.create_all(engine)
 session = Session(engine)
 
@@ -41,6 +42,14 @@ SESSION_NAME = "SessionID"
 
 ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
 ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
+
+
+def logout_fun(user):
+    session.delete(user)
+    session.commit()
+    resp = make_response(redirect('/'))
+    resp.delete_cookie(SESSION_NAME)
+    return resp
 
 
 def get_user(sessionid):
@@ -58,17 +67,32 @@ def check_logged():
     return None
 
 
-def login_req(fun):
-    def wrapper(*args, **kwargs):
-        user = check_logged()
-        if user is not None:
-            user.last_use = datetime.utcnow()
-            return fun(user, *args, **kwargs)
+def login_req(role=0, refresh=False):
+    def decorate(fun):
+        @wraps(fun)
+        def wrapper(*args, **kwargs):
+            user = check_logged()
+            if user is not None:
+                logger.info(f'{fun.__name__}:{user}')
+                if refresh:
+                    user_data = api.get_by_userprofileid(user.userprofileid)
+                    user.username = user_data['username']
+                    user.name = user_data['name']
+                    user.role = user_data['role']
+                    user.clanid = user_data['clanid']
+                    user.serverid = user_data['serverid']
+                    user.change_pw = user_data['change_pw']
+                user.last_use = datetime.utcnow()
+                if user.role >= role:
+                    return fun(user, *args, **kwargs)
 
-        return redirect('/')
+                return logout_fun(user)
 
-    wrapper.__name__ = fun.__name__
-    return wrapper
+            return redirect('/')
+
+        return wrapper
+
+    return decorate
 
 
 @app.get('/health')
@@ -121,16 +145,13 @@ def login():
 
 
 @app.get('/logout')
-@login_req
+@login_req()
 def logout(user: User):
-    session.delete(user)
-    resp = make_response(redirect('/'))
-    resp.delete_cookie(SESSION_NAME)
-    return resp
+    return logout_fun(user)
 
 
 @app.get('/sessions/get')
-@login_req
+@login_req()
 def get_sessions(user: User):
     stmt = select(User).where(User.username == user.username)
     user_sessions = session.scalars(stmt).all()

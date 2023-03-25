@@ -17,7 +17,7 @@ int_nn = Annotated[int, mapped_column(nullable=False)]
 class User(Base):
     __tablename__ = 'user_session'
 
-    _keys_external_use = ['id', 'username', 'last_use']
+    _keys_external_use = ['id', 'last_use']
 
     id: Mapped[str] = mapped_column(unique=True)
     sessionid: Mapped[str] = mapped_column(primary_key=True)
