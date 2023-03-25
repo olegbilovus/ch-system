@@ -33,7 +33,7 @@ key_f.close()
 api = Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
           cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
 
-engine = create_engine("sqlite:///sessions.db", isolation_level='AUTOCOMMIT')
+engine = create_engine(os.getenv("DB_URI"), isolation_level='AUTOCOMMIT')
 Base.metadata.create_all(engine)
 session = Session(engine)
 
@@ -41,7 +41,7 @@ app = Flask(__name__, template_folder='templates', static_folder='static')
 SESSION_NAME = "SessionID"
 
 ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin', 'Chief']
-ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b', '#000000']
+ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b', '#134f5c']
 
 
 def logout_fun(user):
