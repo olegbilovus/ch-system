@@ -40,8 +40,8 @@ session = Session(engine)
 app = Flask(__name__, template_folder='templates', static_folder='static')
 SESSION_NAME = "SessionID"
 
-ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
-ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
+ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin', 'Chief']
+ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b', '#000000']
 
 
 def logout_fun(user):
@@ -162,6 +162,12 @@ def get_sessions(user: User):
         data['sessions'].append(us.get_external_data())
 
     return jsonify(data)
+
+
+@app.get('/dashboard')
+@login_req(refresh=True)
+def dashboard(user: User):
+    return render_template('dashboard.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
 
 
 if __name__ == '__main__':
