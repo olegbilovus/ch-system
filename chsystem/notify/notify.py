@@ -63,19 +63,15 @@ if not args.broadcast:
         webhooks = clan_discord_db.get_all_notify_webhooks()
 
         for clan_id, webhook, discord_guild_id in webhooks:
-            try:
-                timers_data = timer_db.get_notify_data_by_clan_id(clan_id)
-                for timer_id, timer, boss_name in timers_data:
-                    subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(timer_id)
-                    msg = f'{boss_name} due in {minutes_to_dhm(time_remaining(timer))} '
+            timers_data = timer_db.get_notify_data_by_clan_id(clan_id)
+            for timer_id, timer, boss_name in timers_data:
+                subscribers = subscriber_db.get_discord_ids_by_timer_id_clan_id(timer_id)
+                msg = f'{boss_name} due in {minutes_to_dhm(time_remaining(timer))} '
 
-                    for discord_id, in subscribers:
-                        msg += f'<@{discord_id}>'
+                for discord_id, in subscribers:
+                    msg += f'<@{discord_id}>'
 
-                    jobs.put((webhook, msg, username, clan_id))
-            except Exception as e:
-                logger.exception(e)
-
+                jobs.put((webhook, msg, username, clan_id))
 
         do_work(jobs, logger)
         logger.info('Finish check')
