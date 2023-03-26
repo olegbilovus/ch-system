@@ -1,4 +1,3 @@
-import os
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
@@ -10,7 +9,7 @@ class User:
     sessionid: Optional[str] = None
     username: Optional[str] = None
     userprofileid: Optional[int] = None
-    host: Optional[str] = os.getenv('HOST')
+    host: Optional[str] = None
     name: Optional[str] = None
     role: Optional[int] = None
     clanid: Optional[int] = None

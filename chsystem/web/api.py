@@ -1,3 +1,4 @@
+import os
 import uuid
 from datetime import datetime
 from secrets import token_hex
@@ -6,6 +7,8 @@ import bcrypt
 import requests
 
 from models import User
+
+_HOST = os.getenv('HOST')
 
 
 def check_str_chars(obj):
@@ -60,7 +63,7 @@ class Api:
                                         name=user_data['name'], role=user_data['role'],
                                         clanid=user_data['clanid'], serverid=user_data['serverid'],
                                         change_pw=user['change_pw'],
-                                        creation=datetime.utcnow(), lastuse=datetime.utcnow())
+                                        creation=datetime.utcnow(), lastuse=datetime.utcnow(), host=_HOST)
 
                     res = self.session.post(f'{self.url}/websession',
                                             json={'id': user_session.id, 'sessionid': user_session.sessionid,
