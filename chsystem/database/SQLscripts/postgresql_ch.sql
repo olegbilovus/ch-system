@@ -91,6 +91,20 @@ CREATE TABLE webProfile
         ON UPDATE CASCADE ON DELETE CASCADE
 );
 
+DROP TABLE IF EXISTS webSession CASCADE;
+CREATE TABLE webSession
+(
+    id            VARCHAR(200) UNIQUE,
+    userProfileID BIGSERIAL,
+    sessionID     VARCHAR(200) UNIQUE,
+    host          VARCHAR(50),
+    creation      timestamp DEFAULT now(),
+    lastUse       timestamp DEFAULT now(),
+    FOREIGN KEY (userProfileID)
+        REFERENCES userProfile (ID)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
 DROP TABLE IF EXISTS subscriber CASCADE;
 CREATE TABLE subscriber
 (

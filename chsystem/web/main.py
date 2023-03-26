@@ -4,20 +4,15 @@ setup()
 import os
 from functools import wraps
 import tempfile
-from datetime import datetime, timedelta
-from secrets import token_hex
+from datetime import timedelta
 
 import logs
 from flask import Flask, redirect, render_template, request, make_response, jsonify
 from paste.translogger import TransLogger
 from waitress import serve
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
-from sqlalchemy.orm.exc import NoResultFound
-import uuid
+from models import User
 
 from api import Api
-from models import Base, User
 
 logger = logs.get_logger('Web', token=os.getenv('LOGTAIL_WEB'))
 logger.info('Starting Web')
@@ -33,10 +28,6 @@ key_f.close()
 api = Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
           cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
 
-engine = create_engine("sqlite:///sessions.db", isolation_level='AUTOCOMMIT')
-Base.metadata.create_all(engine)
-session = Session(engine)
-
 app = Flask(__name__, template_folder='templates', static_folder='static')
 SESSION_NAME = "SessionID"
 
@@ -44,49 +35,34 @@ ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin', 'Chief']
 ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b', '#000000']
 
 
-def logout_fun(user):
-    session.delete(user)
-    session.commit()
+def logout_fun(sessionid):
+    api.delete_session(sessionid)
     resp = make_response(redirect('/'))
     resp.delete_cookie(SESSION_NAME)
     return resp
 
 
-def get_user(sessionid):
-    stmt = select(User).where(User.sessionid == sessionid)
-    try:
-        return session.scalars(stmt).one()
-    except NoResultFound:
-        return None
+def get_user(sessionid) -> User | None:
+    return api.get_user_by_sessionid(sessionid)
 
 
 def check_logged():
     sessionid = request.cookies.get(SESSION_NAME)
     if sessionid is not None:
         return get_user(sessionid)
-    return None
 
 
-def login_req(role=0, refresh=False):
+def login_req(role=0):
     def decorate(fun):
         @wraps(fun)
         def wrapper(*args, **kwargs):
             user = check_logged()
             if user is not None:
                 logger.info(f'{fun.__name__}:{user}')
-                if refresh:
-                    user_data = api.get_by_userprofileid(user.userprofileid)
-                    user.username = user_data['username']
-                    user.name = user_data['name']
-                    user.role = user_data['role']
-                    user.clanid = user_data['clanid']
-                    user.serverid = user_data['serverid']
-                    user.change_pw = user_data['change_pw']
-                user.last_use = datetime.utcnow()
                 if user.role >= role:
                     return fun(user, *args, **kwargs)
 
-                return logout_fun(user)
+                return logout_fun(user.sessionid)
 
             return redirect('/')
 
@@ -95,42 +71,37 @@ def login_req(role=0, refresh=False):
     return decorate
 
 
+def no_login(fun):
+    @wraps(fun)
+    def wrapper(*args, **kwargs):
+        if check_logged():
+            return redirect('/dashboard')
+
+        return fun(*args, **kwargs)
+
+    return wrapper
+
+
 @app.get('/health')
 def ping():
     return 'OK' if api.check_valid_conn() else 'BAD'
 
 
 @app.get('/')
+@no_login
 def home():
-    if check_logged():
-        return redirect('dashboard')
     return render_template('index.html', servers=api.get_servers_names())
 
 
 @app.post('/login')
+@no_login
 def login():
     req = request.form
-    user = api.login(req['username'].lower(), req['password'], int(req['server']), req['clan'])
+    user = api.login(req['username'].lower(), req['password'], int(req['server']), req['clan'].lower())
     if user:
-        sessionid = token_hex(64)
-
-        user = User(
-            id=str(uuid.uuid4()),
-            sessionid=sessionid,
-            username=req['username'],
-            userprofileid=user['userprofileid'],
-            name=user['name'],
-            role=user['role'],
-            clanid=user['clanid'],
-            serverid=user['serverid'],
-            change_pw=user['change_pw'],
-            last_use=datetime.utcnow()
-        )
-        session.add(user)
         logger.info(f'{login.__name__}:{user}')
-
         resp = make_response(redirect('dashboard'))
-        resp.set_cookie(SESSION_NAME, sessionid, httponly=True, secure=True, samesite='Lax',
+        resp.set_cookie(SESSION_NAME, user.sessionid, httponly=True, secure=True, samesite='Lax',
                         max_age=timedelta(days=3))
         return resp
 
@@ -139,6 +110,7 @@ def login():
         'server': int(req['server']),
         'clan': req['clan']
     }
+    logger.warning(f'{login.__name__}:{cache}')
 
     return render_template('index.html', error='We could not find you', servers=api.get_servers_names(),
                            cache=cache), 401
@@ -147,25 +119,24 @@ def login():
 @app.get('/logout')
 @login_req()
 def logout(user: User):
-    return logout_fun(user)
+    return logout_fun(user.sessionid)
 
 
-@app.get('/sessions/get')
+@app.get('/sessions')
 @login_req()
 def get_sessions(user: User):
-    stmt = select(User).where(User.username == user.username)
-    user_sessions = session.scalars(stmt).all()
+    user_sessions = api.get_user_sessions(user.userprofileid)
     data = {'sessions': [], 'current': -1}
     for i, us in enumerate(user_sessions):
+        data['sessions'].append(us.get_data_select('id', 'creation', 'lastuse', 'host'))
         if us.id == user.id:
             data['current'] = i
-        data['sessions'].append(us.get_external_data())
 
     return jsonify(data)
 
 
 @app.get('/dashboard')
-@login_req(refresh=True)
+@login_req()
 def dashboard(user: User):
     return render_template('dashboard.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
 
