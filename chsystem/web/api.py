@@ -95,8 +95,8 @@ class Api:
     @postgrest_sanitize
     def get_user_sessions(self, userprofileid) -> list[User]:
         data = self.session.get(
-            f'{self.url}/websession?userprofileid=eq.{userprofileid}&select=id,creation,lastuse').json()
-        return [User(id=d['id'], creation=d['creation'], lastuse=d['lastuse']) for d in data]
+            f'{self.url}/websession?userprofileid=eq.{userprofileid}&select=id,creation,lastuse,host').json()
+        return [User(id=d['id'], creation=d['creation'], lastuse=d['lastuse'], host=d['host']) for d in data]
 
     @postgrest_sanitize
     def get_session_by_id(self, _id) -> User | None:

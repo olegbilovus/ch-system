@@ -20,7 +20,7 @@ class User:
 
     def __repr__(self):
         return f'[id:{self.id},username:{self.username},userprofileid:{self.userprofileid},' \
-               f'name:{self.name},role:{self.role},clanid:{self.clanid},serverid:{self.serverid}]'
+               f'name:{self.name},role:{self.role},clanid:{self.clanid},serverid:{self.serverid},host:{self.host}]'
 
     def get_data_select(self, *args):
         return {k: getattr(self, k) for k in args}
