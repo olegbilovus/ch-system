@@ -67,7 +67,8 @@ class Api:
 
                     res = self.session.post(f'{self.url}/websession',
                                             json={'id': user_session.id, 'sessionid': user_session.sessionid,
-                                                  'userprofileid': user_session.userprofileid})
+                                                  'userprofileid': user_session.userprofileid,
+                                                  'host': user_session.host})
                     if res.status_code == 201:
                         return user_session
 
