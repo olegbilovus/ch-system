@@ -1,4 +1,4 @@
-function minutes_to_dhm(minutes) {
+function minutesToDHM(minutes) {
     let negative = false
     if (minutes < 0) {
         minutes *= -1
@@ -15,6 +15,36 @@ function minutes_to_dhm(minutes) {
     return '-' + msg
 }
 
+function setTdTimerBK(tdTimer, remainingMins) {
+    $(tdTimer).removeClass()
+    if (remainingMins >= 15) {
+        $(tdTimer).addClass('table-success')
+    } else if (remainingMins >= 7) {
+        $(tdTimer).addClass('table-warning')
+    } else if (remainingMins >= -15) {
+        $(tdTimer).addClass('table-danger')
+    }
+
+}
+
+function timerResetConfirmed(bossname, tdTimer) {
+    $.ajax({
+        url: `./timer/reset/${bossname}`,
+        type: 'PATCH',
+        timeout: 5000,
+        success: function (data) {
+            let minsNow = Math.trunc(new Date().getTime() / 1000 / 60)
+            let remainingMins = data.timer - minsNow
+            $(tdTimer).empty()
+            $(tdTimer).text(minutesToDHM(remainingMins))
+            setTdTimerBK(tdTimer, remainingMins)
+        },
+        error: function (xhr, status, error) {
+            alert(`Error resetting ${bossname}`)
+        }
+    })
+}
+
 function loadTimers(_type) {
     $.ajax({
         url: `./timers/${_type}`,
@@ -29,18 +59,36 @@ function loadTimers(_type) {
                 let tr = $('<tr>')[0]
                 let th = $(`<th scope="row">${timer.bossname}</th>`)[0]
                 let remainingMins = timer.timer - minsNow
-                let tdTimer = $(`<td>${timer.timer == null ? 'No Data' : minutes_to_dhm(remainingMins)}</td>`)[0]
+                let tdTimer = $(`<td>${timer.timer == null ? 'No Data' : minutesToDHM(remainingMins)}</td>`)[0]
                 let tdResetButton = $('<td>')[0]
                 let resetButton = $(resetButtonTemplate)[0]
 
+                $(resetButton).click(() => {
+                    bootbox.confirm({
+                        message: `Are you sure you want to reset ${timer.bossname} ?`,
+                        buttons: {
+                            confirm: {
+                                label: 'Yes',
+                                className: 'btn-danger'
+                            },
+                            cancel: {
+                                label: 'No',
+                                className: 'btn-secondary'
+                            }
+                        },
+                        callback: function (result) {
+                            if (result) {
+                                $(tdTimer).empty()
+                                $(tdTimer).append($('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'))
+                                timerResetConfirmed(timer.bossname, tdTimer)
+                            }
+                        }
+
+                    })
+                })
+
                 if (timer.timer != null) {
-                    if (remainingMins >= 15) {
-                        $(tdTimer).addClass('table-success')
-                    } else if (remainingMins >= 7) {
-                        $(tdTimer).addClass('table-warning')
-                    } else if (remainingMins >= -15) {
-                        $(tdTimer).addClass('table-danger')
-                    }
+                    setTdTimerBK(tdTimer, remainingMins)
                 }
 
                 tdResetButton.append(resetButton)
@@ -62,7 +110,7 @@ function loadTimersType() {
         timeout: 5000,
         success: function (data) {
             let accordionBodyTemplate = '<div class="accordion-body row mx-auto table-responsive">'
-            let tableTemplate = '<table class="table">'
+            let tableTemplate = '<table class="table table-hover">'
             let tableThreadTemplate = '<thead><tr><th scope="col">Name</th><th scope="col">Timer</th><th scope="col">Reset</th></tr></thead>'
 
             let timersCard = $('#timersCard')[0]

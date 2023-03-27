@@ -154,6 +154,16 @@ def get_timers_by_type(user: User, _type):
     return jsonify(api.get_timers_by_clanid_type(user.clanid, _type.upper()))
 
 
+@app.patch('/timer/reset/<bossname>')
+@login_req(role=1)
+def reset_timer_by_bossname(user: User, bossname):
+    res = api.reset_timer_by_clanid_bossname(user.clanid, bossname.lower())
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
+
+
 if __name__ == '__main__':
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
     serve(TransLogger(app, format=format_logger),

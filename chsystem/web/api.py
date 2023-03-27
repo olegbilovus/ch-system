@@ -6,6 +6,7 @@ from secrets import token_hex
 import bcrypt
 import requests
 
+from utils import get_current_time_minutes, TIMER_OFFSET
 from models import User
 
 _HOST = os.getenv('HOST')
@@ -131,3 +132,22 @@ class Api:
     def get_timers_by_clanid_type(self, clanid, _type):
         return self.session.get(
             f'{self.url}/timer?clanid=eq.{clanid}&type=eq.{_type}&select=bossname,timer&order=bossname').json()
+
+    @postgrest_sanitize
+    def set_timer_by_clanid_bossname(self, clanid, bossname, timer):
+        res = self.session.patch(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}', json={'timer': timer})
+
+        return res.status_code == 204
+
+    @postgrest_sanitize
+    def reset_timer_by_clanid_bossname(self, clanid, bossname):
+        boss_data = self.session.get(
+            f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}&select=respawntimeminutes').json()
+        if boss_data:
+            respawn_time_minutes = boss_data[0]['respawntimeminutes']
+            current_time_in_minutes = get_current_time_minutes()
+            timer = current_time_in_minutes + respawn_time_minutes - TIMER_OFFSET
+            res = self.set_timer_by_clanid_bossname(clanid, bossname, timer)
+
+            if res:
+                return {'timer': timer}
