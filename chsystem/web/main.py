@@ -142,6 +142,18 @@ def dashboard(user: User):
     return render_template('dashboard.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
 
 
+@app.get('/timers-type')
+@login_req()
+def get_timers_type(user: User):
+    return jsonify(api.get_timers_type_by_clanid(user.clanid))
+
+
+@app.get('/timers/<_type>')
+@login_req()
+def get_timers_by_type(user: User, _type):
+    return jsonify(api.get_timers_by_clanid_type(user.clanid, _type.upper()))
+
+
 if __name__ == '__main__':
     format_logger = '[%(time)s] %(status)s %(REQUEST_METHOD)s %(REQUEST_URI)s'
     serve(TransLogger(app, format=format_logger),
