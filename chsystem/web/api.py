@@ -106,3 +106,9 @@ class Api:
             data = data[0]
             return User(id=_id, sessionid=data['sessionid'], userprofileid=data['userprofile']['id'],
                         clanid=data['userprofile']['clanid'], role=data['userprofile']['role'])
+
+    @postgrest_sanitize
+    def session_used(self, sessionid):
+        res = self.session.patch(f'{self.url}/websession?sessionid=eq.{sessionid}', json={'lastuse': datetime.utcnow().isoformat()})
+
+        return res.status_code == 204

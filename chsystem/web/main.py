@@ -59,6 +59,7 @@ def login_req(role=0):
             user = check_logged()
             if user is not None:
                 logger.info(f'{fun.__name__}:{user}')
+                api.session_used(user.sessionid)
                 if user.role >= role:
                     return fun(user, *args, **kwargs)
 
