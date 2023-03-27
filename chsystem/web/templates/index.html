@@ -9,6 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"
+            integrity="sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS"
+            crossorigin="anonymous"></script>
     <title>Login</title>
 </head>
 
@@ -63,7 +66,7 @@
             </div>
         </div>
         <div class="d-grid gap-2">
-            <button class="btn btn-lg btn-success" type="submit">Login</button>
+            <button id="loginButton" class="btn btn-lg btn-success" type="submit" onclick="loading()">Login</button>
         </div>
 
     </form>
@@ -94,6 +97,10 @@
 
     function toLower(e) {
         e.target.value = e.target.value.toLowerCase()
+    }
+
+    function loading() {
+        $('#loginButton').text('Login ...')
     }
 
 </script>
