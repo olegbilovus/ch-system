@@ -18,11 +18,11 @@ function minutesToDHM(minutes) {
 function setTdTimerBK(tdTimer, remainingMins) {
     $(tdTimer).removeClass()
     if (remainingMins >= 15) {
-        $(tdTimer).addClass('table-success')
+        $(tdTimer).addClass('bg-success table-success')
     } else if (remainingMins >= 7) {
-        $(tdTimer).addClass('table-warning')
+        $(tdTimer).addClass('bg-warning table-warning')
     } else if (remainingMins >= -15) {
-        $(tdTimer).addClass('table-danger')
+        $(tdTimer).addClass('bg-danger table-danger')
     }
 
 }
