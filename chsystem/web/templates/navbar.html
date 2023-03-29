@@ -1,0 +1,28 @@
+<nav class="navbar navbar-expand-lg">
+    <div class="container">
+        <a class="navbar-brand" href="#">Dashboard</a>
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
+                    data-bs-display="static" aria-expanded="false" style="color:{{ role_color }}">{{ user['name'] }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start align-content-center">
+                <li>
+                    <a class="dropdown-item" href="/profile">Profile</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="/sessions">Sessions</a>
+                </li>
+                {% if user.role >= 4 %}
+                    <li>
+                        <a class="dropdown-item" href="/clan">Clan</a>
+                    </li>
+                {% endif %}
+                <li>
+                    <form method="GET" action="/logout">
+                        <button type="submit" class="dropdown-item bg-danger">Logout</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

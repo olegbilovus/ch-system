@@ -4,17 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-qKXV1j0HvMUeCBQ+QVp7JcfGl760yU08IQ+GpUo5hlbpg51QRiuqHAJz8+BrxE/N"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.min.js"
-            integrity="sha384-UG8ao2jwOWB7/oDdObZc6ItJmwUkR/PfMyt9Qs5AwX7PsnYn1CRKCTWyncPTWvaS"
-            crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootbox@6.0.0/dist/bootbox.min.js"
-            integrity="sha384-oX3gCyE8eJ+9Nl9zEkn/C+bi2nkYOHCuj3ICcIF2DillgVq3oC8VBh6OuhgRaRHZ"
-            crossorigin="anonymous"></script>
+    {% include 'dependencies.html' %}
     <script src="static/js/dashboard.js"></script>
     <script>
         $(window).on('load', function () {
@@ -25,34 +15,7 @@
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg">
-    <div class="container">
-        <a class="navbar-brand" href="#">Dashboard</a>
-        <div class="btn-group">
-            <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"
-                    data-bs-display="static" aria-expanded="false" style="color:{{ role_color }}">{{ user['name'] }}
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start align-content-center">
-                <li>
-                    <a class="dropdown-item" href="/profile">Profile</a>
-                </li>
-                <li>
-                    <a class="dropdown-item" href="/sessions">Sessions</a>
-                </li>
-                {% if user.role >= 4 %}
-                    <li>
-                        <a class="dropdown-item" href="/clan">Clan</a>
-                    </li>
-                {% endif %}
-                <li>
-                    <form method="GET" action="/logout">
-                        <button type="submit" class="dropdown-item bg-danger">Logout</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+{% include 'navbar.html' %}
 <div class="container text-center mt-4">
     <div class="card col-12 mb-2">
         <h5 class="card-header text-center">Timers</h5>
