@@ -1,12 +1,11 @@
 import os
-import uuid
 from datetime import datetime
 from secrets import token_hex
 
 import bcrypt
 import requests
-
 from utils import get_current_time_minutes, TIMER_OFFSET
+
 from models import User
 
 _HOST = os.getenv('HOST')
@@ -59,7 +58,7 @@ class Api:
             if user_data['serverid'] == serverid:
                 clan_data = self.session.get(f'{self.url}/clan?id=eq.{user_data["clanid"]}').json()[0]
                 if clan_data['name'] == clan:
-                    user_session = User(id=str(uuid.uuid4()), sessionid=token_hex(64), username=username,
+                    user_session = User(id=token_hex(16), sessionid=token_hex(64), username=username,
                                         userprofileid=user_data['id'],
                                         name=user_data['name'], role=user_data['role'],
                                         clanid=user_data['clanid'], serverid=user_data['serverid'],
@@ -76,6 +75,11 @@ class Api:
     @postgrest_sanitize
     def delete_session(self, sessionid) -> bool:
         res = self.session.delete(f'{self.url}/websession?sessionid=eq.{sessionid}')
+        return res.status_code == 204
+
+    @postgrest_sanitize
+    def delete_session_by_id(self, _id) -> bool:
+        res = self.session.delete(f'{self.url}/websession?id=eq.{_id}')
         return res.status_code == 204
 
     @postgrest_sanitize
@@ -96,7 +100,7 @@ class Api:
     @postgrest_sanitize
     def get_user_sessions(self, userprofileid) -> list[User]:
         data = self.session.get(
-            f'{self.url}/websession?userprofileid=eq.{userprofileid}&select=id,creation,lastuse,host').json()
+            f'{self.url}/websession?userprofileid=eq.{userprofileid}&select=id,creation,lastuse,host&order=lastuse').json()
         return [User(id=d['id'], creation=d['creation'], lastuse=d['lastuse'], host=d['host']) for d in data]
 
     @postgrest_sanitize

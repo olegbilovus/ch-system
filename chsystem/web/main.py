@@ -123,19 +123,6 @@ def logout(user: User):
     return logout_fun(user.sessionid)
 
 
-@app.get('/sessions')
-@login_req()
-def get_sessions(user: User):
-    user_sessions = api.get_user_sessions(user.userprofileid)
-    data = {'sessions': [], 'current': -1}
-    for i, us in enumerate(user_sessions):
-        data['sessions'].append(us.get_data_select('id', 'creation', 'lastuse', 'host'))
-        if us.id == user.id:
-            data['current'] = i
-
-    return jsonify(data)
-
-
 @app.get('/dashboard')
 @login_req()
 def dashboard(user: User):
@@ -158,6 +145,35 @@ def get_timers_by_type(user: User, _type):
 @login_req(role=1)
 def reset_timer_by_bossname(user: User, bossname):
     res = api.reset_timer_by_clanid_bossname(user.clanid, bossname.lower())
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
+
+
+@app.get('/sessions')
+@login_req()
+def sessions(user: User):
+    return render_template('sessions.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
+
+
+@app.get('/user-sessions')
+@login_req()
+def get_user_sessions(user: User):
+    user_sessions = api.get_user_sessions(user.userprofileid)
+    data = {'sessions': [], 'current': -1}
+    for i, us in enumerate(user_sessions):
+        data['sessions'].append(us.get_data_select('id', 'creation', 'lastuse', 'host'))
+        if us.id == user.id:
+            data['current'] = us.id
+
+    return jsonify(data)
+
+
+@app.delete('/user-sessions')
+@login_req()
+def delete_user_sessions(user: User):
+    res = api.delete_session_by_id(request.json['id'])
     if res:
         return jsonify(res)
 
