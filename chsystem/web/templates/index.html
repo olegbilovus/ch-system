@@ -34,9 +34,12 @@
         </div>
         <div class="col-md-6">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-            <div class="invalid-feedback">
-                Please provide a valid password.
+            <div class="input-group">
+                <input type="password" class="form-control" id="password" name="password" required>
+                <button class="btn btn-outline-secondary bi-eye-slash" type="button" id="pwShow"></button>
+                <div class="invalid-feedback">
+                    Please provide a valid password.
+                </div>
             </div>
         </div>
         <div class="col-md-6">
@@ -60,42 +63,20 @@
             </div>
         </div>
         <div class="d-grid gap-2">
-            <button id="loginButton" class="btn btn-lg btn-success" type="submit" onclick="loading()">Login</button>
+            <button id="loginButton" class="btn btn-lg btn-success" type="submit">Login</button>
         </div>
 
     </form>
 </div>
 <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (function () {
-        'use strict'
-
-        // Fetch all the forms we want to apply custom Bootstrap validation styles to
-        let forms = document.querySelectorAll('.needs-validation')
-
-        // Loop over them and prevent submission
-        Array.prototype.slice.call(forms)
-            .forEach(function (form) {
-                form.addEventListener('submit', function (event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault()
-                        event.stopPropagation()
-                    }
-
-                    form.classList.add('was-validated')
-                }, false)
-            })
-    })()
+    formValidate()
 
     document.getElementById('username').addEventListener('input', toLower)
 
-    function toLower(e) {
-        e.target.value = e.target.value.toLowerCase()
-    }
-
-    function loading() {
-        $('#loginButton').text('Login ...')
-    }
+    let eyes = document.querySelectorAll('#pwShow')
+    eyes.forEach((buttonEye) => {
+        buttonEye.addEventListener('click', pwEye)
+    })
 
 </script>
 </body>

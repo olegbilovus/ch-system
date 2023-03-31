@@ -155,3 +155,14 @@ class Api:
 
             if res:
                 return {'timer': timer}
+
+    @postgrest_sanitize
+    def change_pw(self, userprofileid, oldpw, newpw):
+        user = self.session.get(f'{self.url}/webprofile?userprofileid=eq.{userprofileid}').json()
+        if user and bcrypt.checkpw(bytes(oldpw, 'utf-8'), bytes(user[0]['hash_pw'], 'utf-8')):
+            res = self.session.patch(f'{self.url}/webprofile?userprofileid=eq.{userprofileid}',
+                                     json={'hash_pw': bcrypt.hashpw(bytes(newpw, 'utf-8'), bcrypt.gensalt()).decode(
+                                         "utf-8")})
+            return res.status_code == 204
+
+        return False

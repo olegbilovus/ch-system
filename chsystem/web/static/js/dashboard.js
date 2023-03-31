@@ -51,7 +51,7 @@ function loadTimers(_type) {
         type: 'GET',
         timeout: 5000,
         success: function (data) {
-            let resetButtonTemplate = '<button type="button" class="fw-bold btn btn-outline-danger">↻</button>'
+            let resetButtonTemplate = '<button type="button" class="fw-bold btn btn-outline-danger"><i class="bi bi-arrow-clockwise"></i></button>'
 
             let tbody = $(`#tbody${_type}`)
             let minsNow = Math.trunc(new Date().getTime() / 1000 / 60)

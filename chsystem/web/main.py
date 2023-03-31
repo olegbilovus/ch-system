@@ -7,7 +7,7 @@ import tempfile
 from datetime import timedelta
 
 import logs
-from flask import Flask, redirect, render_template, request, make_response, jsonify
+from flask import Flask, redirect, render_template, request, make_response, jsonify, url_for
 from paste.translogger import TransLogger
 from waitress import serve
 from models import User
@@ -52,7 +52,7 @@ def check_logged():
         return get_user(sessionid)
 
 
-def login_req(role=0):
+def login_req(role=0, change_pw=True):
     def decorate(fun):
         @wraps(fun)
         def wrapper(*args, **kwargs):
@@ -60,12 +60,14 @@ def login_req(role=0):
             if user is not None:
                 logger.info(f'{fun.__name__}:{user}')
                 api.session_used(user.sessionid)
+                if change_pw and user.change_pw:
+                    return redirect(url_for('profile'))
                 if user.role >= role:
                     return fun(user, *args, **kwargs)
 
                 return logout_fun(user.sessionid)
 
-            return redirect('/')
+            return redirect(url_for('/'))
 
         return wrapper
 
@@ -76,7 +78,7 @@ def no_login(fun):
     @wraps(fun)
     def wrapper(*args, **kwargs):
         if check_logged():
-            return redirect('/dashboard')
+            return redirect(url_for('dashboard'))
 
         return fun(*args, **kwargs)
 
@@ -101,7 +103,7 @@ def login():
     user = api.login(req['username'].lower(), req['password'], int(req['server']), req['clan'].lower())
     if user:
         logger.info(f'{login.__name__}:{user}')
-        resp = make_response(redirect('dashboard'))
+        resp = make_response(redirect(url_for('dashboard')))
         resp.set_cookie(SESSION_NAME, user.sessionid, httponly=True, secure=True, samesite='Lax',
                         max_age=timedelta(days=3))
         return resp
@@ -149,6 +151,37 @@ def reset_timer_by_bossname(user: User, bossname):
         return jsonify(res)
 
     return jsonify(None), 404
+
+
+@app.get('/profile')
+@login_req(change_pw=False)
+def profile(user: User):
+    return render_template('profile.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
+                           msg={'text': 'Please change your password', 'type': 'danger'} if user.change_pw else None)
+
+
+@app.post('/change-pw')
+@login_req(change_pw=False)
+def change_pw(user: User):
+    req = request.form
+    if 8 <= len(req['newPassword']) <= 20:
+        res = api.change_pw(user.userprofileid, req['oldPassword'], req['newPassword'])
+    else:
+        res = None
+
+    if res:
+        msg = {'text': 'Password changed. Sessions have not been deleted, you may want to check them.', 'type': 'success'}
+    else:
+        msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
+
+    return render_template('profile.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
+                           msg=msg)
+
+
+@app.get('/clan')
+@login_req()
+def clan(user: User):
+    return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
 
 
 @app.get('/sessions')
