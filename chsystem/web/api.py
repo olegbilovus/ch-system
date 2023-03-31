@@ -162,7 +162,7 @@ class Api:
         if user and bcrypt.checkpw(bytes(oldpw, 'utf-8'), bytes(user[0]['hash_pw'], 'utf-8')):
             res = self.session.patch(f'{self.url}/webprofile?userprofileid=eq.{userprofileid}',
                                      json={'hash_pw': bcrypt.hashpw(bytes(newpw, 'utf-8'), bcrypt.gensalt()).decode(
-                                         "utf-8")})
+                                         "utf-8"), 'change_pw': False})
             return res.status_code == 204
 
         return False
