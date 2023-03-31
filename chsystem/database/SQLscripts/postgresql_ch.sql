@@ -118,3 +118,13 @@ CREATE TABLE subscriber
         REFERENCES timer (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+DROP PROCEDURE IF EXISTS deleteOldSessions CASCADE;
+CREATE PROCEDURE deleteOldSessions()
+    LANGUAGE 'sql'
+AS
+$$
+DELETE
+FROM websession
+WHERE creation < now() - interval '3 days';
+$$;

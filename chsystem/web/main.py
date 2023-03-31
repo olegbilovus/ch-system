@@ -67,7 +67,7 @@ def login_req(role=0, change_pw=True):
 
                 return logout_fun(user.sessionid)
 
-            return redirect(url_for('/'))
+            return redirect('/')
 
         return wrapper
 
