@@ -448,8 +448,8 @@ def help_commands(successor=None):
                 f'*-- Commands which require role > 3 --*\n' \
                 f'{PREFIX}**role** <@user> <role> - Change a user role, @user means to tag/mention the user. role has to be a number between 0 and 4\n' \
                 f'*-- Commands which require role > 2 --*\n' \
-                f'{PREFIX}**timeradd** <name> <type> <respawm mins> <window mins> - Add a timer. Name has to be one single word, respawm and window has to be in minutes. Each clan has a maximum of {MAX_NUM_TIMERS} timers.\n' \
-                f'{PREFIX}**timeredit** <name> <type> <respawm mins> <window mins> - Edit a timer. Name has to be one single word, respawm and window has to be in minutes.\n' \
+                f'{PREFIX}**timeradd** <name> <type> <respawn mins> <window mins> - Add a timer. Name has to be one single word, respawn and window has to be in minutes. Each clan has a maximum of {MAX_NUM_TIMERS} timers.\n' \
+                f'{PREFIX}**timeredit** <name> <type> <respawn mins> <window mins> - Edit a timer. Name has to be one single word, respawn and window has to be in minutes.\n' \
                 f'{PREFIX}**timerdel** <name> - Delete a timer'
         elif successor is not None:
             msg_to_send = successor.send(msg)
