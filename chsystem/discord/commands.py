@@ -1,6 +1,7 @@
 from functools import wraps
 import psycopg2
 from tabulate import tabulate
+from datetime import datetime
 
 import database
 from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data, PREFIX, \
@@ -424,6 +425,18 @@ def timer(successor=None):
 
 
 @start_chain
+def gt(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'gt':
+            dt = datetime.utcnow()
+            msg_to_send['msg'] = f'{dt.hour}:{dt.minute}'
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
 def help_commands(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
@@ -444,6 +457,7 @@ def help_commands(successor=None):
                 f'{PREFIX}**unsub <boss> <boss> ...** - Unsubscribe from bosses.\n' \
                 f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
                 f'{PREFIX}**bosslist** - Get the names, respawn and window of the bosses available in your clan.\n' \
+                f'{PREFIX}**gt** - Shows current game time.\n' \
                 f'{PREFIX}**help** - Show this message.\n' \
                 f'*-- Commands which require role > 3 --*\n' \
                 f'{PREFIX}**role** <@user> <role> - Change a user role, @user means to tag/mention the user. role has to be a number between 0 and 4\n' \
