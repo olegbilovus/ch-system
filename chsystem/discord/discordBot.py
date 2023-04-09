@@ -27,8 +27,8 @@ timer_db = database.Timer()
 
 def get_chain_commands():
     return commands.security_check(commands.soon(commands.set_timer(commands.sub(commands.unsub(commands.sublist(
-        commands.copy_copyforce(commands.help_commands(
-            commands.bosslist(commands.role(commands.timer(commands.reset_timer(commands.default()))))))))))))
+        commands.copy_copyforce(commands.help_commands(commands.bosslist(
+            commands.role(commands.timer(commands.gt(commands.reset_timer(commands.default())))))))))))))
 
 
 class DiscordBot(discord.Client):
