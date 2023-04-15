@@ -12,7 +12,7 @@ from paste.translogger import TransLogger
 from waitress import serve
 from models import User
 
-from api import Api
+from api import ApiPostgREST
 
 logger = logs.get_logger('Web', token=os.getenv('LOGTAIL_WEB'))
 logger.info('Starting Web')
@@ -25,8 +25,8 @@ key_f = tempfile.NamedTemporaryFile(delete=False)
 key_f.write(bytes(os.getenv('CERT_KEY'), 'utf-8'))
 key_f.close()
 
-api = Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
-          cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
+api = ApiPostgREST(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
+                   cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 SESSION_NAME = "SessionID"

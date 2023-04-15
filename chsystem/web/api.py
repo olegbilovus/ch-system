@@ -33,7 +33,7 @@ def postgrest_sanitize(fun):
     return wrapper_fun
 
 
-class Api:
+class ApiPostgREST:
 
     def __init__(self, cert_f, key_f, cf_client_id, cf_client_secret, url):
         self.session = requests.Session()
