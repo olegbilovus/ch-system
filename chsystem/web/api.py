@@ -166,3 +166,18 @@ class Api:
             return res.status_code == 204
 
         return False
+
+    @postgrest_sanitize
+    def add_timer(self, clanid, bossname, _type, respawn: int, window: int):
+        timer_exists = self.session.get(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}').json()
+
+        if not timer_exists:
+            res = self.session.post(f'{self.url}/timer', json={'clanid': clanid, 'bossname': bossname, 'type': _type,
+                                                               'respawntimeminutes': respawn, 'windowminutes': window})
+            return res.status_code == 201
+        return False
+
+    @postgrest_sanitize
+    def delete_timer(self, clanid, bossname):
+        res = self.session.delete(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}')
+        return res.status_code == 204

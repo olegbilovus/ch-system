@@ -31,8 +31,8 @@ api = Api(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
 app = Flask(__name__, template_folder='templates', static_folder='static')
 SESSION_NAME = "SessionID"
 
-ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin', 'Chief']
-ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b', '#000000']
+ROLES = ['Recruit', 'Clansman', 'Guardian', 'General', 'Admin']
+ROLES_COLORS = ['#f1c21b', '#e67f22', '#3398dc', '#9a59b5', '#1abc9b']
 
 
 def logout_fun(sessionid):
@@ -153,6 +153,43 @@ def reset_timer_by_bossname(user: User, bossname):
     return jsonify(None), 404
 
 
+@app.post('/timer-add')
+@login_req(role=3)
+def add_timer(user: User):
+    req = request.form
+    if req['bossname'].isalnum() and req['type'].isalpha() and req['respawn'].isdigit() and req['window'].isdigit():
+        res = api.add_timer(user.clanid, req['bossname'].lower(), req['type'].upper(), int(req['respawn']),
+                            int(req['window']))
+    else:
+        res = None
+
+    if res:
+        msg = {'text': f'{req["bossname"]} added', 'type': 'success'}
+    else:
+        msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
+
+    return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
+                           msg=msg)
+
+
+@app.post('/timer-delete')
+@login_req(role=3)
+def delete_timer(user: User):
+    req = request.form
+    if req['bossname'].isalnum():
+        res = api.delete_timer(user.clanid, req['bossname'].lower())
+    else:
+        res = None
+
+    if res:
+        msg = {'text': f'{req["bossname"]} deleted', 'type': 'success'}
+    else:
+        msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
+
+    return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
+                           msg=msg)
+
+
 @app.get('/profile')
 @login_req(change_pw=False)
 def profile(user: User):
@@ -170,7 +207,8 @@ def change_pw(user: User):
         res = None
 
     if res:
-        msg = {'text': 'Password changed. Sessions have not been deleted, you may want to check them.', 'type': 'success'}
+        msg = {'text': 'Password changed. Sessions have not been deleted, you may want to check them.',
+               'type': 'success'}
     else:
         msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
 
@@ -179,7 +217,7 @@ def change_pw(user: User):
 
 
 @app.get('/clan')
-@login_req()
+@login_req(role=3)
 def clan(user: User):
     return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
 

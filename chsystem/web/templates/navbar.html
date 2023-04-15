@@ -12,7 +12,7 @@
                 <li>
                     <a class="dropdown-item" href="{{ url_for('sessions') }}">Sessions</a>
                 </li>
-                {% if user.role >= 4 %}
+                {% if user.role >= 3 %}
                     <li>
                         <a class="dropdown-item" href="{{ url_for('clan') }}">Clan</a>
                     </li>

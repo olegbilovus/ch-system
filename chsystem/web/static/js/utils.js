@@ -37,3 +37,7 @@ function pwEye(e) {
 function toLower(e) {
     e.target.value = e.target.value.toLowerCase()
 }
+
+function toUpper(e) {
+    e.target.value = e.target.value.toUpperCase()
+}
