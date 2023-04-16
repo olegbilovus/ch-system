@@ -9,7 +9,7 @@ function sessionDeleteConfirmed(_id, tr) {
             $(tr).remove()
         },
         error() {
-            alert(`Error deleting session ${_id}`)
+            bootbox.alert(`Error deleting session ${_id}`)
         }
     })
 }
@@ -69,7 +69,7 @@ function loadSessions() {
             $('#sessionsLoading').remove()
         },
         error() {
-            alert("Error getting sessions data")
+            bootbox.alert("Error getting sessions data")
         }
     })
 }

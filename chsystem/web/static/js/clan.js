@@ -18,10 +18,10 @@ function changeRoleUser(username, tdRoleSelect) {
         data: JSON.stringify({username: username, role: $(tdRoleSelect).val()}),
         contentType: 'application/json; charset=utf-8',
         success() {
-            alert(`Role changed to ${username}`)
+            bootbox.alert(`Role changed to ${username}`)
         },
         error() {
-            alert(`Error changing the role to ${username}`)
+            bootbox.alert(`Error changing the role to ${username}`)
         }
     })
 }
@@ -37,7 +37,7 @@ function deleteUser(username, tr) {
             $(tr).remove()
         },
         error() {
-            alert(`Error deleting the user ${username}`)
+            bootbox.alert(`Error deleting the user ${username}`)
         }
     })
 }
@@ -96,7 +96,7 @@ function loadUsers(roleNames, roleColors) {
             $('#buttonUserList').children()[0].remove()
         },
         error() {
-            alert("Error getting users")
+            bootbox.alert("Error getting users")
         }
     })
 }

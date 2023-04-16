@@ -40,7 +40,7 @@ function timerResetConfirmed(bossname, tdTimer) {
             setTdTimerBK(tdTimer, remainingMins)
         },
         error() {
-            alert(`Error resetting ${bossname}`)
+            bootbox.alert(`Error resetting ${bossname}`)
         }
     })
 }
@@ -98,7 +98,7 @@ function loadTimers(_type) {
             $(`#button${_type}`).children()[0].remove()
         },
         error() {
-            alert(`Error getting ${_type} timers data`)
+            bootbox.alert(`Error getting ${_type} timers data`)
         }
     })
 }
@@ -148,7 +148,7 @@ function loadTimersType() {
             $('#timersCardLoading').remove()
         },
         error() {
-            alert('Error getting timers type data')
+            bootbox.alert('Error getting timers type data')
         }
     })
 }
