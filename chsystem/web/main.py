@@ -157,11 +157,8 @@ def reset_timer_by_bossname(user: User, bossname):
 @login_req(role=3)
 def add_timer(user: User):
     req = request.form
-    if req['bossname'].isalnum() and req['type'].isalpha() and req['respawn'].isdigit() and req['window'].isdigit():
-        res = api.add_timer(user.clanid, req['bossname'].lower(), req['type'].upper(), int(req['respawn']),
-                            int(req['window']))
-    else:
-        res = None
+    res = api.add_timer(user.clanid, req['bossname'].lower(), req['type'].upper(), int(req['respawn']),
+                        int(req['window']))
 
     if res:
         msg = {'text': f'{req["bossname"]} added', 'type': 'success'}
@@ -169,17 +166,14 @@ def add_timer(user: User):
         msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
 
     return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
-                           msg=msg)
+                           msg=msg, role_names=ROLES, role_colors=ROLES_COLORS)
 
 
 @app.post('/timer-delete')
 @login_req(role=3)
 def delete_timer(user: User):
     req = request.form
-    if req['bossname'].isalnum():
-        res = api.delete_timer(user.clanid, req['bossname'].lower())
-    else:
-        res = None
+    res = api.delete_timer(user.clanid, req['bossname'].lower())
 
     if res:
         msg = {'text': f'{req["bossname"]} deleted', 'type': 'success'}
@@ -187,7 +181,7 @@ def delete_timer(user: User):
         msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
 
     return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
-                           msg=msg)
+                           msg=msg, role_names=ROLES, role_colors=ROLES_COLORS)
 
 
 @app.get('/profile')
@@ -219,7 +213,59 @@ def change_pw(user: User):
 @app.get('/clan')
 @login_req(role=3)
 def clan(user: User):
-    return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
+    return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
+                           role_names=ROLES, role_colors=ROLES_COLORS)
+
+
+@app.post('/user-add')
+@login_req(role=4)
+def add_user(user: User):
+    req = request.form
+    role = int(req['role'])
+    if 0 <= role < len(ROLES):
+        res = api.add_user(user.clanid, user.serverid, req['username'], req['name'], role)
+    else:
+        res = None
+
+    if res:
+        msg = {'text': f'username: {req["username"]}, temporary password: {res}', 'type': 'success'}
+    else:
+        msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
+
+    return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
+                           msg=msg, role_names=ROLES, role_colors=ROLES_COLORS)
+
+
+@app.get('/users')
+@login_req(role=4)
+def get_users(user: User):
+    return jsonify(api.get_users(user.clanid))
+
+
+@app.delete('/users')
+@login_req(role=4)
+def delete_user(user: User):
+    res = api.delete_user_by_username(request.json['username'], user.clanid)
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
+
+
+@app.post('/user-role')
+@login_req(role=4)
+def change_user_role(user: User):
+    req = request.json
+    role = int(req['role'])
+    if 0 <= role < len(ROLES):
+        res = api.change_user_role(user.clanid, req['username'], role)
+    else:
+        res = None
+
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
 
 
 @app.get('/sessions')

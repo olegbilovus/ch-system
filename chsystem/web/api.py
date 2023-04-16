@@ -184,3 +184,43 @@ class ApiPostgREST:
     def delete_timer(self, clanid, bossname):
         res = self.session.delete(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}')
         return res.status_code == 204
+
+    @postgrest_sanitize
+    def add_user(self, clanid, serverid, username, name, role):
+        username_exists = self.session.get(f'{self.url}/webprofile?username=eq.{username}').json()
+        if not username_exists:
+            res1_headers = {k: v for k, v in self.session.headers.items()}
+            res1_headers['Prefer'] = "return=representation"
+            res1 = self.session.post(f'{self.url}/userprofile?select=id',
+                                     json={'name': name, 'clanid': clanid, 'serverid': serverid, 'role': role},
+                                     headers=res1_headers)
+            if res1.status_code == 201:
+                userid = res1.json()[0]['id']
+                pwd = token_hex(16)
+                hash_pwd = bcrypt.hashpw(bytes(pwd, 'utf-8'), bcrypt.gensalt()).decode('utf-8')
+                res2 = self.session.post(f'{self.url}/webprofile',
+                                         json={'userprofileid': userid, 'username': username, 'change_pw': True,
+                                               'hash_pw': hash_pwd})
+                if res2.status_code == 201:
+                    return pwd
+
+        return None
+
+    @postgrest_sanitize
+    def get_users(self, clanid):
+        return self.session.get(
+            f'{self.url}/webprofile?select=username,userprofile(name,role)&userprofile.clanid=eq.{clanid}&userprofile.order=role.desc&order=username').json()
+
+    @postgrest_sanitize
+    def delete_user_by_username(self, username, clanid):
+        userid = self.session.get(f'{self.url}/webprofile?select=userprofileid&username=eq.{username}').json()[0][
+            'userprofileid']
+        res = self.session.delete(f'{self.url}/userprofile?clanid=eq.{clanid}&id=eq.{userid}')
+        return res.status_code == 204
+
+    @postgrest_sanitize
+    def change_user_role(self, clanid, username, role):
+        userid = self.session.get(f'{self.url}/webprofile?select=userprofileid&username=eq.{username}').json()[0][
+            'userprofileid']
+        res = self.session.patch(f'{self.url}/userprofile?clanid=eq.{clanid}&id=eq.{userid}', json={'role': role})
+        return res.status_code == 204
