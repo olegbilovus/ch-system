@@ -1,6 +1,7 @@
 from functools import wraps
 import psycopg2
 from tabulate import tabulate
+from datetime import datetime
 
 import database
 from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data, PREFIX, \
@@ -238,28 +239,6 @@ def copy_copyforce(successor=None):
 
 
 @start_chain
-def init_timers(successor=None):
-    msg_to_send = {'private': False, 'msg': None}
-    while True:
-        msg = yield msg_to_send
-        if msg.cmd == 'init':
-            if msg.user_role < 5:
-                msg_to_send['msg'] = f'{msg.author_mention} You are not authorized to use this command'
-            else:
-                clan_id = msg.user_clan_id
-                default_timers = get_default_timers_data()
-                try:
-                    timer_db.init_timers(default_timers, clan_id)
-                    msg_to_send['msg'] = f'{msg.author_mention} Timers have been added'
-                except psycopg2.IntegrityError:
-                    timer_db.conn.rollback()
-                    msg_to_send['msg'] = f'{msg.author_mention} An error occurred while initializing timers'
-
-        elif successor is not None:
-            msg_to_send = successor.send(msg)
-
-
-@start_chain
 def sub(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
@@ -446,6 +425,18 @@ def timer(successor=None):
 
 
 @start_chain
+def gt(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'gt':
+            dt = datetime.utcnow()
+            msg_to_send['msg'] = f'{dt.hour}:{dt.minute}'
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
 def help_commands(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
@@ -466,12 +457,13 @@ def help_commands(successor=None):
                 f'{PREFIX}**unsub <boss> <boss> ...** - Unsubscribe from bosses.\n' \
                 f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
                 f'{PREFIX}**bosslist** - Get the names, respawn and window of the bosses available in your clan.\n' \
+                f'{PREFIX}**gt** - Shows current game time.\n' \
                 f'{PREFIX}**help** - Show this message.\n' \
                 f'*-- Commands which require role > 3 --*\n' \
                 f'{PREFIX}**role** <@user> <role> - Change a user role, @user means to tag/mention the user. role has to be a number between 0 and 4\n' \
                 f'*-- Commands which require role > 2 --*\n' \
-                f'{PREFIX}**timeradd** <name> <type> <respawm mins> <window mins> - Add a timer. Name has to be one single word, respawm and window has to be in minutes. Each clan has a maximum of {MAX_NUM_TIMERS} timers.\n' \
-                f'{PREFIX}**timeredit** <name> <type> <respawm mins> <window mins> - Edit a timer. Name has to be one single word, respawm and window has to be in minutes.\n' \
+                f'{PREFIX}**timeradd** <name> <type> <respawn mins> <window mins> - Add a timer. Name has to be one single word, respawn and window has to be in minutes. Each clan has a maximum of {MAX_NUM_TIMERS} timers.\n' \
+                f'{PREFIX}**timeredit** <name> <type> <respawn mins> <window mins> - Edit a timer. Name has to be one single word, respawn and window has to be in minutes.\n' \
                 f'{PREFIX}**timerdel** <name> - Delete a timer'
         elif successor is not None:
             msg_to_send = successor.send(msg)

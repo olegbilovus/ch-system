@@ -1,11 +1,15 @@
-import setup
+import psycopg2
+
+from setup import setup
+
+setup()
 import os
 import discord
 
 import logs
 import database
 import commands
-from utils import PREFIX
+from utils import PREFIX, get_default_timers_data
 import threading
 import keep_alive
 
@@ -18,12 +22,13 @@ clan_discord_db = database.ClanDiscord()
 discord_id_db = database.DiscordID()
 clan_db = database.Clan()
 user_profile_db = database.UserProfile()
+timer_db = database.Timer()
 
 
 def get_chain_commands():
     return commands.security_check(commands.soon(commands.set_timer(commands.sub(commands.unsub(commands.sublist(
-        commands.init_timers(commands.copy_copyforce(commands.help_commands(
-            commands.bosslist(commands.role(commands.timer(commands.reset_timer(commands.default())))))))))))))
+        commands.copy_copyforce(commands.help_commands(commands.bosslist(
+            commands.role(commands.timer(commands.gt(commands.reset_timer(commands.default())))))))))))))
 
 
 class DiscordBot(discord.Client):
@@ -60,10 +65,9 @@ class DiscordBot(discord.Client):
         msg_received = commands.Message(message.content[1:], message.author, logger)
         try:
             msg_to_send = self.cmds(msg_received)
-        except StopIteration:
-            logger.error('StopIteration', extra=extra_log)
+        except StopIteration as e:
+            logger.exception(e, extra=extra_log)
             self.cmds = get_chain_commands().send
-            clan_discord_db.update_url(force=True)
             return
 
         if msg_to_send['msg'] is not None:
@@ -90,6 +94,15 @@ class DiscordBot(discord.Client):
         if clan_discord_db.get_by_discord_guild_id(guild.id) is None:
             logger.critical(f'Guild {guild.name} joined but not in database, leaving.')
             await guild.leave()
+        else:
+            default_timers = get_default_timers_data()
+            try:
+                clan_discord = clan_discord_db.get_by_discord_guild_id(guild.id)
+                timer_db.init_timers(default_timers, clan_discord[0])
+                logger.info('Timers have been added')
+            except psycopg2.IntegrityError as e:
+                timer_db.conn.rollback()
+                logger.exception(e)
 
     async def on_guild_remove(self, guild):
         logger.warning(f'Left GuildID: {guild.id}, Guild name: {guild.name}')
