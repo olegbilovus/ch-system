@@ -3,6 +3,10 @@ version = 1
 [[analyzers]]
 name = "javascript"
 
+  [analyzers.meta]
+    environment = ["bootstrap", "jquery"]
+
+
 [[analyzers]]
 name = "python"
 

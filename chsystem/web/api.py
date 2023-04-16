@@ -189,7 +189,7 @@ class ApiPostgREST:
     def add_user(self, clanid, serverid, username, name, role):
         username_exists = self.session.get(f'{self.url}/webprofile?username=eq.{username}').json()
         if not username_exists:
-            res1_headers = {k: v for k, v in self.session.headers.items()}
+            res1_headers = dict(self.session.headers.items())
             res1_headers['Prefer'] = "return=representation"
             res1 = self.session.post(f'{self.url}/userprofile?select=id',
                                      json={'name': name, 'clanid': clanid, 'serverid': serverid, 'role': role},

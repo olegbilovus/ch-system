@@ -193,7 +193,7 @@ def profile(user: User):
 
 @app.post('/change-pw')
 @login_req(change_pw=False)
-def change_pw(user: User):
+def change_pwd(user: User):
     req = request.form
     if 8 <= len(req['newPassword']) <= 20:
         res = api.change_pw(user.userprofileid, req['oldPassword'], req['newPassword'])
@@ -279,7 +279,7 @@ def sessions(user: User):
 def get_user_sessions(user: User):
     user_sessions = api.get_user_sessions(user.userprofileid)
     data = {'sessions': [], 'current': -1}
-    for i, us in enumerate(user_sessions):
+    for us in user_sessions:
         data['sessions'].append(us.get_data_select('id', 'creation', 'lastuse', 'host'))
         if us.id == user.id:
             data['current'] = us.id
