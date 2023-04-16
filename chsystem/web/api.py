@@ -9,6 +9,7 @@ from utils import get_current_time_minutes, TIMER_OFFSET
 from models import User
 
 _HOST = os.getenv('HOST')
+MAX_NUM_TIMERS = 50
 
 
 def check_str_chars(obj):
@@ -169,12 +170,14 @@ class ApiPostgREST:
 
     @postgrest_sanitize
     def add_timer(self, clanid, bossname, _type, respawn: int, window: int):
-        timer_exists = self.session.get(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}').json()
-
-        if not timer_exists:
-            res = self.session.post(f'{self.url}/timer', json={'clanid': clanid, 'bossname': bossname, 'type': _type,
-                                                               'respawntimeminutes': respawn, 'windowminutes': window})
-            return res.status_code == 201
+        clan_timers_count = len(self.session.get(f'{self.url}/timer?clanid={clanid}&select=id').json())
+        if clan_timers_count < MAX_NUM_TIMERS:
+            timer_exists = self.session.get(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}').json()
+            if not timer_exists:
+                res = self.session.post(f'{self.url}/timer',
+                                        json={'clanid': clanid, 'bossname': bossname, 'type': _type,
+                                              'respawntimeminutes': respawn, 'windowminutes': window})
+                return res.status_code == 201
         return False
 
     @postgrest_sanitize
