@@ -1,6 +1,7 @@
 version: "3.7"
 
 services:
+
   chsystem-discord:
     container_name: chsystem-discord
     image: chsystem:latest
@@ -12,6 +13,7 @@ services:
       LOGTAIL_DISCORD: # LOGTAIL_DISCORD TOKEN
       LOGTAIL_DATABASE: # LOGTAIL_DATABASE TOKEN
     restart: always
+
   chsystem-notify:
     container_name: chsystem-notify
     image: chsystem:latest
@@ -23,6 +25,32 @@ services:
       LOGTAIL_DATABASE: # LOGTAIL_DATABASE TOKEN
     restart: always
     command: bash init.sh chsystem/notify/notify.py
+
+  chsystem-web:
+    container_name: chsystem-web
+    image: chsystem:latest
+    networks:
+      - postgres
+    environment:
+      CF_CLIENT_ID: # CF Client ID, None otherwise
+      CF_CLIENT_SECRET: # CF Client Secret, None otherwise
+      CERT: # mTLS Cert, None otherwise
+      CERT_KEY: # mTLS Cert Key, None otherwise
+      URL: http://chsystem-postgrest:3000
+      LOGTAIL_WEB: # LOGTAIL_WEB TOKEN
+      HOST: # Host name
+    restart: always
+    command: bash init.sh chsystem/web/main.py
+
+  chsystem-postgrest:
+    container_name: chsystem-postgrest
+    image: postgrest/postgrest:latest
+    networks:
+      - postgres
+    environment:
+      PGRST_DB_URI: # Postgres URI
+      PGRST_DB_ANON_ROLE: chsystem
+    restart: always
 
 networks:
   postgres:
