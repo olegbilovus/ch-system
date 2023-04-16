@@ -17,10 +17,10 @@ function changeRoleUser(username, tdRoleSelect) {
         timeout: 5000,
         data: JSON.stringify({username: username, role: $(tdRoleSelect).val()}),
         contentType: 'application/json; charset=utf-8',
-        success: function (data) {
+        success() {
             alert(`Role changed to ${username}`)
         },
-        error: function (xhr, status, error) {
+        error() {
             alert(`Error changing the role to ${username}`)
         }
     })
@@ -33,10 +33,10 @@ function deleteUser(username, tr) {
         timeout: 5000,
         data: JSON.stringify({username: username}),
         contentType: 'application/json; charset=utf-8',
-        success: function (data) {
+        success() {
             $(tr).remove()
         },
-        error: function (xhr, status, error) {
+        error() {
             alert(`Error deleting the user ${username}`)
         }
     })
@@ -47,7 +47,7 @@ function loadUsers(roleNames, roleColors) {
         url: './users',
         type: 'GET',
         timeout: 5000,
-        success: function (data) {
+        success(data) {
             let deleteButtonTemplate = '<button type="button" class="fw-bold btn btn-outline-danger"><i class="bi bi-trash"></i></button>'
             let tbody = $('#tbodyUserList')
 
@@ -77,7 +77,7 @@ function loadUsers(roleNames, roleColors) {
                                 className: 'btn-secondary'
                             }
                         },
-                        callback: function (result) {
+                        callback(result) {
                             if (result) {
                                 $(deleteButton).empty()
                                 $(deleteButton).append($('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'))
@@ -95,7 +95,7 @@ function loadUsers(roleNames, roleColors) {
             })
             $('#buttonUserList').children()[0].remove()
         },
-        error: function (xhr, status, error) {
+        error() {
             alert("Error getting users")
         }
     })

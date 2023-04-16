@@ -5,10 +5,10 @@ function sessionDeleteConfirmed(_id, tr) {
         timeout: 5000,
         data: JSON.stringify({id: _id}),
         contentType: 'application/json; charset=utf-8',
-        success: function (data) {
+        success() {
             $(tr).remove()
         },
-        error: function (xhr, status, error) {
+        error() {
             alert(`Error deleting session ${_id}`)
         }
     })
@@ -19,7 +19,7 @@ function loadSessions() {
         url: "./user-sessions",
         type: 'GET',
         timeout: 5000,
-        success: function (data) {
+        success(data) {
             let deleteButtonTemplate = '<button type="button" class="fw-bold btn btn-outline-danger"><i class="bi bi-trash"></i></button>'
             let noDeleteButtonTemplate = '<button type="button" class="fw-bold btn btn-outline-secondary" disabled>Current session </button>'
 
@@ -50,7 +50,7 @@ function loadSessions() {
                                     className: 'btn-secondary'
                                 }
                             },
-                            callback: function (result) {
+                            callback(result) {
                                 if (result) {
                                     $(tdDeleteButton).empty()
                                     $(tdDeleteButton).append($('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'))
@@ -68,7 +68,7 @@ function loadSessions() {
             })
             $('#sessionsLoading').remove()
         },
-        error: function (xhr, status, error) {
+        error() {
             alert("Error getting sessions data")
         }
     })
