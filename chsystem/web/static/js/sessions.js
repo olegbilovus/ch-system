@@ -1,6 +1,6 @@
 function sessionDeleteConfirmed(_id, tr) {
     $.ajax({
-        url: `./user-sessions`,
+        url: "./user-sessions",
         type: 'DELETE',
         timeout: 5000,
         data: JSON.stringify({id: _id}),
@@ -16,7 +16,7 @@ function sessionDeleteConfirmed(_id, tr) {
 
 function loadSessions() {
     $.ajax({
-        url: `./user-sessions`,
+        url: "./user-sessions",
         type: 'GET',
         timeout: 5000,
         success: function (data) {
@@ -69,7 +69,7 @@ function loadSessions() {
             $('#sessionsLoading').remove()
         },
         error: function (xhr, status, error) {
-            alert(`Error getting sessions data`)
+            alert("Error getting sessions data")
         }
     })
 }

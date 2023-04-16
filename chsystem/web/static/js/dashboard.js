@@ -59,7 +59,7 @@ function loadTimers(_type) {
                 let tr = $('<tr>')[0]
                 let th = $(`<th scope="row">${timer.bossname}</th>`)[0]
                 let remainingMins = timer.timer - minsNow
-                let tdTimer = $(`<td>${timer.timer == null ? 'No Data' : minutesToDHM(remainingMins)}</td>`)[0]
+                let tdTimer = $(`<td>${timer.timer === null ? 'No Data' : minutesToDHM(remainingMins)}</td>`)[0]
                 let tdResetButton = $('<td>')[0]
                 let resetButton = $(resetButtonTemplate)[0]
 
@@ -87,7 +87,7 @@ function loadTimers(_type) {
                     })
                 })
 
-                if (timer.timer != null) {
+                if (timer.timer !== null) {
                     setTdTimerBK(tdTimer, remainingMins)
                 }
 

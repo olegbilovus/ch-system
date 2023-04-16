@@ -110,7 +110,7 @@
 
     function setup() {
         let settings = localStorage.getItem('lightSwitch');
-        if (settings == null) {
+        if (settings === null) {
             settings = getSystemDefaultTheme();
         }
 

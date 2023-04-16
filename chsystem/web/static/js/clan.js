@@ -12,7 +12,7 @@ function createRoleSelect(roleNames, roleColors, selected) {
 
 function changeRoleUser(username, tdRoleSelect) {
     $.ajax({
-        url: `./user-role`,
+        url: "./user-role",
         type: 'POST',
         timeout: 5000,
         data: JSON.stringify({username: username, role: $(tdRoleSelect).val()}),
@@ -28,7 +28,7 @@ function changeRoleUser(username, tdRoleSelect) {
 
 function deleteUser(username, tr) {
     $.ajax({
-        url: `./users`,
+        url: "./users",
         type: 'DELETE',
         timeout: 5000,
         data: JSON.stringify({username: username}),
@@ -55,7 +55,7 @@ function loadUsers(roleNames, roleColors) {
                 let tr = $('<tr>')[0]
                 let th = $(`<th scope="row">${user.username}</th>`)[0]
                 let tdName = $(`<td>${user.userprofile.name}</td>`)[0]
-                let tdRole = $(`<td>`)[0]
+                let tdRole = $("<td>")[0]
                 let tdRoleSelect = createRoleSelect(roleNames, roleColors, user.userprofile.role)
                 let tdDeleteButton = $('<td>')[0]
                 let deleteButton = $(deleteButtonTemplate)[0]
@@ -96,7 +96,7 @@ function loadUsers(roleNames, roleColors) {
             $('#buttonUserList').children()[0].remove()
         },
         error: function (xhr, status, error) {
-            alert(`Error getting users`)
+            alert("Error getting users")
         }
     })
 }
