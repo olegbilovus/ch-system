@@ -223,7 +223,7 @@ def add_user(user: User):
     req = request.form
     role = int(req['role'])
     if 0 <= role < len(ROLES):
-        res = api.add_user(user.clanid, user.serverid, req['username'], req['name'], role)
+        res = api.add_user(user.clanid, user.serverid, req['username'].lower(), req['name'], role)
     else:
         res = None
 
