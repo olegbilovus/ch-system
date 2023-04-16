@@ -7,6 +7,10 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.11 (ch-system)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="bootstrap" level="application" />
+    <orderEntry type="library" name="jquery" level="application" />
+    <orderEntry type="library" name="bootbox" level="application" />
+    <orderEntry type="library" name="bootstrap-icons" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="versionSpecifier" value="Greater or equal (&gt;=x.y.z)" />

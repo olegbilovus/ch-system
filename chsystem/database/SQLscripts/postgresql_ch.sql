@@ -83,9 +83,23 @@ DROP TABLE IF EXISTS webProfile CASCADE;
 CREATE TABLE webProfile
 (
     userProfileID BIGSERIAL PRIMARY KEY,
-    username      VARCHAR(50),
+    username      VARCHAR(50) UNIQUE,
     hash_pw       VARCHAR(150),
     change_pw     BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (userProfileID)
+        REFERENCES userProfile (ID)
+        ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+DROP TABLE IF EXISTS webSession CASCADE;
+CREATE TABLE webSession
+(
+    id            VARCHAR(200) UNIQUE,
+    userProfileID BIGSERIAL,
+    sessionID     VARCHAR(200) UNIQUE,
+    host          VARCHAR(50),
+    creation      timestamp DEFAULT now(),
+    lastUse       timestamp DEFAULT now(),
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
@@ -104,3 +118,13 @@ CREATE TABLE subscriber
         REFERENCES timer (ID)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+DROP PROCEDURE IF EXISTS deleteOldSessions CASCADE;
+CREATE PROCEDURE deleteOldSessions()
+    LANGUAGE 'sql'
+AS
+$$
+DELETE
+FROM websession
+WHERE creation < now() - interval '3 days';
+$$;

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'dependencies.html' %}
+    <title>{{ 'Profile ' + user['name'] }}</title>
+</head>
+
+<body>
+{% include 'navbar.html' %}
+<div class="container mt-5 mx-auto">
+    {% if msg %}
+        <div class="alert alert-{{ msg['type'] }}">
+            {{ msg['text'] }}
+        </div>
+    {% endif %}
+    <form method="POST" action="/change-pw" class="row g-3 needs-validation" novalidate>
+
+        <div class="col-md-6">
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" id="username" disabled value="{{ user.username }}">
+        </div>
+        <div class="col-md-6">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" disabled value="{{ user.name }}">
+        </div>
+        <fieldset class="form-group border p-3">
+            <legend class="w-auto px-2">Change password</legend>
+            <div class="col-md-12">
+                <label for="oldPassword" class="form-label">Old Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                    <button class="btn btn-outline-secondary bi-eye-slash" type="button" id="pwShow"></button>
+                    <div class="invalid-feedback">
+                        Please provide a valid password.
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 mt-3">
+                <label for="newPassword" class="form-label">New Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="newPassword" name="newPassword" required
+                           oninput="passwordCheck()"
+                           onfocus="(function () {document.getElementById('invalidFeedbackNewPassword').classList.add('d-block')})()">
+                    <button class="btn btn-outline-secondary bi-eye-slash" type="button" id="pwShow"></button>
+                    <div class="invalid-feedback" id="invalidFeedbackNewPassword">
+                        Please provide a valid password with only letters, numbers and length between
+                        8 and 20.
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+        <div class="d-grid gap-2">
+            <button id="loginButton" class="btn btn-lg btn-success" type="submit">Save</button>
+        </div>
+
+    </form>
+    {% include 'switch.html' %}
+</div>
+<script>
+    formValidate()
+
+    const constraintPassword = new RegExp(/^[A-Za-z0-9]+$/i, "");
+
+    function passwordCheck() {
+        let invFeed = document.getElementById('invalidFeedbackNewPassword')
+        invFeed.classList.add('d-block')
+        let pw = document.getElementById('newPassword')
+        let pwVal = ''
+
+        for (const c of pw.value) {
+            if (!constraintPassword.test(c)) {
+                let msg = c + ' is not allowed. Only letters and numbers.'
+                pw.setCustomValidity(msg)
+                invFeed.textContent = msg
+                return
+            }
+            if (pwVal.length > 20) {
+                let msg = 'Max password length is 20 characters,'
+                pw.setCustomValidity(msg)
+                invFeed.textContent = msg
+                return
+            }
+            pwVal += c
+        }
+
+        if (pwVal.length < 8) {
+            let msg = 'Please provide a password with at least 8 characters.'
+            pw.setCustomValidity(msg)
+            document.getElementById('invalidFeedbackNewPassword').textContent = msg
+            return
+        }
+
+        pw.setCustomValidity('')
+        invFeed.textContent = ''
+    }
+
+    let eyes = document.querySelectorAll('#pwShow')
+    eyes.forEach((buttonEye) => {
+        buttonEye.addEventListener('click', pwEye)
+    })
+
+
+</script>
+</body>
+</html>

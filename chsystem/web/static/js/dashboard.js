@@ -1,210 +1,154 @@
-const BOSSES = {
-  110: 30,
-  115: 35,
-  120: 40,
-  125: 45,
-  130: 50,
-  140: 55,
-  155: 60,
-  160: 65,
-  165: 70,
-  170: 80,
-  180: 90,
-  185: 75,
-  190: 85,
-  195: 95,
-  200: 105,
-  205: 115,
-  210: 125,
-  215: 135,
-  aggy: 1894,
-  mord: 2160,
-  hrung: 2160,
-  necro: 2160,
-  prot: 1190,
-  gele: 2880,
-  bt: 4320,
-  dino: 4320
-}
-
-function createUser () {
-  const user = {
-    user_id: document.getElementById('user_id_create').value,
-    role: parseInt(document.getElementById('role').value),
-    main: document.getElementById('main').value
-  }
-  $.ajax({
-    url: './user/create',
-    type: 'POST',
-    data: JSON.stringify(user),
-    contentType: 'application/json; charset=utf-8',
-    timeout: 5000,
-    success: function (apiKey) {
-      const viewer = document.getElementById('apikey_value')
-      viewer.classList.remove('d-none')
-      viewer.classList.add('d-block')
-      viewer.innerHTML = apiKey.split('"')[1]
-    },
-    error: function (xhr, status, error) {
-      alert('Error')
+function minutesToDHM(minutes) {
+    let negative = false
+    if (minutes < 0) {
+        minutes *= -1
+        negative = true
     }
-  })
-}
-
-function deleteUserConfirmed (_user_id) {
-  $.ajax({
-    url: './user/delete',
-    type: 'POST',
-    data: JSON.stringify({ user_id: _user_id }),
-    contentType: 'application/json; charset=utf-8',
-    timeout: 5000,
-    success: function (apiKey) {
-      document.getElementById('userD' + _user_id).remove()
-      alert('Deleted')
-    },
-    error: function (xhr, status, error) {
-      alert('Error')
+    let days = Math.trunc(minutes / 1440)
+    minutes %= 1440
+    let hours = Math.trunc(minutes / 60)
+    minutes %= 60
+    let msg = `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes}m`
+    if (!negative) {
+        return msg
     }
-  })
+    return '-' + msg
 }
 
-function deleteUser (_user_id) {
-  bootbox.confirm({
-    message: 'Are you sure you want to delete ' + _user_id + '?',
-    buttons: {
-      confirm: {
-        label: 'DELETE',
-        className: 'btn-danger'
-      },
-      cancel: {
-        label: 'No',
-        className: 'btn-secondary'
-      }
-    },
-    callback: function (result) {
-      if (result) {
-        deleteUserConfirmed(_user_id)
-      }
+function setTdTimerBK(tdTimer, remainingMins) {
+    $(tdTimer).removeClass()
+    if (remainingMins >= 15) {
+        $(tdTimer).addClass('bg-success table-success')
+    } else if (remainingMins >= 7) {
+        $(tdTimer).addClass('bg-warning table-warning')
+    } else if (remainingMins >= -15) {
+        $(tdTimer).addClass('bg-danger table-danger')
     }
 
-  })
 }
 
-function changeRole (_user_id, _role) {
-  const user = {
-    user_id: _user_id,
-    role: parseInt(_role.value)
-  }
-  $.ajax({
-    url: './user/change-role',
-    type: 'POST',
-    data: JSON.stringify(user),
-    contentType: 'application/json; charset=utf-8',
-    timeout: 5000,
-    success: function (apiKey) {
-      alert('Role changed to ' + _role.options[_role.selectedIndex].text)
-      location.reload()
-    },
-    error: function (xhr, status, error) {
-      alert('Error ' + xhr.status)
-    }
-  })
-}
-
-function boss_sub (_boss) {
-  $.ajax({
-    url: './boss/sub',
-    type: 'POST',
-    data: JSON.stringify({ boss: _boss }),
-    contentType: 'application/json; charset=utf-8',
-    timeout: 5000,
-    success: function (apiKey) {
-      alert('Subed to ' + _boss)
-    },
-    error: function (xhr, status, error) {
-      alert('Error')
-    }
-  })
-}
-
-function boss_unsub (_boss) {
-  $.ajax({
-    url: './boss/unsub',
-    type: 'POST',
-    data: JSON.stringify({ boss: _boss }),
-    contentType: 'application/json; charset=utf-8',
-    timeout: 5000,
-    success: function (apiKey) {
-      alert('Unsubed from ' + _boss)
-    },
-    error: function (xhr, status, error) {
-      alert('Error')
-    }
-  })
-}
-
-function boss_reset_confirmed (_boss, _timer) {
-  $.ajax({
-    url: './boss/set',
-    type: 'POST',
-    data: JSON.stringify({ boss: _boss, timer: BOSSES[_boss].toString() }),
-    contentType: 'application/json; charset=utf-8',
-    timeout: 5000,
-    success: function (apiKey) {
-      alert(_boss + ' reset')
-      location.reload()
-    },
-    error: function (xhr, status, error) {
-      alert('Error')
-    }
-  })
-}
-
-function boss_reset (_boss, _timer) {
-  bootbox.confirm({
-    message: 'Are you sure you want to reset ' + _boss + '?',
-    buttons: {
-      confirm: {
-        label: 'Yes',
-        className: 'btn-danger'
-      },
-      cancel: {
-        label: 'No',
-        className: 'btn-secondary'
-      }
-    },
-    callback: function (result) {
-      if (result) {
-        boss_reset_confirmed(_boss, _timer)
-      }
-    }
-
-  })
-}
-
-function check_key () {
-  const key_local = localStorage.getItem('key')
-  if (key_local === null) {
+function timerResetConfirmed(bossname, tdTimer) {
     $.ajax({
-      url: './key/generate',
-      type: 'POST',
-      contentType: 'application/json; charset=utf-8',
-      timeout: 5000,
-      success: function (key) {
-        localStorage.setItem('key', key)
-      },
-      error: function (xhr, status, error) {}
+        url: `./timer/reset/${bossname}`,
+        type: 'PATCH',
+        timeout: 5000,
+        success(data) {
+            let minsNow = Math.trunc(new Date().getTime() / 1000 / 60)
+            let remainingMins = data.timer - minsNow
+            $(tdTimer).empty()
+            $(tdTimer).text(minutesToDHM(remainingMins))
+            setTdTimerBK(tdTimer, remainingMins)
+        },
+        error() {
+            alert(`Error resetting ${bossname}`)
+        }
     })
-  } else {
-    $.ajax({
-      url: './key/check',
-      type: 'POST',
-      data: JSON.stringify({ key: key_local }),
-      contentType: 'application/json; charset=utf-8',
-      timeout: 5000,
-      success: function (data) {},
-      error: function (xhr, status, error) {}
+}
 
+function loadTimers(_type) {
+    $.ajax({
+        url: `./timers/${_type}`,
+        type: 'GET',
+        timeout: 5000,
+        success(data) {
+            let resetButtonTemplate = '<button type="button" class="fw-bold btn btn-outline-danger"><i class="bi bi-arrow-clockwise"></i></button>'
+
+            let tbody = $(`#tbody${_type}`)
+            let minsNow = Math.trunc(new Date().getTime() / 1000 / 60)
+            data.forEach((timer) => {
+                let tr = $('<tr>')[0]
+                let th = $(`<th scope="row">${timer.bossname}</th>`)[0]
+                let remainingMins = timer.timer - minsNow
+                let tdTimer = $(`<td>${timer.timer === null ? 'No Data' : minutesToDHM(remainingMins)}</td>`)[0]
+                let tdResetButton = $('<td>')[0]
+                let resetButton = $(resetButtonTemplate)[0]
+
+                $(resetButton).click(() => {
+                    bootbox.confirm({
+                        message: `Are you sure you want to reset ${timer.bossname} ?`,
+                        buttons: {
+                            confirm: {
+                                label: 'Yes',
+                                className: 'btn-danger'
+                            },
+                            cancel: {
+                                label: 'No',
+                                className: 'btn-secondary'
+                            }
+                        },
+                        callback(result) {
+                            if (result) {
+                                $(tdTimer).empty()
+                                $(tdTimer).append($('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'))
+                                timerResetConfirmed(timer.bossname, tdTimer)
+                            }
+                        }
+
+                    })
+                })
+
+                if (timer.timer !== null) {
+                    setTdTimerBK(tdTimer, remainingMins)
+                }
+
+                tdResetButton.append(resetButton)
+                tr.append(th, tdTimer, tdResetButton)
+                tbody.append(tr)
+            })
+            $(`#button${_type}`).children()[0].remove()
+        },
+        error() {
+            alert(`Error getting ${_type} timers data`)
+        }
     })
-  }
+}
+
+function loadTimersType() {
+    $.ajax({
+        url: './timers-type',
+        type: 'GET',
+        timeout: 5000,
+        success(data) {
+            let accordionBodyTemplate = '<div class="accordion-body row mx-auto table-responsive">'
+            let tableTemplate = '<table class="table table-hover">'
+            let tableThreadTemplate = '<thead><tr><th scope="col">Name</th><th scope="col">Timer</th><th scope="col">Reset</th></tr></thead>'
+
+            let timersCard = $('#timersCard')[0]
+            data.forEach((_type) => {
+                let accordionItem = $(`<div class="accordion-item" id="accordion${_type}">`)[0]
+                let accordionHeader = $(`<h2 class="accordion-header" id="heading${_type}">`)[0]
+                $(accordionHeader).click(() => {
+                    $(`#tbody${_type}`).empty()
+                    let button = $(`#button${_type}`)
+                    if (!$(button).hasClass('collapsed')) {
+                        button.prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+                        loadTimers(_type)
+                    }
+                })
+
+                let collapseType = `collapse${_type}`
+                let accordionButton = $(`<button id="button${_type}" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseType}" aria-expanded="false" aria-controls="${collapseType}">`)[0]
+                accordionButton.append(_type)
+                accordionHeader.append(accordionButton)
+                accordionItem.append(accordionHeader)
+
+                let accordionCollapse = $(`<div id="collapse${_type}" class="accordion-collapse collapse" aria-labelledby="heading${_type}" data-bs-parent="#timersCard">`)[0]
+                let accordionBody = $(accordionBodyTemplate)[0]
+                let table = $(tableTemplate)[0]
+                let thread = $(tableThreadTemplate)[0]
+                let tbody = $(`<tbody id="tbody${_type}">`)[0]
+                table.append(thread)
+                table.append(tbody)
+                accordionBody.append(table)
+                accordionCollapse.append(accordionBody)
+                accordionItem.append(accordionCollapse)
+
+                timersCard.append(accordionItem)
+            })
+            $('#timersCardLoading').remove()
+        },
+        error() {
+            alert('Error getting timers type data')
+        }
+    })
 }

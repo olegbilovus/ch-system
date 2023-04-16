@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% include 'dependencies.html' %}
+    <script src="static/js/clan.js"></script>
+    <title>{{ 'Clan ' + user['name'] }}</title>
+</head>
+
+<body>
+{% include 'navbar.html' %}
+<div class="container text-center mt-4">
+    {% if msg %}
+        <div class="alert alert-{{ msg['type'] }}">
+            {{ msg['text'] }}
+        </div>
+    {% endif %}
+    <div class="card col-12 mb-2">
+        <h5 class="card-header text-center">Manage timers</h5>
+        <div class="card-body">
+            <div class="accordion" id="timersCard">
+                <div class="accordion-item" id="accordionTimerAdd">
+                    <h2 class="accordion-header" id="headingTimerAdd">
+                        <button id="buttonTimerAdd" class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapseTimerAdd" aria-expanded="false"
+                                aria-controls="collapseTimerAdd">Add timer
+                        </button>
+                    </h2>
+                    <div id="collapseTimerAdd" class="accordion-collapse collapse" aria-labelledby="headingTimerAdd"
+                         data-bs-parent="#timersCard">
+                        <div class="accordion-body row mx-auto table-responsive">
+                            <form method="POST" action="/timer-add" class="row g-3 needs-validation" novalidate>
+                                <div class="col-md-6">
+                                    <label for="bossname" class="form-label">Bossname</label>
+                                    <input type="text" class="form-control" id="bossname" name="bossname" required
+                                           autofocus>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid unique bossname.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="type" class="form-label">Type</label>
+                                    <input type="text" class="form-control" id="type" name="type" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid type.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="respawn" class="form-label">Respawn minutes</label>
+                                    <input type="number" class="form-control" id="respawn" name="respawn" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid respawn in minutes.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="window" class="form-label">Window minutes</label>
+                                    <input type="number" class="form-control" id="window" name="window" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid window in minutes.
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button id="timerAddButton" class="btn btn-lg btn-success" type="submit">Add timer
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item" id="accordionTimerDelete">
+                    <h2 class="accordion-header" id="headingTimerDelete">
+                        <button id="buttonTimerDelete" class="accordion-button collapsed" type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapseTimerDelete" aria-expanded="false"
+                                aria-controls="collapseTimerDelete">Delete timer
+                        </button>
+                    </h2>
+                    <div id="collapseTimerDelete" class="accordion-collapse collapse"
+                         aria-labelledby="headingTimerDelete"
+                         data-bs-parent="#timersCard">
+                        <div class="accordion-body row mx-auto table-responsive">
+                            <form method="POST" action="/timer-delete" class="row g-3 needs-validation" novalidate>
+                                <div class="col-md-12">
+                                    <label for="bossnameDel" class="form-label">Bossname</label>
+                                    <input type="text" class="form-control" id="bossnameDel" name="bossname" required
+                                           autofocus>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid bossname.
+                                    </div>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button id="timerDeleteButton" class="btn btn-lg btn-danger" type="submit">Delete
+                                        timer
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {%- if user.role >= 4 -%}
+        <div class="card col-12 mb-2">
+            <h5 class="card-header text-center">Manage users</h5>
+            <div class="card-body">
+                <div class="accordion" id="usersCard">
+                    <div class="accordion-item" id="accordionUserAdd">
+                        <h2 class="accordion-header" id="headingUserAdd">
+                            <button id="buttonUserAdd" class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseUserAdd" aria-expanded="false"
+                                    aria-controls="collapseUserAdd">Add user
+                            </button>
+                        </h2>
+                        <div id="collapseUserAdd" class="accordion-collapse collapse" aria-labelledby="headingUserAdd"
+                             data-bs-parent="#usersCard">
+                            <div class="accordion-body row mx-auto table-responsive">
+                                <form method="POST" action="/user-add" class="row g-3 needs-validation" novalidate>
+                                    <div class="col-md-6">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username" required
+                                               autofocus>
+                                        <div class="invalid-feedback">
+                                            Please provide a valid unique username.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label">Name</label>
+                                        <input type="text" class="form-control" id="name" name="name" required>
+                                        <div class="invalid-feedback">
+                                            Please provide a valid name.
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label for="role" class="form-label">Role</label>
+                                        <select class="form-select" id="role" name="role" required>
+                                            <option selected value="0"
+                                                    style="color:{{ role_colors[0] }}">{{ role_names[0] }}</option>
+                                            {%- for i in range(1, role_colors | length) -%}
+                                                <option value="{{ i }}"
+                                                        style="color:{{ role_colors[i] }}">{{ role_names[i] }}</option>
+                                            {%- endfor -%}
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Please select a valid role.
+                                        </div>
+                                    </div>
+                                    <div class="d-grid gap-2">
+                                        <button id="userAddButton" class="btn btn-lg btn-success" type="submit">Add user
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" id="accordionUserList">
+                        <h2 class="accordion-header" id="headingUserList">
+                            <button id="buttonUserList" class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseUserList" aria-expanded="false"
+                                    aria-controls="collapseUserList">Users
+                            </button>
+                        </h2>
+                        <div id="collapseUserList" class="accordion-collapse collapse" aria-labelledby="headingUserList"
+                             data-bs-parent="#usersCard">
+                            <div class="accordion-body row mx-auto table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Username</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Role</th>
+                                        <th scope="col">Delete</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="tbodyUserList"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    {% include 'switch.html' %}
+</div>
+<script>
+    formValidate()
+
+    document.getElementById('bossname').addEventListener('input', toLower)
+    document.getElementById('type').addEventListener('input', toUpper)
+    document.getElementById('bossnameDel').addEventListener('input', toLower)
+
+    $('#headingUserList').click(() => {
+        $('#tbodyUserList').empty()
+        let button = $('#buttonUserList')
+        if (!$(button).hasClass('collapsed')) {
+            button.prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+            loadUsers([
+                {% for role in role_names %}
+                    '{{ role }}',
+                {% endfor %}
+            ], [
+                {% for color in role_colors %}
+                    '{{ color }}',
+                {% endfor %}
+            ])
+        }
+    });
+</script>
+</body>
+</html>
