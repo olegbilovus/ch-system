@@ -143,6 +143,33 @@ def get_timers_by_type(user: User, _type):
     return jsonify(api.get_timers_by_clanid_type(user.clanid, _type.upper()))
 
 
+@app.get('/timers')
+@login_req(role=3)
+def get_timers(user: User):
+    return jsonify(api.get_timers(user.clanid))
+
+
+@app.delete('/timers')
+@login_req(role=3)
+def delete_timers(user: User):
+    res = api.delete_timer_by_bossname(request.json['bossname'].lower(), user.clanid)
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
+
+
+@app.patch('/timers')
+@login_req(role=3)
+def patch_timers(user: User):
+    res = api.patch_timer_by_bossname(user.clanid, request.json['bossname'].lower(), request.json['_type'].upper(),
+                                      int(request.json['respawn']), int(request.json['window']))
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
+
+
 @app.patch('/timer/reset/<bossname>')
 @login_req(role=1)
 def reset_timer_by_bossname(user: User, bossname):
@@ -162,21 +189,6 @@ def add_timer(user: User):
 
     if res:
         msg = {'text': f'{req["bossname"]} added', 'type': 'success'}
-    else:
-        msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
-
-    return render_template('clan.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
-                           msg=msg, role_names=ROLES, role_colors=ROLES_COLORS)
-
-
-@app.post('/timer-delete')
-@login_req(role=3)
-def delete_timer(user: User):
-    req = request.form
-    res = api.delete_timer(user.clanid, req['bossname'].lower())
-
-    if res:
-        msg = {'text': f'{req["bossname"]} deleted', 'type': 'success'}
     else:
         msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
 

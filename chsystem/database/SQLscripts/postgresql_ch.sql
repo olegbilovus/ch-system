@@ -126,5 +126,5 @@ AS
 $$
 DELETE
 FROM websession
-WHERE creation < now() - interval '3 days';
+WHERE creation < now() - interval '3 days' or creation = lastuse;
 $$;
