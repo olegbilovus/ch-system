@@ -48,7 +48,7 @@ function disableInputs(...inputs) {
     })
 }
 
-function minutesToDHM(minutes, fParse) {
+function minutesToDHM(minutes, numbers) {
     let negative = false
     if (minutes < 0) {
         minutes *= -1
@@ -58,12 +58,14 @@ function minutesToDHM(minutes, fParse) {
     minutes %= 1440
     let hours = Math.trunc(minutes / 60)
     minutes %= 60
+
+    if (numbers === true) {
+        return {days, hours, minutes, negative}
+    }
+
     let msg = `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes}m`
     if (negative) {
         msg = '-' + msg
-    }
-    if (fParse !== undefined) {
-        return fParse(msg)
     }
     return msg
 }
