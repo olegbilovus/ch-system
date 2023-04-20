@@ -235,6 +235,7 @@ class ApiPostgREST:
         res = self.session.delete(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}')
         return res.status_code == 204
 
+    @postgrest_sanitize
     def patch_timer_by_bossname(self, clanid, bossname, _type, respawn, window):
         res = self.session.patch(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}',
                                  json={'type': _type, 'respawntimeminutes': respawn, 'windowminutes': window})
