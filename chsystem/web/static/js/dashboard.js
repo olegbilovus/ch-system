@@ -1,20 +1,3 @@
-function minutesToDHM(minutes) {
-    let negative = false
-    if (minutes < 0) {
-        minutes *= -1
-        negative = true
-    }
-    let days = Math.trunc(minutes / 1440)
-    minutes %= 1440
-    let hours = Math.trunc(minutes / 60)
-    minutes %= 60
-    let msg = `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes}m`
-    if (!negative) {
-        return msg
-    }
-    return '-' + msg
-}
-
 function setTdTimerBK(tdTimer, remainingMins) {
     $(tdTimer).removeClass()
     if (remainingMins >= 15) {
