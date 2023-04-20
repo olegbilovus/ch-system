@@ -209,7 +209,7 @@ class ApiPostgREST:
     @postgrest_sanitize
     def get_users(self, clanid):
         return self.session.get(
-            f'{self.url}/webprofile?select=username,userprofile(name,role)&userprofile.clanid=eq.{clanid}&userprofile.order=role.desc&order=username').json()
+            f'{self.url}/webprofile?select=username,userprofile(name,role)&userprofile.clanid=eq.{clanid}&order=userprofile(role).desc,username').json()
 
     @postgrest_sanitize
     def delete_user_by_username(self, username, clanid):
