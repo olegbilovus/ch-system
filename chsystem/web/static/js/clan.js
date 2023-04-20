@@ -21,12 +21,12 @@ function addTimer() {
     form.submit()
 }
 
-function saveTimer(bossname, _type, respawn, window, saveButton) {
+function saveTimer(bossname, respawn, window, saveButton) {
     $.ajax({
         url: "./timers",
         type: 'PATCH',
         timeout: 5000,
-        data: JSON.stringify({bossname, _type, respawn: parseInt(respawn), window: parseInt(window)}),
+        data: JSON.stringify({bossname, respawn: parseInt(respawn), window: parseInt(window)}),
         contentType: 'application/json; charset=utf-8',
         success() {
             $(saveButton).empty()
@@ -69,8 +69,7 @@ function loadTimers() {
                 let tr = $('<tr>')[0]
                 let th = $(`<th scope="row">${timer.bossname}</th>`)[0]
 
-                let tdType = $(`<td><input type="text" class="form-control" value="${timer.type}"></td>`)[0]
-                tdType.addEventListener('input', toUpper)
+                let tdType = $(`<td>${timer.type}</td>`)[0]
 
                 let tdRespawn = $(`<td><input type="number" class="form-control" min="0" value="${timer.respawntimeminutes}"></td>`)[0]
                 let tdWindow = $(`<td><input type="number" class="form-control" min="0" value="${timer.windowminutes}"></td>`)[0]
@@ -94,7 +93,7 @@ function loadTimers() {
                             if (result) {
                                 $(saveButton).empty()
                                 $(saveButton).append($('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'))
-                                saveTimer(th.textContent, tdType.children[0].value, tdRespawn.children[0].value, tdWindow.children[0].value, saveButton)
+                                saveTimer(th.textContent, tdRespawn.children[0].value, tdWindow.children[0].value, saveButton)
                             }
                         }
 

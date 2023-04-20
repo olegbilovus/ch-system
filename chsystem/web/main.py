@@ -162,7 +162,7 @@ def delete_timers(user: User):
 @app.patch('/timers')
 @login_req(role=3)
 def patch_timers(user: User):
-    res = api.patch_timer_by_bossname(user.clanid, request.json['bossname'].lower(), request.json['_type'].upper(),
+    res = api.patch_timer_by_bossname(user.clanid, request.json['bossname'].lower(),
                                       int(request.json['respawn']), int(request.json['window']))
     if res:
         return jsonify(res)
