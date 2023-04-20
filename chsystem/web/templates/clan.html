@@ -116,33 +116,30 @@
                         </div>
                     </div>
                 </div>
-                <div class="accordion-item" id="accordionTimerDelete">
-                    <h2 class="accordion-header" id="headingTimerDelete">
-                        <button id="buttonTimerDelete" class="accordion-button collapsed" type="button"
+                <div class="accordion-item" id="accordionTimerList">
+                    <h2 class="accordion-header" id="headingTimerList">
+                        <button id="buttonTimerList" class="accordion-button collapsed" type="button"
                                 data-bs-toggle="collapse"
-                                data-bs-target="#collapseTimerDelete" aria-expanded="false"
-                                aria-controls="collapseTimerDelete">Delete timer
+                                data-bs-target="#collapseTimerList" aria-expanded="false"
+                                aria-controls="collapseTimerList">Timers
                         </button>
                     </h2>
-                    <div id="collapseTimerDelete" class="accordion-collapse collapse"
-                         aria-labelledby="headingTimerDelete"
+                    <div id="collapseTimerList" class="accordion-collapse collapse" aria-labelledby="headingTimerList"
                          data-bs-parent="#timersCard">
                         <div class="accordion-body row mx-auto table-responsive">
-                            <form method="POST" action="/timer-delete" class="row g-3 needs-validation" novalidate>
-                                <div class="col-md-12">
-                                    <label for="bossnameDel" class="form-label">Bossname</label>
-                                    <input type="text" class="form-control" id="bossnameDel" name="bossname" required
-                                           autofocus>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid bossname.
-                                    </div>
-                                </div>
-                                <div class="d-grid gap-2">
-                                    <button id="timerDeleteButton" class="btn btn-lg btn-danger" type="submit">Delete
-                                        timer
-                                    </button>
-                                </div>
-                            </form>
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Bossname</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Respawn</th>
+                                    <th scope="col">Window</th>
+                                    <th scope="col">Save</th>
+                                    <th scope="col">Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tbodyTimerList"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -239,7 +236,6 @@
 
     document.getElementById('bossname').addEventListener('input', toLower)
     document.getElementById('type').addEventListener('input', toUpper)
-    document.getElementById('bossnameDel').addEventListener('input', toLower)
     document.getElementById('username').addEventListener('input', toLower)
 
     $('#headingUserList').click(() => {
@@ -256,6 +252,15 @@
                     '{{ color }}',
                 {% endfor %}
             ])
+        }
+    });
+
+    $('#headingTimerList').click(() => {
+        $('#tbodyTimerList').empty()
+        let button = $('#buttonTimerList')
+        if (!$(button).hasClass('collapsed')) {
+            button.prepend('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>')
+            loadTimers()
         }
     });
 </script>

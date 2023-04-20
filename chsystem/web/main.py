@@ -143,6 +143,33 @@ def get_timers_by_type(user: User, _type):
     return jsonify(api.get_timers_by_clanid_type(user.clanid, _type.upper()))
 
 
+@app.get('/timers')
+@login_req(role=3)
+def get_timers(user: User):
+    return jsonify(api.get_timers(user.clanid))
+
+
+@app.delete('/timers')
+@login_req(role=4)
+def delete_timers(user: User):
+    res = api.delete_timer_by_bossname(request.json['bossname'], user.clanid)
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
+
+
+@app.patch('/timers')
+@login_req(role=4)
+def patch_timers(user: User):
+    res = api.patch_timer_by_bossname(user.clanid, request.json['bossname'], request.json['_type'],
+                                      int(request.json['respawn']), int(request.json['window']))
+    if res:
+        return jsonify(res)
+
+    return jsonify(None), 404
+
+
 @app.patch('/timer/reset/<bossname>')
 @login_req(role=1)
 def reset_timer_by_bossname(user: User, bossname):

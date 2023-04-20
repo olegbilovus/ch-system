@@ -224,3 +224,18 @@ class ApiPostgREST:
             'userprofileid']
         res = self.session.patch(f'{self.url}/userprofile?clanid=eq.{clanid}&id=eq.{userid}', json={'role': role})
         return res.status_code == 204
+
+    @postgrest_sanitize
+    def get_timers(self, clanid):
+        return self.session.get(
+            f'{self.url}/timer?clanid=eq.{clanid}&select=bossname,type,respawntimeminutes,windowminutes&order=type,bossname').json()
+
+    @postgrest_sanitize
+    def delete_timer_by_bossname(self, bossname, clanid):
+        res = self.session.delete(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}')
+        return res.status_code == 204
+
+    def patch_timer_by_bossname(self, clanid, bossname, _type, respawn, window):
+        res = self.session.patch(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}',
+                                 json={'type': _type, 'respawntimeminutes': respawn, 'windowminutes': window})
+        return res.status_code == 204
