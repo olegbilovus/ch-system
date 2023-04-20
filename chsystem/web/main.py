@@ -150,7 +150,7 @@ def get_timers(user: User):
 
 
 @app.delete('/timers')
-@login_req(role=4)
+@login_req(role=3)
 def delete_timers(user: User):
     res = api.delete_timer_by_bossname(request.json['bossname'].lower(), user.clanid)
     if res:
@@ -160,7 +160,7 @@ def delete_timers(user: User):
 
 
 @app.patch('/timers')
-@login_req(role=4)
+@login_req(role=3)
 def patch_timers(user: User):
     res = api.patch_timer_by_bossname(user.clanid, request.json['bossname'].lower(), request.json['_type'].upper(),
                                       int(request.json['respawn']), int(request.json['window']))
