@@ -32,7 +32,8 @@
                     <div id="collapseTimerAdd" class="accordion-collapse collapse" aria-labelledby="headingTimerAdd"
                          data-bs-parent="#timersCard">
                         <div class="accordion-body row mx-auto table-responsive">
-                            <form method="POST" action="/timer-add" class="row g-3 needs-validation" novalidate>
+                            <form method="POST" action="/timer-add" class="row g-3 needs-validation" novalidate
+                                  id="formAddTimer">
                                 <div class="col-md-6">
                                     <label for="bossname" class="form-label">Bossname</label>
                                     <input type="text" class="form-control" id="bossname" name="bossname" required
@@ -49,21 +50,66 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="respawn" class="form-label">Respawn minutes</label>
-                                    <input type="number" class="form-control" id="respawn" name="respawn" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid respawn in minutes.
-                                    </div>
+                                    <input type="hidden" name="respawn" id="respawn" value="0">
+                                    <fieldset class="form-group p-3">
+                                        <legend class="w-auto px-2">Respawn</legend>
+                                        <div class="input-group">
+                                            <label for="respawnDays" class="form-label"></label>
+                                            <input type="number" class="form-control" id="respawnDays"
+                                                   name="respawnDays" required value="0">
+                                            <span class="input-group-text">d</span>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid number of days.
+                                            </div>
+                                            <label for="respawnHours" class="form-label"></label>
+                                            <input type="number" class="form-control" id="respawnHours"
+                                                   name="respawnHours" required value="0">
+                                            <span class="input-group-text">h</span>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid number of hours.
+                                            </div>
+                                            <label for="respawnMinutes" class="form-label"></label>
+                                            <input type="number" class="form-control" id="respawnMinutes"
+                                                   name="respawnMinutes" required max="60" min="0" value="0">
+                                            <span class="input-group-text">m</span>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid number of minutes.
+                                            </div>
+                                        </div>
+                                    </fieldset>
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="window" class="form-label">Window minutes</label>
-                                    <input type="number" class="form-control" id="window" name="window" required>
-                                    <div class="invalid-feedback">
-                                        Please provide a valid window in minutes.
-                                    </div>
+                                    <input type="hidden" name="window" id="window" value="0">
+                                    <fieldset class="form-group p-3">
+                                        <legend class="w-auto px-2">Window</legend>
+                                        <div class="input-group">
+                                            <label for="windowDays" class="form-label"></label>
+                                            <input type="number" class="form-control" id="windowDays"
+                                                   name="windowDays" required value="0">
+                                            <span class="input-group-text">d</span>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid number of days.
+                                            </div>
+                                            <label for="windowHours" class="form-label"></label>
+                                            <input type="number" class="form-control" id="windowHours"
+                                                   name="windowHours" required value="0">
+                                            <span class="input-group-text">h</span>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid number of hours.
+                                            </div>
+                                            <label for="windowMinutes" class="form-label"></label>
+                                            <input type="number" class="form-control" id="windowMinutes"
+                                                   name="windowMinutes" required max="60" min="0" value="0">
+                                            <span class="input-group-text">m</span>
+                                            <div class="invalid-feedback">
+                                                Please provide a valid number of minutes.
+                                            </div>
+                                        </div>
+                                    </fieldset>
                                 </div>
                                 <div class="d-grid gap-2">
-                                    <button id="timerAddButton" class="btn btn-lg btn-success" type="submit">Add timer
+                                    <button id="timerAddButton" class="btn btn-lg btn-success" type="button"
+                                            onclick="addTimer()">Add timer
                                     </button>
                                 </div>
                             </form>

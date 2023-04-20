@@ -41,3 +41,9 @@ function toLower(e) {
 function toUpper(e) {
     e.target.value = e.target.value.toUpperCase()
 }
+
+function disableInputs(...inputs) {
+    inputs.forEach((input) => {
+        input.prop('disabled', true)
+    })
+}

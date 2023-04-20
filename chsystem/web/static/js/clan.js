@@ -1,3 +1,26 @@
+function getMinutesFromDHM(days, hours, minutes) {
+    return (parseInt(days.val()) * 24 * 60) + (parseInt(hours.val()) * 60) + parseInt(minutes.val())
+}
+
+function addTimer() {
+    let form = $('#formAddTimer')
+    let respawnD = $('#respawnDays')
+    let respawnH = $('#respawnHours')
+    let respawnM = $('#respawnMinutes')
+    let respawn = getMinutesFromDHM(respawnD, respawnH, respawnM)
+    $('#respawn').val(respawn)
+    disableInputs(respawnD, respawnH, respawnM)
+
+    let windowD = $('#windowDays')
+    let windowH = $('#windowHours')
+    let windowM = $('#windowMinutes')
+    let window = getMinutesFromDHM(windowD, windowH, windowM)
+    $('#window').val(window)
+    disableInputs(windowD, windowH, windowM)
+
+    form.submit()
+}
+
 function createRoleSelect(roleNames, roleColors, selected) {
     let select = $('<select class="form-select">')[0]
     for (let i = 0; i < roleNames.length; i++) {
