@@ -1,10 +1,11 @@
-from functools import wraps
-import psycopg2
-from tabulate import tabulate
+import math
 from datetime import datetime
+from functools import wraps
 
 import database
-from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, get_default_timers_data, PREFIX, \
+import psycopg2
+from tabulate import tabulate
+from utils import time_remaining, dhm_to_minutes, minutes_to_dhm, PREFIX, \
     get_current_time_minutes, TIMER_OFFSET
 
 discord_id_db = database.DiscordID()
@@ -437,6 +438,37 @@ def gt(successor=None):
 
 
 @start_chain
+def range_timer(successor=None):
+    msg_to_send = {'private': False, 'msg': None}
+    while True:
+        msg = yield msg_to_send
+        if msg.cmd == 'range' and len(msg.args) == 1:
+            timer_data = timer_db.get_timer_data_range(msg.guild_id, msg.args[0])
+            if timer_data is not None:
+                time_left = time_remaining(timer_data[2])
+                if time_left < 0:
+                    time_left = abs(time_left)
+                    times_min = math.ceil(time_left / timer_data[0])
+                    min_rem = abs(time_left - timer_data[0] * times_min)
+                    if min_rem < 0:
+                        min_rem = timer_data[0] - min_rem
+
+                    resp_wind = timer_data[0] + timer_data[1]
+                    times_max = math.ceil(time_left / resp_wind)
+                    max_rem = abs(time_left - resp_wind * times_max)
+                    if max_rem < 0:
+                        max_rem = resp_wind - max_rem
+
+                    msg_to_send['msg'] = f'{minutes_to_dhm(min_rem)} - {minutes_to_dhm(max_rem)}'
+                else:
+                    msg_to_send['msg'] = f'{msg.author_mention} {msg.args[0]} has still a positive timer'
+            else:
+                msg_to_send['msg'] = f'{msg.author_mention} {msg.args[0]} is not a valid boss'
+        elif successor is not None:
+            msg_to_send = successor.send(msg)
+
+
+@start_chain
 def help_commands(successor=None):
     msg_to_send = {'private': False, 'msg': None}
     while True:
@@ -458,6 +490,7 @@ def help_commands(successor=None):
                 f'{PREFIX}**sublist** - Show all the bosses you are subscribed to.\n' \
                 f'{PREFIX}**bosslist** - Get the names, respawn and window of the bosses available in your clan.\n' \
                 f'{PREFIX}**gt** - Shows current game time.\n' \
+                f'{PREFIX}**range <boss>** - If a timer was lost, this command shows a range of spawn. The range will be shorter and more accurate if boss timer window is short and last reset was recent.\n' \
                 f'{PREFIX}**help** - Show this message.\n' \
                 f'*-- Commands which require role > 3 --*\n' \
                 f'{PREFIX}**role** <@user> <role> - Change a user role, @user means to tag/mention the user. role has to be a number between 0 and 4\n' \
