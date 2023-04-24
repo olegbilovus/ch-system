@@ -288,6 +288,13 @@ class Timer(Database):
                                    (guild_id, boss_name))
             return cur.fetchone()
 
+    def get_timer_data_range(self, guild_id, boss_name):
+        with self.conn.cursor() as cur:
+            cur = self.execute(cur,
+                               "SELECT respawnTimeMinutes, windowminutes, timer.timer FROM timer, clandiscord WHERE discordguildid = %s AND bossname = %s AND timer.clanid = clandiscord.clanid",
+                               (guild_id, boss_name))
+            return cur.fetchone()
+
     def get_by_clan_id_and_timer_id(self, clan_id, timer_id):
         with self.conn.cursor() as cur:
             cur = self.execute(cur,
