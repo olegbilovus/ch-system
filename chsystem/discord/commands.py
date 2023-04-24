@@ -1,4 +1,4 @@
-import math
+from datetime import datetime
 from datetime import datetime
 from functools import wraps
 
@@ -448,15 +448,11 @@ def range_timer(successor=None):
                 time_left = time_remaining(timer_data[2])
                 if time_left < 0:
                     time_left = abs(time_left)
-                    times_min = math.ceil(time_left / timer_data[0])
-                    min_rem = abs(time_left - timer_data[0] * times_min)
-                    if min_rem < 0:
-                        min_rem = timer_data[0] - min_rem
+                    min_rem = timer_data[0] - (time_left % timer_data[0])
 
                     resp_wind = timer_data[0] + timer_data[1]
-                    times_max = math.ceil(time_left / resp_wind)
-                    max_rem = abs(time_left - resp_wind * times_max)
-                    if max_rem < 0:
+                    max_rem = resp_wind - (time_left % resp_wind)
+                    if max_rem == min_rem:
                         max_rem = resp_wind - max_rem
 
                     msg_to_send['msg'] = f'{minutes_to_dhm(min_rem)} - {minutes_to_dhm(max_rem)}'
