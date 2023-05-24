@@ -32,10 +32,12 @@ services:
     networks:
       - postgres
     environment:
-      CF_CLIENT_ID: # CF Client ID, None otherwise
-      CF_CLIENT_SECRET: # CF Client Secret, None otherwise
-      CERT: # mTLS Cert, None otherwise
-      CERT_KEY: # mTLS Cert Key, None otherwise
+      CF_CLIENT_ID: # CF Client ID, Optional
+      CF_CLIENT_SECRET: # CF Client Secret, Optional
+      CERT: # mTLS Cert, Optional
+      CERT_KEY: # mTLS Cert Key, Optional
+      API_KEY: # Optional
+      API_KEY_NAME: # Optional
       URL: http://chsystem-postgrest:3000
       LOGTAIL_WEB: # LOGTAIL_WEB TOKEN
       HOST: # Host name

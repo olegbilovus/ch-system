@@ -36,10 +36,16 @@ def postgrest_sanitize(fun):
 
 class ApiPostgREST:
 
-    def __init__(self, cert_f, key_f, cf_client_id, cf_client_secret, url):
+    def __init__(self, url, cert_f=None, key_f=None, cf_client_id=None, cf_client_secret=None, api_key=None,
+                 api_key_name=None):
         self.session = requests.Session()
-        self.session.cert = (cert_f, key_f)
-        self.session.headers.update({'CF-Access-Client-Id': cf_client_id, 'CF-Access-Client-Secret': cf_client_secret})
+        if cert_f and key_f:
+            self.session.cert = (cert_f, key_f)
+        if cf_client_id and cf_client_secret:
+            self.session.headers.update(
+                {'CF-Access-Client-Id': cf_client_id, 'CF-Access-Client-Secret': cf_client_secret})
+        if api_key and api_key_name:
+            self.session.headers.update({api_key_name: api_key})
         self.url = url
 
     def check_valid_conn(self) -> bool:
