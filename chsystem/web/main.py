@@ -17,16 +17,23 @@ from api import ApiPostgREST
 logger = logs.get_logger('Web', token=os.getenv('LOGTAIL_WEB'))
 logger.info('Starting Web')
 
-cert_f = tempfile.NamedTemporaryFile(delete=False)
-cert_f.write(bytes(os.getenv('CERT'), 'utf-8'))
-cert_f.close()
+cert_env = os.getenv('CERT')
+if cert_env:
+    cert_f = tempfile.NamedTemporaryFile(delete=False)
+    cert_f.write(bytes(cert_env, 'utf-8'))
+    cert_f.close()
+    cert_env = cert_f.name
 
-key_f = tempfile.NamedTemporaryFile(delete=False)
-key_f.write(bytes(os.getenv('CERT_KEY'), 'utf-8'))
-key_f.close()
+key_env = os.getenv('CERT_KEY')
+if key_env:
+    key_f = tempfile.NamedTemporaryFile(delete=False)
+    key_f.write(bytes(key_env, 'utf-8'))
+    key_f.close()
+    key_env = key_f.name
 
 api = ApiPostgREST(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
-                   cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_f.name, key_f=key_f.name)
+                   cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_env, key_f=key_env,
+                   api_key=os.getenv('API_KEY'), api_key_name=os.getenv('API_KEY_NAME'))
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 SESSION_NAME = "SessionID"
