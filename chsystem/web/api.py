@@ -49,7 +49,7 @@ class ApiPostgREST:
         self.url = url
 
     def check_valid_conn(self) -> bool:
-        res = self.session.get(self.url)
+        res = self.session.get(f'{self.url}/')
         return res.status_code < 400
 
     def get_servers_names(self):
