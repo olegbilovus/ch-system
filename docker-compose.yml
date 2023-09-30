@@ -41,6 +41,9 @@ services:
       URL: http://chsystem-postgrest:3000
       LOGTAIL_WEB: # LOGTAIL_WEB TOKEN
       HOST: # Host name
+      PWL_URL: # Passwordless URL
+      PWL_PRIVATE_KEY: # Passwordless PVK
+      PWL_PUBLIC_KEY: # Passwordless PBK
     restart: always
     command: bash init.sh chsystem/web/main.py
 

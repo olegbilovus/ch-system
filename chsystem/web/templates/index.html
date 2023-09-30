@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% include 'dependencies.html' %}
+    <script src="static/js/passkey.js"></script>
     <title>Login</title>
 </head>
 
@@ -23,7 +24,7 @@
             {{ error }}
         </div>
     {% endif %}
-    <form method="POST" action="/login" class="row g-3 needs-validation" novalidate>
+    <form id="loginForm" method="POST" action="/login" class="row g-3 needs-validation" novalidate>
         <div class="col-md-6">
             <label for="username" class="form-label">Username</label>
             <input type="text" class="form-control" id="username" name="username" required autofocus
@@ -62,13 +63,21 @@
                 Please provide a valid clan.
             </div>
         </div>
-        <div class="d-grid gap-2">
+        <div class="d-grid gap-md-6">
             <button id="loginButton" class="btn btn-lg btn-success" type="submit">Login</button>
+        </div>
+
+        <input type="hidden" id="verificationToken" name="verificationToken">
+        <div class="d-grid gap-md-6">
+            <button id="passkeyButton" class="btn btn-lg btn-primary" type="button" onclick="signinPasswordless()">
+                Passkey
+            </button>
         </div>
 
     </form>
 </div>
 <script>
+    $('#verificationToken').val("")
     formValidate()
 
     document.getElementById('username').addEventListener('input', toLower)
