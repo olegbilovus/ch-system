@@ -11,9 +11,13 @@
     <orderEntry type="library" name="jquery" level="application" />
     <orderEntry type="library" name="bootbox" level="application" />
     <orderEntry type="library" name="bootstrap-icons" level="application" />
+    <orderEntry type="library" name="passwordless.umd" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
     <option name="versionSpecifier" value="Greater or equal (&gt;=x.y.z)" />
+  </component>
+  <component name="SonarLintModuleSettings">
+    <option name="uniqueId" value="00f81271-d07b-4631-9db1-b4325c812c64" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />

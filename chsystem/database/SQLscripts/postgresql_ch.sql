@@ -19,7 +19,7 @@ CREATE TABLE clan
 DROP TABLE IF EXISTS userProfile CASCADE;
 CREATE TABLE userProfile
 (
-    ID       BIGSERIAL PRIMARY KEY,
+    ID       VARCHAR(100) PRIMARY KEY DEFAULT md5(random()::text),
     name     VARCHAR(30),
     serverID SMALLSERIAL,
     clanID   SERIAL,
@@ -35,7 +35,7 @@ CREATE TABLE userProfile
 DROP TABLE IF EXISTS apiKey CASCADE;
 CREATE TABLE apiKey
 (
-    userProfileID BIGSERIAL PRIMARY KEY,
+    userProfileID VARCHAR(100) PRIMARY KEY,
     key           VARCHAR(50) UNIQUE,
     FOREIGN KEY (userProfileID)
         REFERENCES userProfile (ID)
@@ -71,7 +71,7 @@ CREATE TABLE timer
 DROP TABLE IF EXISTS discordID CASCADE;
 CREATE TABLE discordID
 (
-    userProfileID BIGSERIAL PRIMARY KEY,
+    userProfileID VARCHAR(100) PRIMARY KEY,
     discordID     BIGINT UNIQUE,
     discordTag    VARCHAR(50),
     FOREIGN KEY (userProfileID)
@@ -82,7 +82,7 @@ CREATE TABLE discordID
 DROP TABLE IF EXISTS webProfile CASCADE;
 CREATE TABLE webProfile
 (
-    userProfileID BIGSERIAL PRIMARY KEY,
+    userProfileID VARCHAR(100) PRIMARY KEY,
     username      VARCHAR(50) UNIQUE,
     hash_pw       VARCHAR(150),
     change_pw     BOOLEAN DEFAULT TRUE,
@@ -95,7 +95,7 @@ DROP TABLE IF EXISTS webSession CASCADE;
 CREATE TABLE webSession
 (
     id            VARCHAR(200) UNIQUE,
-    userProfileID BIGSERIAL,
+    userProfileID VARCHAR(100),
     sessionID     VARCHAR(200) UNIQUE,
     host          VARCHAR(50),
     creation      timestamp DEFAULT now(),
@@ -108,7 +108,7 @@ CREATE TABLE webSession
 DROP TABLE IF EXISTS subscriber CASCADE;
 CREATE TABLE subscriber
 (
-    userProfileID BIGSERIAL,
+    userProfileID VARCHAR(100),
     timerID       BIGSERIAL,
     PRIMARY KEY (timerID, userProfileID),
     FOREIGN KEY (userProfileID)
@@ -126,5 +126,6 @@ AS
 $$
 DELETE
 FROM websession
-WHERE creation < now() - interval '3 days' or creation = lastuse;
+WHERE creation < now() - interval '3 days'
+   or creation = lastuse;
 $$;

@@ -12,7 +12,7 @@ from paste.translogger import TransLogger
 from waitress import serve
 from models import User
 
-from api import ApiPostgREST
+from api import ApiPostgREST, ApiPasswordless
 
 logger = logs.get_logger('Web', token=os.getenv('LOGTAIL_WEB'))
 logger.info('Starting Web')
@@ -34,6 +34,8 @@ if key_env:
 api = ApiPostgREST(url=os.getenv('URL'), cf_client_id=os.getenv('CF_CLIENT_ID'),
                    cf_client_secret=os.getenv('CF_CLIENT_SECRET'), cert_f=cert_env, key_f=key_env,
                    api_key=os.getenv('API_KEY'), api_key_name=os.getenv('API_KEY_NAME'))
+
+api_pwl = ApiPasswordless(url=os.getenv('PWL_URL'), api_secret_key=os.getenv('PWL_PRIVATE_KEY'))
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 SESSION_NAME = "SessionID"
@@ -103,17 +105,23 @@ def home():
     return render_template('index.html', servers=api.get_servers_names())
 
 
+def _login_process(user: User, endpoint):
+    logger.info(f'{endpoint}:{user}')
+    resp = make_response(redirect(url_for('dashboard')))
+    resp.set_cookie(SESSION_NAME, user.sessionid, httponly=True, secure=True, samesite='Lax',
+                    max_age=timedelta(days=3))
+    return resp
+
+
 @app.post('/login')
 @no_login
 def login():
     req = request.form
+    if req['verificationToken']:
+        return passwordless_signin()
     user = api.login(req['username'].lower(), req['password'], int(req['server']), req['clan'].lower())
     if user:
-        logger.info(f'{login.__name__}:{user}')
-        resp = make_response(redirect(url_for('dashboard')))
-        resp.set_cookie(SESSION_NAME, user.sessionid, httponly=True, secure=True, samesite='Lax',
-                        max_age=timedelta(days=3))
-        return resp
+        return _login_process(user, login.__name__)
 
     cache = {
         'username': req['username'],
@@ -126,6 +134,44 @@ def login():
                            cache=cache), 401
 
 
+@app.post('/passwordless/signin')
+@no_login
+def passwordless_signin():
+    req = request.form
+    verification_token = req['verificationToken']
+    userid = api_pwl.signin_verify(verification_token)
+    if userid:
+        username = api.get_username_by_userid(userid)
+        if username:
+            user = api.login(username, skip=True)
+            return _login_process(user, passwordless_signin.__name__)
+
+
+@app.get('/passwordless/register')
+@login_req()
+def passwordless_register(user: User):
+    registration_token = api_pwl.register(user)
+    return jsonify({'token': registration_token, 'publicKey': os.getenv('PWL_PUBLIC_KEY')})
+
+
+@app.get('/passwordless/pbk')
+@no_login
+def passwordless_pbk():
+    return jsonify({'publicKey': os.getenv('PWL_PUBLIC_KEY')})
+
+
+@app.get('/passwordless/credentials')
+@login_req()
+def passwordless_credentials(user: User):
+    return jsonify(api_pwl.credentials(user))
+
+
+@app.delete('/passwordless/delete')
+@login_req()
+def passwordless_delete(user: User):
+    return jsonify({'deleted': api_pwl.delete_credential(request.json['credential'])})
+
+
 @app.get('/logout')
 @login_req()
 def logout(user: User):
@@ -135,7 +181,8 @@ def logout(user: User):
 @app.get('/dashboard')
 @login_req()
 def dashboard(user: User):
-    return render_template('dashboard.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
+    return render_template('dashboard.html', user=user, role_name=ROLES[user.role],
+                           role_color=ROLES_COLORS[user.role])
 
 
 @app.get('/timers-type')
@@ -206,8 +253,11 @@ def add_timer(user: User):
 @app.get('/profile')
 @login_req(change_pw=False)
 def profile(user: User):
-    return render_template('profile.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
-                           msg={'text': 'Please change your password', 'type': 'danger'} if user.change_pw else None)
+    return render_template('profile.html', user=user, pwl_credentials=api_pwl.credentials(user),
+                           role_name=ROLES[user.role],
+                           role_color=ROLES_COLORS[user.role],
+                           msg={'text': 'Please change your password',
+                                'type': 'danger'} if user.change_pw else None)
 
 
 @app.post('/change-pw')
@@ -225,7 +275,8 @@ def change_pwd(user: User):
     else:
         msg = {'text': 'Try again, there was an error.', 'type': 'danger'}
 
-    return render_template('profile.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role],
+    return render_template('profile.html', user=user, role_name=ROLES[user.role],
+                           role_color=ROLES_COLORS[user.role],
                            msg=msg)
 
 
@@ -290,7 +341,8 @@ def change_user_role(user: User):
 @app.get('/sessions')
 @login_req()
 def sessions(user: User):
-    return render_template('sessions.html', user=user, role_name=ROLES[user.role], role_color=ROLES_COLORS[user.role])
+    return render_template('sessions.html', user=user, role_name=ROLES[user.role],
+                           role_color=ROLES_COLORS[user.role])
 
 
 @app.get('/user-sessions')

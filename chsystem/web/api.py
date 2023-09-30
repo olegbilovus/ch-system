@@ -6,7 +6,7 @@ import bcrypt
 import requests
 from utils import get_current_time_minutes, TIMER_OFFSET
 
-from models import User
+from models import User, PWLCredential
 
 _HOST = os.getenv('HOST')
 MAX_NUM_TIMERS = 50
@@ -56,15 +56,21 @@ class ApiPostgREST:
         return self.session.get(f'{self.url}/server?select=id,name&order=name').json()
 
     @postgrest_sanitize
-    def login(self, username, password, serverid, clan) -> User | None:
+    def get_username_by_userid(self, userid):
+        res = self.session.get(f'{self.url}/webprofile?userprofileid=eq.{userid}&select=username').json()
+        if res:
+            return res[0]['username']
+
+    @postgrest_sanitize
+    def login(self, username, password=None, serverid=None, clan=None, skip=False) -> User | None:
         # The login is divided in multiple steps to avoid making complex query when the user does not exist
         user = self.session.get(f'{self.url}/webprofile?username=eq.{username}').json()
-        if user and bcrypt.checkpw(bytes(password, 'utf-8'), bytes(user[0]['hash_pw'], 'utf-8')):
+        if user and (skip or bcrypt.checkpw(bytes(password, 'utf-8'), bytes(user[0]['hash_pw'], 'utf-8'))):
             user = user[0]
             user_data = self.session.get(f'{self.url}/userprofile?id=eq.{user["userprofileid"]}').json()[0]
-            if user_data['serverid'] == serverid:
+            if user_data['serverid'] == serverid or skip:
                 clan_data = self.session.get(f'{self.url}/clan?id=eq.{user_data["clanid"]}').json()[0]
-                if clan_data['name'] == clan:
+                if clan_data['name'] == clan or skip:
                     user_session = User(id=token_hex(16), sessionid=token_hex(64), username=username,
                                         userprofileid=user_data['id'],
                                         name=user_data['name'], role=user_data['role'],
@@ -108,7 +114,8 @@ class ApiPostgREST:
     def get_user_sessions(self, userprofileid) -> list[User]:
         data = self.session.get(
             f'{self.url}/websession?userprofileid=eq.{userprofileid}&select=id,creation,lastuse,host&order=lastuse').json()
-        return [User(id=d['id'], creation=d['creation'], lastuse=d['lastuse'], host=d['host']) for d in data]
+        return [User(id=d['id'], creation=datetime.fromisoformat(d['creation']),
+                     lastuse=datetime.fromisoformat(d['lastuse']), host=d['host']) for d in data]
 
     @postgrest_sanitize
     def get_session_by_id(self, _id) -> User | None:
@@ -246,3 +253,39 @@ class ApiPostgREST:
         res = self.session.patch(f'{self.url}/timer?clanid=eq.{clanid}&bossname=eq.{bossname}',
                                  json={'respawntimeminutes': respawn, 'windowminutes': window})
         return res.status_code == 204
+
+
+class ApiPasswordless:
+    def __init__(self, api_secret_key, url):
+        self.session = requests.Session()
+        self.session.headers.update({'ApiSecret': api_secret_key, 'Content-Type': 'application/json'})
+        self.url = url
+
+    def register(self, user: User):
+        payload = {
+            "userId": user.userprofileid,
+            "username": user.username,
+            "aliases": [user.userprofileid]
+        }
+        res = self.session.post(f'{self.url}/register/token', json=payload).json()
+        return res['token']
+
+    def signin_verify(self, verification_token):
+        res = self.session.post(f'{self.url}/signin/verify', json={'token': verification_token}).json()
+        if res['success']:
+            return res['userId']
+
+    def credentials(self, user: User) -> list[PWLCredential]:
+        res = self.session.get(f'{self.url}/credentials/list?userId={user.userprofileid}').json()
+        data = []
+        if res:
+            for credential in res['values']:
+                data.append(PWLCredential(id=credential['descriptor']['id'],
+                                          creation=datetime.fromisoformat(credential['createdAt']),
+                                          lastuse=datetime.fromisoformat(credential['lastUsedAt']),
+                                          origin=credential['origin']))
+        return data
+
+    def delete_credential(self, credential_id):
+        res = self.session.post(f'{self.url}/credentials/delete', json={'credentialId': credential_id})
+        return res.status_code == 200

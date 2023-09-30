@@ -8,7 +8,7 @@ class User:
     id: str
     sessionid: Optional[str] = None
     username: Optional[str] = None
-    userprofileid: Optional[int] = None
+    userprofileid: Optional[str] = None
     host: Optional[str] = None
     name: Optional[str] = None
     role: Optional[int] = None
@@ -24,3 +24,11 @@ class User:
 
     def get_data_select(self, *args):
         return {k: getattr(self, k) for k in args}
+
+
+@dataclass
+class PWLCredential:
+    id: str
+    creation: datetime
+    lastuse: datetime
+    origin: str
