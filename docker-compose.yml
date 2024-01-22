@@ -13,6 +13,7 @@ services:
       LOGTAIL_DISCORD: # LOGTAIL_DISCORD TOKEN
       LOGTAIL_DATABASE: # LOGTAIL_DATABASE TOKEN
     restart: always
+    command: chsystem/discord/discordBot.py
 
   chsystem-notify:
     container_name: chsystem-notify
@@ -24,7 +25,7 @@ services:
       LOGTAIL_NOTIFY: # LOGTAIL_NOTIFY TOKEN
       LOGTAIL_DATABASE: # LOGTAIL_DATABASE TOKEN
     restart: always
-    command: bash init.sh chsystem/notify/notify.py
+    command: chsystem/notify/notify.py
 
   chsystem-web:
     container_name: chsystem-web
@@ -45,7 +46,7 @@ services:
       PWL_PRIVATE_KEY: # Passwordless PVK
       PWL_PUBLIC_KEY: # Passwordless PBK
     restart: always
-    command: bash init.sh chsystem/web/main.py
+    command: chsystem/web/main.py
 
   chsystem-postgrest:
     container_name: chsystem-postgrest
