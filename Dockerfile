@@ -7,4 +7,7 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ENTRYPOINT [ "bash", "init.sh"]
+ENV PYTHONPATH "${PYTHONPATH}:/app/chsystem/utility/"
+ENV PYTHONPATH "${PYTHONPATH}:/app/chsystem/database/"
+
+ENTRYPOINT [ "python3"]
