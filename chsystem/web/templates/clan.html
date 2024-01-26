@@ -236,7 +236,10 @@
 
     document.getElementById('bossname').addEventListener('input', toLower)
     document.getElementById('type').addEventListener('input', toUpper)
-    document.getElementById('username').addEventListener('input', toLower)
+    let usernameVal = document.getElementById('username')
+    if (usernameVal != null){
+        usernameVal.addEventListener('input', toLower)
+    }
 
     $('#headingUserList').click(() => {
         $('#tbodyUserList').empty()
