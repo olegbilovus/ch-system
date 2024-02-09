@@ -10,6 +10,11 @@ variable "vm_user" {
   default = "azureuser"
 }
 
+variable "AZ_ObjectID" {
+  type        = string
+  description = "The ObjectID of the user to which the higher permissions/roles will be assigned"
+}
+
 variable "PG_USER" {
   type        = string
   description = "PostgreSQL user"

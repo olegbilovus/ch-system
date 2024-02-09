@@ -14,7 +14,7 @@ terraform {
     }
   }
 
-  required_version = ">= 1.1.0"
+  required_version = ">= 1.7.3"
 }
 
 provider "azurerm" {
@@ -302,6 +302,11 @@ resource "azurerm_key_vault" "keyvault" {
     virtual_network_subnet_ids = [azurerm_subnet.container.id]
     ip_rules                   = [var.myip]
   }
+
+  # Assign yourself as Key Vault Admin
+  provisioner "local-exec" {
+    command = "az role assignment create --assignee \"${var.AZ_ObjectID}\" --role \"Key Vault Administrator\" --scope \"${self.id}\""
+  }
 }
 
 # Managed Identities
@@ -313,7 +318,7 @@ resource "azurerm_user_assigned_identity" "ids" {
 }
 
 # Secrets. 
-# Need to assign yourself as KeyVault Admin from the portal. Terraform will inherit from the Collab role
+# Need to assign yourself as KeyVault Admin from the portal or az cli. Terraform will inherit from the Collab role
 resource "azurerm_key_vault_secret" "secrets" {
   for_each = {
     (var.s_DB-URI)           = "postgresql://${var.PG_CH_USER}:${var.PG_CH_PASS}@${azurerm_postgresql_flexible_server.db.fqdn}:5432/${var.name}",
