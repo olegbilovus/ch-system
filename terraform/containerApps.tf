@@ -35,10 +35,12 @@ resource "azapi_resource" "containerapp_environment" {
 
 # need to remove dashes and lower case the name of the secrets
 locals {
+  vault_uri = "${azurerm_key_vault.keyvault.vault_uri}secrets/"
   ca_postgrest_secrets = {
     (var.s_DB-URI)     = lower(replace(azurerm_key_vault_secret.secrets[var.s_DB-URI].name, "-", ""))
     (var.s_PG-CH-USER) = lower(replace(azurerm_key_vault_secret.secrets[var.s_PG-CH-USER].name, "-", ""))
   }
+  ca_postgrest_identity = azurerm_user_assigned_identity.ids[var.postgrest].id
 }
 
 # Container App: PostgREST
@@ -52,7 +54,7 @@ resource "azapi_resource" "container_app_postgrest" {
     identity = {
       type = var.container-app_identity-type
       userAssignedIdentities = {
-        azurerm_user_assigned_identity.ids[var.postgrest].id = {}
+        (local.ca_postgrest_identity) = {}
       }
     }
     properties = {
@@ -73,13 +75,13 @@ resource "azapi_resource" "container_app_postgrest" {
         secrets = [
           {
             name        = local.ca_postgrest_secrets[var.s_DB-URI]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_DB-URI}"
-            identity    = azurerm_user_assigned_identity.ids[var.postgrest].id
+            keyVaultUrl = "${local.vault_uri}${var.s_DB-URI}"
+            identity    = local.ca_postgrest_identity
           },
           {
             name        = local.ca_postgrest_secrets[var.s_PG-CH-USER]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_PG-CH-USER}"
-            identity    = azurerm_user_assigned_identity.ids[var.postgrest].id
+            keyVaultUrl = "${local.vault_uri}${var.s_PG-CH-USER}"
+            identity    = local.ca_postgrest_identity
           }
         ]
       }
@@ -154,6 +156,7 @@ resource "azurerm_role_assignment" "POSTGREST-URL" {
 
 # need to remove dashes and lower case the name of the secrets
 locals {
+  ch_image = "${azurerm_container_registry.acr.name}.azurecr.io/${var.name}:latest"
   ca_web_secrets = {
     (var.s_LOGTAIL-WEB)     = lower(replace(azurerm_key_vault_secret.secrets[var.s_LOGTAIL-WEB].name, "-", ""))
     (var.s_POSTGREST-URL)   = lower(replace(azurerm_key_vault_secret.POSTGREST-URL.name, "-", ""))
@@ -162,9 +165,11 @@ locals {
     (var.s_PWL-PRIVATE-KEY) = lower(replace(azurerm_key_vault_secret.secrets[var.s_PWL-PRIVATE-KEY].name, "-", ""))
     (var.s_PWL-PUBLIC-KEY)  = lower(replace(azurerm_key_vault_secret.secrets[var.s_PWL-PUBLIC-KEY].name, "-", ""))
   }
+  ca_web_identity = azurerm_user_assigned_identity.ids[var.web].id
 }
 
 # Container App: Web
+## Can not use the module here because the lifecycle is needed but modules do not support the lifecycle
 resource "azapi_resource" "container_app_web" {
   type      = var.azapi_container-app-type
   name      = "${var.name}-web"
@@ -175,7 +180,7 @@ resource "azapi_resource" "container_app_web" {
     identity = {
       type = var.container-app_identity-type
       userAssignedIdentities = {
-        azurerm_user_assigned_identity.ids[var.web].id = {}
+        (local.ca_web_identity) = {}
       }
     }
     properties = {
@@ -198,7 +203,7 @@ resource "azapi_resource" "container_app_web" {
         }
         registries = [
           {
-            identity = azurerm_user_assigned_identity.ids[var.web].id
+            identity = local.ca_web_identity
             server   = azurerm_container_registry.acr.login_server
           }
         ]
@@ -206,33 +211,33 @@ resource "azapi_resource" "container_app_web" {
         secrets = [
           {
             name        = local.ca_web_secrets[var.s_LOGTAIL-WEB]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_LOGTAIL-WEB}"
-            identity    = azurerm_user_assigned_identity.ids[var.web].id
+            keyVaultUrl = "${local.vault_uri}${var.s_LOGTAIL-WEB}"
+            identity    = local.ca_web_identity
           },
           {
             name        = local.ca_web_secrets[var.s_POSTGREST-URL]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_POSTGREST-URL}"
-            identity    = azurerm_user_assigned_identity.ids[var.web].id
+            keyVaultUrl = "${local.vault_uri}${var.s_POSTGREST-URL}"
+            identity    = local.ca_web_identity
           },
           {
             name        = local.ca_web_secrets[var.s_HOST]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_HOST}"
-            identity    = azurerm_user_assigned_identity.ids[var.web].id
+            keyVaultUrl = "${local.vault_uri}${var.s_HOST}"
+            identity    = local.ca_web_identity
           },
           {
             name        = local.ca_web_secrets[var.s_PWL-URL]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_PWL-URL}"
-            identity    = azurerm_user_assigned_identity.ids[var.web].id
+            keyVaultUrl = "${local.vault_uri}${var.s_PWL-URL}"
+            identity    = local.ca_web_identity
           },
           {
             name        = local.ca_web_secrets[var.s_PWL-PRIVATE-KEY]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_PWL-PRIVATE-KEY}"
-            identity    = azurerm_user_assigned_identity.ids[var.web].id
+            keyVaultUrl = "${local.vault_uri}${var.s_PWL-PRIVATE-KEY}"
+            identity    = local.ca_web_identity
           },
           {
             name        = local.ca_web_secrets[var.s_PWL-PUBLIC-KEY]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_PWL-PUBLIC-KEY}"
-            identity    = azurerm_user_assigned_identity.ids[var.web].id
+            keyVaultUrl = "${local.vault_uri}${var.s_PWL-PUBLIC-KEY}"
+            identity    = local.ca_web_identity
           }
         ]
       }
@@ -241,7 +246,7 @@ resource "azapi_resource" "container_app_web" {
         containers = [
           {
             name  = "${var.name}-web"
-            image = "${azurerm_container_registry.acr.name}.azurecr.io/${var.name}:latest"
+            image = local.ch_image
             resources = {
               cpu    = 1,
               memory = "2Gi"
@@ -307,96 +312,74 @@ locals {
     (var.s_LOGTAIL-DISCORD)  = lower(replace(azurerm_key_vault_secret.secrets[var.s_LOGTAIL-DISCORD].name, "-", ""))
     (var.s_LOGTAIL-DATABASE) = lower(replace(azurerm_key_vault_secret.secrets[var.s_LOGTAIL-DATABASE].name, "-", ""))
   }
+  ca_discord_identity = azurerm_user_assigned_identity.ids[var.discord].id
 }
 
 # Container App: Discord
-resource "azapi_resource" "container_app_discord" {
-  type      = var.azapi_container-app-type
-  name      = "${var.name}-discord"
-  parent_id = azurerm_resource_group.containers.id
-  location  = var.location
+module "container_app_discord" {
+  source = "./modules/container-app"
 
-  body = jsonencode({
-    identity = {
-      type = var.container-app_identity-type
-      userAssignedIdentities = {
-        azurerm_user_assigned_identity.ids[var.discord].id = {}
-      }
-    }
-    properties = {
-      configuration = {
-        activeRevisionsMode = "Single"
-        registries = [
-          {
-            identity = azurerm_user_assigned_identity.ids[var.discord].id
-            server   = azurerm_container_registry.acr.login_server
-          }
-        ]
-        # this will delete any other secret not defined here
-        secrets = [
-          {
-            name        = local.ca_discord_secrets[var.s_DB-URI]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_DB-URI}"
-            identity    = azurerm_user_assigned_identity.ids[var.discord].id
-          },
-          {
-            name        = local.ca_discord_secrets[var.s_DISCORD-TOKEN]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_DISCORD-TOKEN}"
-            identity    = azurerm_user_assigned_identity.ids[var.discord].id
-          },
-          {
-            name        = local.ca_discord_secrets[var.s_LOGTAIL-DISCORD]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_LOGTAIL-DISCORD}"
-            identity    = azurerm_user_assigned_identity.ids[var.discord].id
-          },
-          {
-            name        = local.ca_discord_secrets[var.s_LOGTAIL-DATABASE]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_LOGTAIL-DATABASE}"
-            identity    = azurerm_user_assigned_identity.ids[var.discord].id
-          }
-        ]
-      }
-      environmentId = azapi_resource.containerapp_environment.id
-      template = {
-        containers = [
-          {
-            name  = "${var.name}-discord"
-            image = "${azurerm_container_registry.acr.name}.azurecr.io/${var.name}:latest"
-            resources = {
-              cpu    = 1,
-              memory = "2Gi"
-            }
-            command = ["python3", "chsystem/discord/discordBot.py"]
-            env = [
-              {
-                name      = "DB_URI"
-                secretRef = local.ca_discord_secrets[var.s_DB-URI]
-              },
-              {
-                name      = "DISCORD_TOKEN"
-                secretRef = local.ca_discord_secrets[var.s_DISCORD-TOKEN]
-              },
-              {
-                name      = "LOGTAIL_DISCORD"
-                secretRef = local.ca_discord_secrets[var.s_LOGTAIL-DISCORD]
-              },
-              {
-                name      = "LOGTAIL_DATABASE"
-                secretRef = local.ca_discord_secrets[var.s_LOGTAIL-DATABASE]
-              }
-            ]
-          }
-        ]
-        scale = {
-          minReplicas = 1
-          maxReplicas = 1
-        }
-      }
-      workloadProfileName = var.workload_profile_name
-    }
-  })
+  name          = "${var.name}-discord"
+  resource-id   = azurerm_resource_group.containers.id
+  location      = var.location
+  environmentId = azapi_resource.containerapp_environment.id
+  identity-id   = local.ca_discord_identity
 
-  ignore_missing_property = true
+  acr-login_server = azurerm_container_registry.acr.login_server
+
+  container = {
+    image   = local.ch_image
+    cpu     = 1
+    memory  = "2Gi"
+    command = ["python3", "chsystem/discord/discordBot.py"]
+  }
+
+  secrets = [
+    {
+      name        = local.ca_discord_secrets[var.s_DB-URI]
+      keyVaultUrl = "${local.vault_uri}${var.s_DB-URI}"
+      identity    = local.ca_discord_identity
+    },
+    {
+      name        = local.ca_discord_secrets[var.s_DISCORD-TOKEN]
+      keyVaultUrl = "${local.vault_uri}${var.s_DISCORD-TOKEN}"
+      identity    = local.ca_discord_identity
+    },
+    {
+      name        = local.ca_discord_secrets[var.s_LOGTAIL-DISCORD]
+      keyVaultUrl = "${local.vault_uri}${var.s_LOGTAIL-DISCORD}"
+      identity    = local.ca_discord_identity
+    },
+    {
+      name        = local.ca_discord_secrets[var.s_LOGTAIL-DATABASE]
+      keyVaultUrl = "${local.vault_uri}${var.s_LOGTAIL-DATABASE}"
+      identity    = local.ca_discord_identity
+    }
+  ]
+
+  env = [
+    {
+      name      = "DB_URI"
+      secretRef = local.ca_discord_secrets[var.s_DB-URI]
+    },
+    {
+      name      = "DISCORD_TOKEN"
+      secretRef = local.ca_discord_secrets[var.s_DISCORD-TOKEN]
+    },
+    {
+      name      = "LOGTAIL_DISCORD"
+      secretRef = local.ca_discord_secrets[var.s_LOGTAIL-DISCORD]
+    },
+    {
+      name      = "LOGTAIL_DATABASE"
+      secretRef = local.ca_discord_secrets[var.s_LOGTAIL-DATABASE]
+    }
+  ]
+
+  scale = {
+    minReplicas = 1
+    maxReplicas = 1
+  }
 
   depends_on = [azurerm_role_assignment.discord_secrets]
 }
@@ -408,87 +391,65 @@ locals {
     (var.s_LOGTAIL-NOTIFY)   = lower(replace(azurerm_key_vault_secret.secrets[var.s_LOGTAIL-NOTIFY].name, "-", ""))
     (var.s_LOGTAIL-DATABASE) = lower(replace(azurerm_key_vault_secret.secrets[var.s_LOGTAIL-DATABASE].name, "-", ""))
   }
+  ca_notify_identity = azurerm_user_assigned_identity.ids[var.notify].id
 }
 
 # Container App: Notify
-resource "azapi_resource" "container_app_notify" {
-  type      = var.azapi_container-app-type
-  name      = "${var.name}-notify"
-  parent_id = azurerm_resource_group.containers.id
-  location  = var.location
+module "container_app_notify" {
+  source = "./modules/container-app"
 
-  body = jsonencode({
-    identity = {
-      type = var.container-app_identity-type
-      userAssignedIdentities = {
-        azurerm_user_assigned_identity.ids[var.notify].id = {}
-      }
-    }
-    properties = {
-      configuration = {
-        activeRevisionsMode = "Single"
-        registries = [
-          {
-            identity = azurerm_user_assigned_identity.ids[var.notify].id
-            server   = azurerm_container_registry.acr.login_server
-          }
-        ]
-        # this will delete any other secret not defined here
-        secrets = [
-          {
-            name        = local.ca_notify_secrets[var.s_DB-URI]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_DB-URI}"
-            identity    = azurerm_user_assigned_identity.ids[var.notify].id
-          },
-          {
-            name        = local.ca_notify_secrets[var.s_LOGTAIL-NOTIFY]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_LOGTAIL-NOTIFY}"
-            identity    = azurerm_user_assigned_identity.ids[var.notify].id
-          },
-          {
-            name        = local.ca_notify_secrets[var.s_LOGTAIL-DATABASE]
-            keyVaultUrl = "${azurerm_key_vault.keyvault.vault_uri}secrets/${var.s_LOGTAIL-DATABASE}"
-            identity    = azurerm_user_assigned_identity.ids[var.notify].id
-          }
-        ]
-      }
-      environmentId = azapi_resource.containerapp_environment.id
-      template = {
-        containers = [
-          {
-            name  = "${var.name}-notify"
-            image = "${azurerm_container_registry.acr.name}.azurecr.io/${var.name}:latest"
-            resources = {
-              cpu    = 1,
-              memory = "2Gi"
-            }
-            command = ["python3", "chsystem/notify/notify.py"]
-            env = [
-              {
-                name      = "DB_URI"
-                secretRef = local.ca_notify_secrets[var.s_DB-URI]
-              },
-              {
-                name      = "LOGTAIL_NOTIFY"
-                secretRef = local.ca_notify_secrets[var.s_LOGTAIL-NOTIFY]
-              },
-              {
-                name      = "LOGTAIL_DATABASE"
-                secretRef = local.ca_notify_secrets[var.s_LOGTAIL-DATABASE]
-              }
-            ]
-          }
-        ]
-        scale = {
-          minReplicas = 1
-          maxReplicas = 1
-        }
-      }
-      workloadProfileName = var.workload_profile_name
-    }
-  })
+  name          = "${var.name}-notify"
+  resource-id   = azurerm_resource_group.containers.id
+  location      = var.location
+  environmentId = azapi_resource.containerapp_environment.id
+  identity-id   = local.ca_notify_identity
 
-  ignore_missing_property = true
+  acr-login_server = azurerm_container_registry.acr.login_server
+
+  container = {
+    image   = local.ch_image
+    cpu     = 1
+    memory  = "2Gi"
+    command = ["python3", "chsystem/notify/notify.py"]
+  }
+
+  secrets = [
+    {
+      name        = local.ca_notify_secrets[var.s_DB-URI]
+      keyVaultUrl = "${local.vault_uri}${var.s_DB-URI}"
+      identity    = local.ca_notify_identity
+    },
+    {
+      name        = local.ca_notify_secrets[var.s_LOGTAIL-NOTIFY]
+      keyVaultUrl = "${local.vault_uri}${var.s_LOGTAIL-NOTIFY}"
+      identity    = local.ca_notify_identity
+    },
+    {
+      name        = local.ca_notify_secrets[var.s_LOGTAIL-DATABASE]
+      keyVaultUrl = "${local.vault_uri}${var.s_LOGTAIL-DATABASE}"
+      identity    = local.ca_notify_identity
+    }
+  ]
+
+  env = [
+    {
+      name      = "DB_URI"
+      secretRef = local.ca_notify_secrets[var.s_DB-URI]
+    },
+    {
+      name      = "LOGTAIL_NOTIFY"
+      secretRef = local.ca_notify_secrets[var.s_LOGTAIL-NOTIFY]
+    },
+    {
+      name      = "LOGTAIL_DATABASE"
+      secretRef = local.ca_notify_secrets[var.s_LOGTAIL-DATABASE]
+    }
+  ]
+
+  scale = {
+    minReplicas = 1
+    maxReplicas = 1
+  }
 
   depends_on = [azurerm_role_assignment.notify_secrets]
 }
