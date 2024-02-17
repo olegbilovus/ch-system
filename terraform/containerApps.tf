@@ -317,7 +317,7 @@ locals {
 
 # Container App: Discord
 module "container_app_discord" {
-  source = "./modules/container-app"
+  source = "./modules/terraform-azure-container_app"
 
   name          = "${var.name}-discord"
   resource-id   = azurerm_resource_group.containers.id
@@ -396,7 +396,7 @@ locals {
 
 # Container App: Notify
 module "container_app_notify" {
-  source = "./modules/container-app"
+  source = "./modules/terraform-azure-container_app"
 
   name          = "${var.name}-notify"
   resource-id   = azurerm_resource_group.containers.id
