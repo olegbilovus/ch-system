@@ -206,7 +206,7 @@ def copy_copyforce(successor=None):
                     s = t.split(' in ')
                     data[s[0].lower()] = s[1][:-1].replace('minutes', 'm').replace('days', 'd').replace('hours',
                                                                                                         'h').replace(
-                        ',', '').replace('.', '')
+                        ',', '').replace('.', '').replace('day', 'd').replace('hour', 'h').replace('minute', 'm')
 
             current_time = get_current_time_minutes()
             data_send = []
