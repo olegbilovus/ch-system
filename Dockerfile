@@ -1,4 +1,4 @@
-FROM python:latest
+FROM python:3.12
 
 WORKDIR /app
 
@@ -7,7 +7,7 @@ RUN pip3 install -r requirements.txt
 
 COPY . .
 
-ENV PYTHONPATH "${PYTHONPATH}:/app/chsystem/utility/"
-ENV PYTHONPATH "${PYTHONPATH}:/app/chsystem/database/"
+ENV PYTHONPATH="${PYTHONPATH}:/app/chsystem/utility/"
+ENV PYTHONPATH="${PYTHONPATH}:/app/chsystem/database/"
 
 ENTRYPOINT [ "python3"]
