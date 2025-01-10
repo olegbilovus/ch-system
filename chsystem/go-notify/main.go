@@ -16,7 +16,7 @@ import (
 
 const (
 	mimeJSON = "application/json"
-	username = "NotifierDEV"
+	username = "Notifier"
 )
 
 func main() {
