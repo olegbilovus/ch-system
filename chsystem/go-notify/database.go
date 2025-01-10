@@ -19,6 +19,9 @@ type Database struct {
 func (d *Database) setup() error {
 	var err error
 	d.db, err = sql.Open("postgres", d.uri)
+	if err == nil {
+		return d.db.Ping()
+	}
 	return err
 }
 
