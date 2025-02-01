@@ -2,8 +2,9 @@ FROM golang:alpine AS build-env
 WORKDIR /app
 COPY . .
 
-RUN go mod download && \
-    go build
+RUN go mod download
+   
+RUN go build
 
 # Run stage
 FROM alpine:latest
