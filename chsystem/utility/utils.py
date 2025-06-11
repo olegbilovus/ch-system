@@ -85,6 +85,12 @@ _BOSSES_DATA = [
         "window": 2160
     },
     {
+        "name": "mani",
+        "type": "EGS"
+        "respawn": 5760,
+        "window": 1440,
+    },
+    {
         "name": "prot",
         "type": "EGS",
         "respawn": 1080,
