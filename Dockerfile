@@ -1,4 +1,4 @@
-FROM python:3.12-slim AS install-dependencies
+FROM python:3.13-slim AS install-dependencies
 
 RUN apt-get update &&  \
     apt-get install -y --no-install-recommends build-essential gcc libpq-dev && \
@@ -10,7 +10,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 RUN useradd -m app && \
     apt-get update &&  \
